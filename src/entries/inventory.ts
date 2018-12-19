@@ -1,4 +1,4 @@
-import { Entry } from "./entry";
+import Entry from "./entry";
 import readLines from "../support/file-reader";
 
 const entry: Entry = {

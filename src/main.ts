@@ -29,7 +29,7 @@ if (!("e" in args)) {
 
 let entry: string = args["e"];
 
-import entryMap from "./entries/entry";
+import entryMap from "./entries/entryMap";
 
 if (!(entry in entryMap)) {
     error();

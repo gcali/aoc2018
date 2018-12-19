@@ -1,16 +1,16 @@
-import frequency from "./frequency";
-import inventory from "./inventory";
-import matter from "./no-matter-how-you-slice-it";
+import readLines from "../support/file-reader";
 
-export interface Entry {
-    first: () => void,
-    second: () => void
+export default interface Entry {
+    first(): void;
+    second(): void;
+}
+
+type EntryCallback = (lines: string[]) => void;
+export const entryForFile = (first: EntryCallback, second: EntryCallback): Entry => {
+    return {
+        first: () => readLines(first),
+        second: () => readLines(second)
+    };
 };
 
-const entryMap: { [key: string]: Entry } = {
-    "1": frequency,
-    "2": inventory,
-    "3": matter
-};
-
-export default entryMap;
+// export function entryForFile

@@ -11,6 +11,7 @@
   },
   "include": [
     "src/main.ts",
-    "src/entries/frequency.ts"
+    "src/entries/frequency.ts",
+    "src/entries/inventory.ts"
   ]
 }
