@@ -1,0 +1,15 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "outDir": "./bin",
+    "noImplicitAny": true,
+    "module": "commonjs",
+    "sourceMap": true,
+    "alwaysStrict": true,
+    "target": "es6",
+    "allowJs": true
+  },
+  "include": [
+    "src/main.ts"
+  ]
+}
