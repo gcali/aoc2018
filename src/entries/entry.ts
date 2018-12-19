@@ -1,12 +1,14 @@
 import frequency from "./frequency";
+import inventory from "./inventory";
 
-interface Entry {
+export interface Entry {
     first: () => void,
     second: () => void
 };
 
-let entryMap: { [key: string]: Entry } = {
-    "1": frequency
+const entryMap: { [key: string]: Entry } = {
+    "1": frequency,
+    "2": inventory
 };
 
 export default entryMap;
