@@ -1,7 +1,8 @@
 import frequency from "./frequency";
 
 interface Entry {
-    (): void;
+    first: () => void,
+    second: () => void
 };
 
 let entryMap: { [key: string]: Entry } = {

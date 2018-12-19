@@ -1,9 +1,9 @@
 import * as minimist from 'minimist';
 
 let args = minimist(process.argv.slice(2), {
-    alias: { e: "entry", h: "help" },
+    alias: { e: "entry", h: "help", s: "second" },
     string: ["e"],
-    boolean: ["help"]
+    boolean: ["help", "second"]
 });
 
 
@@ -12,7 +12,8 @@ let usage =
 
 Options:
     -h, --help: print help
-    -e, --entry <entry>: [REQUIRED] Identify which entry to run
+    -e, --entry <entry>: [REQUIRED] Identify which entry to run,
+    -s, --second: choose second part instead of first
 `;
 
 let error = () => { console.log(usage); process.exit(1); };
@@ -34,4 +35,9 @@ if (!(entry in entryMap)) {
     error();
 }
 
-entryMap[entry]();
+if (args["s"]) {
+    entryMap[entry].second();
+}
+else {
+    entryMap[entry].first();
+}
