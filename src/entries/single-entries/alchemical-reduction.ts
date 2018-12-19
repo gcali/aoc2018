@@ -1,5 +1,5 @@
 import { entryForFile } from "../entry";
-import Max from "../../support/max";
+import Best from "../../support/best";
 
 const entry = entryForFile(
     lines => {
@@ -19,7 +19,7 @@ const entry = entryForFile(
         }
         let polymerText = lines[0];
 
-        let max = new Max<string>();
+        let max = new Best<string>();
         let unitList = new Set<string>(polymerText.toLowerCase().split(""));
         polymerText = explodePolymer(polymerText);
         unitList.forEach(unit => {
@@ -27,7 +27,7 @@ const entry = entryForFile(
             let exploded = explodePolymer(cleanPolymer);
             max.add({ key: polymerText.length - exploded.length, value: exploded });
         });
-        console.log(max.currentMax.value.length);
+        console.log(max.currentBest.value.length);
     }
 );
 

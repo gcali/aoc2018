@@ -1,5 +1,5 @@
 import { entryForFile } from "../entry";
-import Max from "../../support/max";
+import Best from "../../support/best";
 
 class GuardSleep {
     id: number;
@@ -108,20 +108,20 @@ const entry = entryForFile(
     },
     lines => {
         let guardSleeps = parseSleeps(lines);
-        let totalMaxSleep = new Max<number>();
+        let totalMaxSleep = new Best<number>();
         for (let guardID in guardSleeps) {
-            let maxSleep = new Max<number>();
+            let maxSleep = new Best<number>();
             let sleeps = guardSleeps[guardID];
             for (let i = 0; i < 60; i++) {
                 let howMany = sleeps.filter(interval => interval.isSleepingInMinute(i)).length;
                 maxSleep.add({ key: howMany, value: i });
             }
             totalMaxSleep.add({
-                key: maxSleep.currentMax.key,
-                value: parseInt(guardID) * maxSleep.currentMax.value
+                key: maxSleep.currentBest.key,
+                value: parseInt(guardID) * maxSleep.currentBest.value
             });
         }
-        console.log(totalMaxSleep.currentMax);
+        console.log(totalMaxSleep.currentBest);
 
     }
 );

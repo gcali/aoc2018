@@ -1,10 +1,7 @@
 import Entry from "../entry";
 import readLines from "../../support/file-reader";
+import { Coordinate } from "../../support/geometry";
 
-interface Coordinate {
-    x: number,
-    y: number
-}
 interface Rectangle {
     id: number,
     position: Coordinate,
