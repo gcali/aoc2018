@@ -1,5 +1,5 @@
-import { entryForFile } from "./entry";
-import Max from "../support/max";
+import { entryForFile } from "../entry";
+import Max from "../../support/max";
 
 class GuardSleep {
     id: number;

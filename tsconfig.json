@@ -10,8 +10,6 @@
     "allowJs": true
   },
   "include": [
-    "src/main.ts",
-    "src/entries/frequency.ts",
-    "src/entries/inventory.ts"
+    "src/main.ts"
   ]
 }

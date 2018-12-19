@@ -1,5 +1,5 @@
-import Entry from "./entry";
-import readLines from "../support/file-reader";
+import Entry from "../entry";
+import readLines from "../../support/file-reader";
 
 const entry: Entry = {
     first: () => readLines(lines => {

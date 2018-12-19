@@ -1,7 +1,7 @@
-import frequency from "./frequency";
-import inventory from "./inventory";
-import matter from "./no-matter-how-you-slice-it";
-import record from "./repose-record";
+import frequency from "./single-entries/frequency";
+import inventory from "./single-entries/inventory";
+import matter from "./single-entries/no-matter-how-you-slice-it";
+import record from "./single-entries/repose-record";
 import Entry from "./entry";
 
 const entryMap: { [key: string]: Entry } = {
