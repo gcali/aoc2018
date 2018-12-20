@@ -7,6 +7,8 @@ import record from "./single-entries/repose-record";
 import polymer from "./single-entries/alchemical-reduction";
 import chronal from "./single-entries/chronal-coordinates";
 import sum from "./single-entries/the-sum-of-its-parts";
+import memory from "./single-entries/memory-maneuver";
+import marbles from "./single-entries/marble-mania";
 
 const entryMap: { [key: string]: Entry } = {
     "1": frequency,
@@ -15,7 +17,9 @@ const entryMap: { [key: string]: Entry } = {
     "4": record,
     "5": polymer,
     "6": chronal,
-    "7": sum
+    "7": sum,
+    "8": memory,
+    "9": marbles
 };
 
 export default entryMap;
