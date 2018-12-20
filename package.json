@@ -4,13 +4,16 @@
   "description": "Solutions for the 2018 Advent of Code",
   "main": "bundle.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node bin/main.js"
   },
   "author": "gcali",
   "license": "MIT",
   "devDependencies": {
+    "@types/jimp": "^0.2.28",
     "@types/minimist": "^1.2.0",
     "@types/node": "^10.12.17",
+    "jimp": "^0.6.0",
     "minimist": "^1.2.0",
     "ts-loader": "^5.3.1",
     "tslint": "^5.12.0",
