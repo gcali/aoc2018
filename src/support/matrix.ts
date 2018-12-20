@@ -16,4 +16,10 @@ export class FixedSizeMatrix<T> {
     public set(c: Coordinate, value: T) {
         this.data[this.indexCalculator(c)] = value;
     }
+
+    public copy(): FixedSizeMatrix<T> {
+        let newMatrix = new FixedSizeMatrix<T>(this.size);
+        newMatrix.data = this.data.slice();
+        return newMatrix;
+    }
 }
