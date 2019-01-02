@@ -1,4 +1,4 @@
-import { entryForFile } from "../entry";
+import { entryForFile } from '../entry';
 
 class Node {
     public nodes: Node[] = [];
@@ -7,18 +7,16 @@ class Node {
     public value(): number {
         if (this.nodes.length === 0) {
             let sum = 0;
-            this.metadata.forEach(m => sum += m);
+            this.metadata.forEach((m) => sum += m);
             return sum;
-        }
-        else {
-            let nodes = this.nodes;
-            return this.metadata.map(m => {
-                let index = m - 1;
+        } else {
+            const nodes = this.nodes;
+            return this.metadata.map((m) => {
+                const index = m - 1;
                 if (index >= 0 && nodes[index] !== undefined) {
-                    let subValue = nodes[index].value();
+                    const subValue = nodes[index].value();
                     return subValue;
-                }
-                else {
+                } else {
                     return 0;
                 }
             }).reduce((acc, curr) => acc + curr, 0);
@@ -27,29 +25,28 @@ class Node {
 }
 
 function getTree(tokens: string[], startIndex: number): [Node, number] {
-    let numberOfChildren = parseInt(tokens[startIndex]);
-    let numberOfMetadata = parseInt(tokens[startIndex + 1]);
+    let numberOfChildren = parseInt(tokens[startIndex], 10);
+    const numberOfMetadata = parseInt(tokens[startIndex + 1], 10);
     startIndex += 2;
     if (numberOfChildren === 0) {
-        let metadata = tokens.slice(startIndex, startIndex + numberOfMetadata);
-        let parsedMetadata = metadata.map(m => parseInt(m));
+        const metadata = tokens.slice(startIndex, startIndex + numberOfMetadata);
+        const parsedMetadata = metadata.map((m) => parseInt(m, 10));
         if (parsedMetadata.some(isNaN)) {
             console.log(parsedMetadata);
         }
-        let node = new Node();
+        const node = new Node();
         node.metadata = parsedMetadata;
         node.nodes = [];
         return [node, startIndex + numberOfMetadata];
-    }
-    else {
-        let node = new Node();
+    } else {
+        const node = new Node();
         while (numberOfChildren > 0) {
-            let [child, newStart] = getTree(tokens, startIndex);
+            const [child, newStart] = getTree(tokens, startIndex);
             node.nodes.push(child);
             startIndex = newStart;
             numberOfChildren--;
         }
-        let metadata = tokens.slice(startIndex, startIndex + numberOfMetadata).map(e => parseInt(e));
+        const metadata = tokens.slice(startIndex, startIndex + numberOfMetadata).map((e) => parseInt(e, 10));
         if (metadata.some(isNaN)) {
             console.log(tokens.slice(startIndex, startIndex + numberOfMetadata));
         }
@@ -59,37 +56,37 @@ function getTree(tokens: string[], startIndex: number): [Node, number] {
 }
 
 const entry = entryForFile(
-    lines => {
-        let line = lines[0];
-        let tokens = line.split(" ");
+    (lines) => {
+        const line = lines[0];
+        const tokens = line.split(' ');
 
-        let calcMetadataSum = (tree: Node): number => {
+        const calcMetadataSum = (argTree: Node): number => {
             let sum = 0;
-            tree.nodes.forEach(node => {
+            argTree.nodes.forEach((node) => {
                 sum += calcMetadataSum(node);
-            })
-            tree.metadata.forEach(m => {
+            });
+            argTree.metadata.forEach((m) => {
                 sum += m;
             });
             return sum;
+        };
+
+        function printMetadata(argTree: Node) {
+            console.log(argTree.metadata);
+            argTree.nodes.forEach((n) => printMetadata(n));
         }
 
-        function printMetadata(tree: Node) {
-            console.log(tree.metadata);
-            tree.nodes.forEach(n => printMetadata(n));
-        }
-
-        let [tree, endIndex] = getTree(tokens, 0);
+        const [tree, endIndex] = getTree(tokens, 0);
         printMetadata(tree);
-        console.log("" + endIndex + " " + tokens.length);
-        console.log(calcMetadataSum(tree))
+        console.log('' + endIndex + ' ' + tokens.length);
+        console.log(calcMetadataSum(tree));
     },
-    lines => {
-        let line = lines[0];
-        let tokens = line.split(" ");
-        let [tree, endIndex] = getTree(tokens, 0);
+    (lines) => {
+        const line = lines[0];
+        const tokens = line.split(' ');
+        const [tree, endIndex] = getTree(tokens, 0);
         console.log(tree.value());
-    }
+    },
 );
 
 export default entry;

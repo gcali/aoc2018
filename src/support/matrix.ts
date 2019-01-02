@@ -1,13 +1,9 @@
-import { Coordinate } from "./geometry";
+import { Coordinate } from './geometry';
 
 export class FixedSizeMatrix<T> {
-    data: T[];
+    public data: T[];
     constructor(private size: Coordinate) {
         this.data = new Array<T>(size.x * size.y);
-    }
-
-    private indexCalculator(c: Coordinate): number {
-        return c.x * this.size.y + c.y;
     }
     public get(c: Coordinate): T {
         return this.data[this.indexCalculator(c)];
@@ -18,8 +14,12 @@ export class FixedSizeMatrix<T> {
     }
 
     public copy(): FixedSizeMatrix<T> {
-        let newMatrix = new FixedSizeMatrix<T>(this.size);
+        const newMatrix = new FixedSizeMatrix<T>(this.size);
         newMatrix.data = this.data.slice();
         return newMatrix;
+    }
+
+    private indexCalculator(c: Coordinate): number {
+        return c.x * this.size.y + c.y;
     }
 }

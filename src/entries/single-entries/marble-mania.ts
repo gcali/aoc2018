@@ -1,9 +1,9 @@
-import { entryForFile } from "../entry";
-import { DoubleLinkedNode } from "../../support/data-structure";
-import { SimpleBest, maxNumber } from "../../support/best";
+import { entryForFile } from '../entry';
+import { DoubleLinkedNode } from '../../support/data-structure';
+import { SimpleBest, maxNumber } from '../../support/best';
 
 class Game {
-    private marbleNodes?: DoubleLinkedNode<number> = null;
+    private marbleNodes: DoubleLinkedNode<number> | null = null;
     private nextMarble: number = 0;
     private scores: number[];
     private lastPlayer: number = 0;
@@ -15,22 +15,20 @@ class Game {
         }
     }
 
-    public addMarble(playerID: number = null): boolean {
+    public addMarble(playerID: number | null = null): boolean {
         if (playerID === null) {
             playerID = this.lastPlayer;
         }
-        let marble = this.nextMarble++;
+        const marble = this.nextMarble++;
         if (marble === 0 || marble % 23 !== 0) {
             if (marble === 0) {
                 this.marbleNodes = new DoubleLinkedNode<number>(marble);
+            } else {
+                this.marbleNodes = this.marbleNodes!.next.append(marble);
             }
-            else {
-                this.marbleNodes = this.marbleNodes.next.append(marble);
-            }
-        }
-        else {
+        } else {
             let currentScore = marble;
-            let currentHead = this.marbleNodes;
+            let currentHead = this.marbleNodes!;
             for (let i = 0; i < 6; i++) {
                 currentHead = currentHead.prev;
             }
@@ -47,33 +45,33 @@ class Game {
     }
 
     public highestScores(): number {
-        let max = new SimpleBest<number>(maxNumber)
-        this.scores.forEach(s => max.add(s));
-        return max.currentBest;
+        const max = new SimpleBest<number>(maxNumber);
+        this.scores.forEach((s) => max.add(s));
+        return max.currentBest!;
     }
 
 }
 
 const entry = entryForFile(
-    lines => {
-        let tokens = lines[0].split(" ");
-        let players = parseInt(tokens[0]);
-        let lastMarble = parseInt(tokens[6]);
-        let game = new Game(players, lastMarble);
+    (lines) => {
+        const tokens = lines[0].split(' ');
+        const players = parseInt(tokens[0], 10);
+        const lastMarble = parseInt(tokens[6], 10);
+        const game = new Game(players, lastMarble);
         while (game.addMarble()) {
             game.switchPlayer();
         }
         console.log(game.highestScores());
     },
-    lines => {
-        let tokens = lines[0].split(" ");
-        let players = parseInt(tokens[0]);
-        let lastMarble = parseInt(tokens[6]) * 100;
-        let game = new Game(players, lastMarble);
+    (lines) => {
+        const tokens = lines[0].split(' ');
+        const players = parseInt(tokens[0], 10);
+        const lastMarble = parseInt(tokens[6], 10) * 100;
+        const game = new Game(players, lastMarble);
         while (game.addMarble()) {
             game.switchPlayer();
         }
         console.log(game.highestScores());
-    }
+    },
 );
 export default entry;

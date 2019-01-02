@@ -7,11 +7,9 @@
     "sourceMap": true,
     "alwaysStrict": true,
     "target": "es6",
-    "allowJs": true,
-    "experimentalDecorators": true
+    "allowJs": true
   },
   "include": [
-    "src/main.ts",
-    "src/entries/single-entries/memory-maneuver.ts",
+    "src/console.ts",
   ]
 }

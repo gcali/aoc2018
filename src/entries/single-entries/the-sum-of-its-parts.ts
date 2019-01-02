@@ -1,28 +1,23 @@
-import { entryForFile } from "../entry";
-import { DefaultListDictionaryString } from "../../support/data-structure";
+import { entryForFile } from '../entry';
+import { DefaultListDictionaryString } from '../../support/data-structure';
 
 class Graph {
-    private nodes: { [key: string]: Node } = {}
+    private nodes: { [key: string]: Node } = {};
     constructor(lines: string[]) {
-        lines.forEach(line => {
-            let split = line.split(" ");
-            let dependency = split[1];
-            let nodeName = split[7];
+        lines.forEach((line) => {
+            const split = line.split(' ');
+            const dependency = split[1];
+            const nodeName = split[7];
             this.ensureNode(dependency);
             this.ensureNode(nodeName);
 
             this.nodes[nodeName].dependentFrom(this.nodes[dependency]);
         });
     }
-    private ensureNode(name: string) {
-        if (!(name in this.nodes)) {
-            this.nodes[name] = new Node(name);
-        }
-    }
 
     public isDone(): boolean {
-        for (let key in this.nodes) {
-            let node = this.nodes[key];
+        for (const key of Object.keys(this.nodes)) {
+            const node = this.nodes[key];
             if (node.wip || !node.isDone) {
                 return false;
             }
@@ -32,9 +27,9 @@ class Graph {
     }
 
     public getNextNode(): Node | null {
-        let candidates = [];
-        for (let key in this.nodes) {
-            let node = this.nodes[key];
+        const candidates = [];
+        for (const key of Object.keys(this.nodes)) {
+            const node = this.nodes[key];
             if (!node.isDone && !node.wip && !node.hasDependencies()) {
                 candidates.push(node);
             }
@@ -42,9 +37,14 @@ class Graph {
         if (candidates.length === 0) {
             return null;
         }
-        let result = candidates.sort((a, b) => a.name.localeCompare(b.name))[0];
+        const result = candidates.sort((a, b) => a.name.localeCompare(b.name))[0];
         result.wip = true;
         return result;
+    }
+    private ensureNode(name: string) {
+        if (!(name in this.nodes)) {
+            this.nodes[name] = new Node(name);
+        }
     }
 }
 class Node {
@@ -60,7 +60,7 @@ class Node {
     }
 
     public duration(): number {
-        return this.name.toLowerCase().charCodeAt(0) - "a".charCodeAt(0) + 61;
+        return this.name.toLowerCase().charCodeAt(0) - 'a'.charCodeAt(0) + 61;
     }
 
     public remove(): void {
@@ -68,53 +68,51 @@ class Node {
     }
 
     public hasDependencies(): boolean {
-        return this.dependencies.some(d => !d.isDone);
+        return this.dependencies.some((d) => !d.isDone);
     }
 }
 const entry = entryForFile(
-    lines => {
-        let graph = new Graph(lines);
-        let nodes = [];
+    (lines) => {
+        const graph = new Graph(lines);
+        const nodes = [];
         while (true) {
-            let node = graph.getNextNode();
+            const node = graph.getNextNode();
             if (node === null) {
                 break;
-            }
-            else {
+            } else {
                 node.isDone = true;
                 nodes.push(node.name);
             }
         }
-        console.log(nodes.join(""));
+        console.log(nodes.join(''));
     },
-    lines => {
-        let graph = new Graph(lines);
-        let howManyWorkers = 5;
-        let workers = new Array<Node | null>(howManyWorkers);
+    (lines) => {
+        const graph = new Graph(lines);
+        const howManyWorkers = 5;
+        const workers = new Array<Node | null>(howManyWorkers);
         for (let i = 0; i < howManyWorkers; i++) {
             workers[i] = null;
         }
-        let callbacks = new DefaultListDictionaryString<() => void>();
+        const callbacks = new DefaultListDictionaryString<() => void>();
         let done = false;
         let currentSecond = 0;
         while (!done) {
-            let call = callbacks.get("" + currentSecond);
-            call.forEach(c => c());
-            callbacks.remove("" + currentSecond);
+            const call = callbacks.get('' + currentSecond);
+            call.forEach((c) => c());
+            callbacks.remove('' + currentSecond);
             if (graph.isDone()) {
                 done = true;
-            }
-            else {
+            } else {
                 for (let i = 0; i < howManyWorkers; i++) {
                     if (workers[i] === null) {
-                        let nextNode = graph.getNextNode();
+                        const nextNode = graph.getNextNode();
                         if (nextNode !== null) {
                             workers[i] = nextNode;
-                            let workerIndex = i;
-                            let targetTime = (currentSecond + nextNode.duration());
-                            console.log("Adding to target " + targetTime + " node " + nextNode.name);
-                            callbacks.add("" + targetTime, () => {
-                                console.log("Node " + nextNode.name + " done");
+                            const workerIndex = i;
+                            const targetTime = (currentSecond + nextNode.duration());
+                            console.log('Adding to target ' + targetTime + ' node ' + nextNode.name);
+                            callbacks.add('' + targetTime, () => {
+                                console.log('Node ' + nextNode.name + ' done');
                                 nextNode.isDone = true;
                                 nextNode.wip = false;
                                 workers[workerIndex] = null;
@@ -126,6 +124,6 @@ const entry = entryForFile(
             }
         }
         console.log(currentSecond);
-    }
+    },
 );
 export default entry;

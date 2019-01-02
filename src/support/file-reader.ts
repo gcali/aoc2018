@@ -1,16 +1,16 @@
-import * as readline from "readline";
+import * as readline from 'readline';
 
 export default (callback: (lines: string[]) => void) => {
-    let readingInterface = readline.createInterface({
+    const readingInterface = readline.createInterface({
         input: process.stdin,
         output: process.stdout,
-        terminal: false
+        terminal: false,
     });
-    let lines: string[] = [];
-    readingInterface.on('line', line => {
-        let trimmed = line.trim();
+    const lines: string[] = [];
+    readingInterface.on('line', (line) => {
+        const trimmed = line.trim();
         lines.push(line);
 
     });
     readingInterface.on('close', () => callback(lines));
-}
+};
