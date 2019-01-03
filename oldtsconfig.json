@@ -7,9 +7,10 @@
     "sourceMap": true,
     "alwaysStrict": true,
     "target": "es6",
-    "allowJs": true
+    "allowJs": true,
+    "experimentalDecorators": true
   },
   "include": [
-    "src/console.ts",
+    "src/main.ts"
   ]
 }

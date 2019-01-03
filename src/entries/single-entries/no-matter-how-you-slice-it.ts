@@ -1,6 +1,7 @@
-import Entry from '../entry';
-import readLines from '../../support/file-reader';
-import { Coordinate } from '../../support/geometry';
+import { Entry } from "../entry";
+import readLines from "../../support/file-reader";
+import { Coordinate } from "../../support/geometry";
+import { log } from "@/support/log";
 
 interface Rectangle {
     id: number;
@@ -13,14 +14,14 @@ type Map = boolean[][];
 let isFirstTime = true;
 const parseRectangle = (line: string): Rectangle => {
     const trimmed = line.trim();
-    const noSpaces = trimmed.replace(/ /g, '');
-    const normalizedDelimiters = noSpaces.replace('#', '').replace('@', ' ').replace(':', ' ');
+    const noSpaces = trimmed.replace(/ /g, "");
+    const normalizedDelimiters = noSpaces.replace("#", "").replace("@", " ").replace(":", " ");
     if (isFirstTime) {
         isFirstTime = false;
-        console.log(noSpaces);
-        console.log(normalizedDelimiters);
+        log(noSpaces);
+        log(normalizedDelimiters);
     }
-    const split = normalizedDelimiters.split(' ');
+    const split = normalizedDelimiters.split(" ");
     const id = parseInt(split[0], 10);
     const fromCoupleToCoordinate = (s: string, d: string): Coordinate => {
         const argSplit = s.split(d);
@@ -29,8 +30,8 @@ const parseRectangle = (line: string): Rectangle => {
             y: parseInt(argSplit[1], 10),
         };
     };
-    const position = fromCoupleToCoordinate(split[1], ',');
-    const size = fromCoupleToCoordinate(split[2], 'x');
+    const position = fromCoupleToCoordinate(split[1], ",");
+    const size = fromCoupleToCoordinate(split[2], "x");
 
     return {
         id,
@@ -43,7 +44,7 @@ const entry: Entry = {
         const map = mapCreator(lines.map(parseRectangle));
 
         const total = map.reduce<number>((acc, current) => acc + current.filter((e) => e).length, 0);
-        console.log(total);
+        log(total);
     }),
     second: () => readLines((lines) => {
         const rectangles = lines.map(parseRectangle);
@@ -58,7 +59,7 @@ const entry: Entry = {
             }, map);
             return isCandidate;
         });
-        console.log(candidate ? candidate.id : 'null');
+        log(candidate ? candidate.id : "null");
     }),
 };
 
@@ -71,7 +72,7 @@ function mapCreator(rectangles: Rectangle[]) {
         map[i] = new Array<boolean>(size);
     }
     const first = rectangles[0];
-    console.log(`First Rectangle: ${first.size.x}x${first.size.y}`);
+    log(`First Rectangle: ${first.size.x}x${first.size.y}`);
     const callback = (argMap: Map, coordinate: Coordinate) => {
         if (argMap[coordinate.x][coordinate.y] === undefined) {
             argMap[coordinate.x][coordinate.y] = false;

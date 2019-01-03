@@ -1,4 +1,4 @@
-import { Coordinate } from './geometry';
+import { Coordinate } from "./geometry";
 
 export class FixedSizeMatrix<T> {
     public data: T[];

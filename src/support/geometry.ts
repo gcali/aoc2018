@@ -1,4 +1,4 @@
-import { SimpleBest } from './best';
+import { SimpleBest } from "./best";
 
 export interface Coordinate {
     x: number;
@@ -31,13 +31,13 @@ export const getBoundaries = (points: Coordinate[]): Bounds => {
         maxY.add(p.y);
     });
     const size = {
-        x: (maxX.currentBest - minX.currentBest + 1),
-        y: (maxY.currentBest - minY.currentBest + 1),
+        x: (maxX.currentBest! - minX.currentBest! + 1),
+        y: (maxY.currentBest! - minY.currentBest! + 1),
     };
     return {
         topLeft: {
-            x: minX.currentBest,
-            y: minY.currentBest,
+            x: minX.currentBest!,
+            y: minY.currentBest!,
         },
         size,
     };

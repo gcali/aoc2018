@@ -1,33 +1,34 @@
-import { entryForFile } from '../entry';
-import Best from '../../support/best';
+import { entryForFile } from "../entry";
+import Best from "../../support/best";
+import { log } from "../../support/log";
 
 const entry = entryForFile(
     (lines) => {
         if (lines.length > 1) {
-            throw Error('Only one line expected');
+            throw Error("Only one line expected");
         }
         let polymerText = lines[0];
 
-        console.log('Start length: ' + polymerText.length);
+        log("Start length: " + polymerText.length);
         polymerText = explodePolymer(polymerText);
-        console.log(polymerText.length);
+        log(polymerText.length);
 
     },
     (lines) => {
         if (lines.length > 1) {
-            throw Error('Only one line expected');
+            throw Error("Only one line expected");
         }
         let polymerText = lines[0];
 
         const max = new Best<string>();
-        const unitList = new Set<string>(polymerText.toLowerCase().split(''));
+        const unitList = new Set<string>(polymerText.toLowerCase().split(""));
         polymerText = explodePolymer(polymerText);
         unitList.forEach((unit) => {
-            const cleanPolymer = polymerText.replace(new RegExp(`[${unit}${unit.toUpperCase()}]`, 'g'), '');
+            const cleanPolymer = polymerText.replace(new RegExp(`[${unit}${unit.toUpperCase()}]`, "g"), "");
             const exploded = explodePolymer(cleanPolymer);
             max.add({ key: polymerText.length - exploded.length, value: exploded });
         });
-        console.log(max.currentBest!.value.length);
+        log(max.currentBest!.value.length);
     },
 );
 

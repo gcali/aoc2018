@@ -1,11 +1,11 @@
-import { entryForFile } from '../entry';
-import { DefaultListDictionaryString } from '../../support/data-structure';
+import { DefaultListDictionaryString } from "../../support/data-structure";
+import { log } from "@/support/log";
 
 class Graph {
     private nodes: { [key: string]: Node } = {};
     constructor(lines: string[]) {
         lines.forEach((line) => {
-            const split = line.split(' ');
+            const split = line.split(" ");
             const dependency = split[1];
             const nodeName = split[7];
             this.ensureNode(dependency);
@@ -60,7 +60,7 @@ class Node {
     }
 
     public duration(): number {
-        return this.name.toLowerCase().charCodeAt(0) - 'a'.charCodeAt(0) + 61;
+        return this.name.toLowerCase().charCodeAt(0) - "a".charCodeAt(0) + 61;
     }
 
     public remove(): void {
@@ -71,8 +71,8 @@ class Node {
         return this.dependencies.some((d) => !d.isDone);
     }
 }
-const entry = entryForFile(
-    (lines) => {
+export const entry = {
+    first: (lines: string[]) => {
         const graph = new Graph(lines);
         const nodes = [];
         while (true) {
@@ -84,9 +84,9 @@ const entry = entryForFile(
                 nodes.push(node.name);
             }
         }
-        console.log(nodes.join(''));
+        log(nodes.join(""));
     },
-    (lines) => {
+    second: (lines: string[]) => {
         const graph = new Graph(lines);
         const howManyWorkers = 5;
         const workers = new Array<Node | null>(howManyWorkers);
@@ -97,9 +97,9 @@ const entry = entryForFile(
         let done = false;
         let currentSecond = 0;
         while (!done) {
-            const call = callbacks.get('' + currentSecond);
+            const call = callbacks.get("" + currentSecond);
             call.forEach((c) => c());
-            callbacks.remove('' + currentSecond);
+            callbacks.remove("" + currentSecond);
             if (graph.isDone()) {
                 done = true;
             } else {
@@ -110,9 +110,9 @@ const entry = entryForFile(
                             workers[i] = nextNode;
                             const workerIndex = i;
                             const targetTime = (currentSecond + nextNode.duration());
-                            console.log('Adding to target ' + targetTime + ' node ' + nextNode.name);
-                            callbacks.add('' + targetTime, () => {
-                                console.log('Node ' + nextNode.name + ' done');
+                            log("Adding to target " + targetTime + " node " + nextNode.name);
+                            callbacks.add("" + targetTime, () => {
+                                log("Node " + nextNode.name + " done");
                                 nextNode.isDone = true;
                                 nextNode.wip = false;
                                 workers[workerIndex] = null;
@@ -123,7 +123,6 @@ const entry = entryForFile(
                 currentSecond++;
             }
         }
-        console.log(currentSecond);
-    },
-);
-export default entry;
+        log(currentSecond);
+    }
+};

@@ -1,16 +1,13 @@
-import readLines from '../support/file-reader';
+type EntryCallback = (lines: string[], outputCallback: ((outputLine: string) => void)) => void;
 
-export default interface Entry {
-    first(): void;
-    second(): void;
+export interface Entry {
+    first: EntryCallback;
+    second: EntryCallback;
 }
 
-type EntryCallback = (lines: string[]) => void;
-export const entryForFile = (first: EntryCallback, second: EntryCallback): Entry => {
+export function entryForFile(first: EntryCallback, second: EntryCallback): Entry {
     return {
-        first: () => readLines(first),
-        second: () => readLines(second),
+        first,
+        second
     };
-};
-
-// export function entryForFile
+}

@@ -1,26 +1,30 @@
-import { entryForFile } from '../entry';
+import { entryForFile } from "../entry";
+import { log } from "@/support/log";
 
-const entry = entryForFile(
-    (lines) => {
+export const entry = entryForFile(
+    (lines, outputCallback) => {
+        log(lines);
         let currentFrequency = 0;
         lines.forEach((line) => {
             const trimmed = line.trim();
             let value = parseInt(trimmed.slice(1), 10);
-            if (trimmed.startsWith('-')) {
+            if (trimmed.startsWith("-")) {
                 value *= -1;
             }
             currentFrequency += value;
+            log(line);
+            log(currentFrequency);
         });
-        console.log('Result: ' + currentFrequency);
+        outputCallback("Result: " + currentFrequency);
     },
-    (lines) => {
+    (lines, outputCallback) => {
         const values: number[] = [];
         const firstRoundOfFrequencies: number[] = [];
         let currentFrequency: number = 0;
         lines.forEach((line) => {
             const trimmed = line.trim();
             let value = parseInt(trimmed.slice(1), 10);
-            if (trimmed.startsWith('-')) {
+            if (trimmed.startsWith("-")) {
                 value *= -1;
             }
             values.push(value);
@@ -35,7 +39,7 @@ const entry = entryForFile(
             found = values.some((v) => {
                 current += v;
                 if (foundFrequencies.has(current)) {
-                    console.log('found: ' + current);
+                    outputCallback("Found: " + current);
                     return true;
                 } else {
                     foundFrequencies.add(current);
@@ -45,5 +49,3 @@ const entry = entryForFile(
         }
     },
 );
-
-export default entry;

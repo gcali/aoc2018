@@ -1,4 +1,5 @@
-import { entryForFile } from '../entry';
+import { entryForFile } from "../entry";
+import { log } from "@/support/log";
 
 class Node {
     public nodes: Node[] = [];
@@ -32,7 +33,7 @@ function getTree(tokens: string[], startIndex: number): [Node, number] {
         const metadata = tokens.slice(startIndex, startIndex + numberOfMetadata);
         const parsedMetadata = metadata.map((m) => parseInt(m, 10));
         if (parsedMetadata.some(isNaN)) {
-            console.log(parsedMetadata);
+            log(parsedMetadata);
         }
         const node = new Node();
         node.metadata = parsedMetadata;
@@ -48,7 +49,7 @@ function getTree(tokens: string[], startIndex: number): [Node, number] {
         }
         const metadata = tokens.slice(startIndex, startIndex + numberOfMetadata).map((e) => parseInt(e, 10));
         if (metadata.some(isNaN)) {
-            console.log(tokens.slice(startIndex, startIndex + numberOfMetadata));
+            log(tokens.slice(startIndex, startIndex + numberOfMetadata));
         }
         node.metadata = metadata;
         return [node, startIndex + numberOfMetadata];
@@ -58,7 +59,7 @@ function getTree(tokens: string[], startIndex: number): [Node, number] {
 const entry = entryForFile(
     (lines) => {
         const line = lines[0];
-        const tokens = line.split(' ');
+        const tokens = line.split(" ");
 
         const calcMetadataSum = (argTree: Node): number => {
             let sum = 0;
@@ -72,20 +73,20 @@ const entry = entryForFile(
         };
 
         function printMetadata(argTree: Node) {
-            console.log(argTree.metadata);
+            log(argTree.metadata);
             argTree.nodes.forEach((n) => printMetadata(n));
         }
 
         const [tree, endIndex] = getTree(tokens, 0);
         printMetadata(tree);
-        console.log('' + endIndex + ' ' + tokens.length);
-        console.log(calcMetadataSum(tree));
+        log("" + endIndex + " " + tokens.length);
+        log(calcMetadataSum(tree));
     },
     (lines) => {
         const line = lines[0];
-        const tokens = line.split(' ');
+        const tokens = line.split(" ");
         const [tree, endIndex] = getTree(tokens, 0);
-        console.log(tree.value());
+        log(tree.value());
     },
 );
 

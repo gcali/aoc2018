@@ -86,7 +86,7 @@ export class DoubleLinkedNode<T> {
 
   public removePrevious(): T {
     if (this._prev === null) {
-      throw Error('Cannot remove non existing element');
+      throw Error("Cannot remove non existing element");
     } else {
       const toRemove = this._prev;
       this._prev = this._prev!._prev;

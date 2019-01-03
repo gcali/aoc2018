@@ -1,16 +1,17 @@
-import * as readline from 'readline';
+import { error } from "./log";
+export function readFileFromInput(file: File, onSuccess: ((content: string) => void)) {
+    const fileReader = new FileReader();
+    fileReader.onload = () => {
+        onSuccess(fileReader.result as string);
+    };
+    fileReader.onerror = () => {
+        error("File read failure");
+    };
+    fileReader.readAsText(file);
+}
+
 
 export default (callback: (lines: string[]) => void) => {
-    const readingInterface = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout,
-        terminal: false,
-    });
     const lines: string[] = [];
-    readingInterface.on('line', (line) => {
-        const trimmed = line.trim();
-        lines.push(line);
-
-    });
-    readingInterface.on('close', () => callback(lines));
+    callback(lines);
 };

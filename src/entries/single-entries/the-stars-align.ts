@@ -1,17 +1,18 @@
-import { entryForFile } from '../entry';
-import { Coordinate, sumCoordinate, getBoundaries, Bounds } from '../../support/geometry';
-import { writeImgFromPoints } from '../../support/output';
+import { entryForFile } from "../entry";
+import { Coordinate, sumCoordinate, getBoundaries, Bounds } from "../../support/geometry";
+import { writeImgFromPoints } from "../../support/output";
+import { log } from "@/support/log";
 
 class MovablePoint {
 
     public static FromLine(line: string): MovablePoint {
-        line = line.replace(/ /g, '');
-        const firstPart = line.slice(line.indexOf('<') + 1, line.indexOf('>'));
-        let secondPart = line.slice(line.indexOf('>') + 1);
-        secondPart = secondPart.slice(secondPart.indexOf('<') + 1, secondPart.indexOf('>'));
-        console.log(secondPart);
-        const coordinateTokens = firstPart.split(',');
-        const speedTokens = secondPart.split(',');
+        line = line.replace(/ /g, "");
+        const firstPart = line.slice(line.indexOf("<") + 1, line.indexOf(">"));
+        let secondPart = line.slice(line.indexOf(">") + 1);
+        secondPart = secondPart.slice(secondPart.indexOf("<") + 1, secondPart.indexOf(">"));
+        log(secondPart);
+        const coordinateTokens = firstPart.split(",");
+        const speedTokens = secondPart.split(",");
         return new MovablePoint(
             {
                 x: parseInt(coordinateTokens[0], 10),
@@ -54,9 +55,9 @@ const entry = entryForFile(
                 lastBoundaries = boundaries;
             } else if (lastBoundaries.size.x < boundaries.size.x &&
                 lastBoundaries.size.y < boundaries.size.y) {
-                console.log(lastBoundaries);
+                log(lastBoundaries);
                 writeImgFromPoints(
-                    'stars.png',
+                    "stars.png",
                     lastBoundaries,
                     points.map((p) => ({
                         color: 0xff0000ff,
@@ -72,7 +73,7 @@ const entry = entryForFile(
 
     },
     (lines) => {
-        throw Error('Not implemented');
+        throw Error("Not implemented");
     },
 );
 

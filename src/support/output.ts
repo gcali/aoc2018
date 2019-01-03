@@ -1,4 +1,4 @@
-import { Coordinate, Bounds } from './geometry';
+import { Coordinate, Bounds } from "./geometry";
 
 interface ColoredPoint {
     coordinates: Coordinate;
@@ -12,5 +12,5 @@ export const writeImgFromPoints = (
     scale: number = 1,
     background: number = 0x00000000,
 ) => {
-    throw Error('Not implemented');
+    throw Error("Not implemented");
 };
