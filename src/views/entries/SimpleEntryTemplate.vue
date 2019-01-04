@@ -1,6 +1,6 @@
 <template lang="pug">
     div.wrapper
-        EntryTitle(date="1", name="Frequency")
+        EntryTitle(:date="id", :name="title")
         .content
             EntryInput(readFile="true", @file-content="readFileContent")
             .choices(:class="{hidden: hideChoices}")
@@ -11,12 +11,13 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Vue, Prop } from "vue-property-decorator";
 import EntryTitle from "@/components/EntryTitle.vue";
 import EntryInput from "@/components/EntryInput.vue";
 import EntryChoice from "@/components/EntryChoice.vue";
 import EntrySimpleOutput from "@/components/EntrySimpleOutput.vue";
-import { entry } from "@/entries/single-entries/frequency";
+// import { entry } from "@/entries/single-entries/frequency";
+import { Entry } from "@/entries/entry";
 @Component({
     components: {
         EntryTitle,
@@ -26,6 +27,9 @@ import { entry } from "@/entries/single-entries/frequency";
     }
 })
 export default class Frequency extends Vue {
+    @Prop() public title!: string;
+    @Prop() public id!: number;
+    @Prop() public entry!: Entry;
     public hideOutput: boolean = true;
     public output: string[] = [];
     public outputHeader: string = "";
@@ -50,11 +54,11 @@ export default class Frequency extends Vue {
             const splitContent = contentToSplit.split("\n");
             this.output = [];
             if (choice === "first") {
-                entry.first(splitContent, outputLine =>
+                this.entry.first(splitContent, (outputLine) =>
                     this.output.push(outputLine)
                 );
             } else if (choice === "second") {
-                entry.second(splitContent, outputLine =>
+                this.entry.second(splitContent, (outputLine) =>
                     this.output.push(outputLine)
                 );
             } else {

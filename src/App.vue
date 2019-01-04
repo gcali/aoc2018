@@ -7,9 +7,10 @@
       hr
     .links
       router-link(to="/") Home
-      router-link(to="/about") About
+      //-router-link(to="/about") About 
+      router-link(:to="{name: 'entries'}") Entries
       .nav-entry
-        label Entries
+        //- label Entries
         router-link(:to="{name: 'frequency'}") Frequency
   #content
     router-view

@@ -1,7 +1,10 @@
 import Vue from "vue";
 import Router from "vue-router";
 import Home from "./views/Home.vue";
+import Entries from "./views/Entries.vue";
 import Frequency from "./views/entries/Frequency.vue";
+import SimpleEntryTemplate from "./views/entries/SimpleEntryTemplate.vue";
+import { entry as frequencyEntry } from "@/entries/single-entries/frequency";
 
 Vue.use(Router);
 
@@ -23,9 +26,19 @@ export default new Router({
       component: () => import(/* webpackChunkName: "about" */ "./views/About.vue"),
     },
     {
+      path: "/entry",
+      name: "entries",
+      component: Entries
+    },
+    {
       path: "/entry/frequency",
       name: "frequency",
-      component: Frequency
+      component: SimpleEntryTemplate,
+      props: {
+        id: 1,
+        title: "Frequency",
+        entry: frequencyEntry
+      }
     }
   ],
 });
