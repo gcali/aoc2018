@@ -1,5 +1,5 @@
 <template lang="pug">
-    .wrapper
+    .wrapper(:class="{hidden: hideOutput}")
         .output {{text}}
 </template>
 
@@ -8,6 +8,10 @@ import { Component, Vue, Prop } from "vue-property-decorator";
 @Component({})
 export default class EntrySimpleOutput extends Vue {
     @Prop({ default: [] }) public lines!: string[];
+
+    public get hideOutput(): boolean {
+        return this.lines.length <= 0;
+    }
 
     public get text() {
         return this.lines.join("\n");

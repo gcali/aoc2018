@@ -1,6 +1,6 @@
 import { Choice } from "@/constants/choice";
 
-type EntryCallback = (lines: string[], outputCallback: ((outputLine: string) => void)) => void;
+type EntryCallback = (lines: string[], outputCallback: ((outputLine: any) => void)) => void;
 
 export interface Entry {
     first: EntryCallback;
@@ -27,6 +27,6 @@ export function executeEntry(entry: Entry, choice: Choice, lines: string[], outp
         callback = entry.second;
     }
     callback(lines, (outputLine) => {
-        output.push(outputLine);
+        output.push(JSON.stringify(outputLine, undefined, 4));
     });
 }

@@ -1,9 +1,7 @@
-import { Entry } from "../entry";
-import readLines from "../../support/file-reader";
-import { log } from "@/support/log";
+import { Entry, entryForFile } from "../entry";
 
-const entry: Entry = {
-    first: () => readLines((lines) => {
+export const entry: Entry = entryForFile(
+    (lines, outputCallback) => {
         interface WordCounter { [key: string]: number; }
         function createWordCounter(word: string) {
             const currentCount: WordCounter = {};
@@ -41,17 +39,16 @@ const entry: Entry = {
         const amountOfTwoLetters = checksumCounter.filter((c) => c.hasTwoLetters).length;
         const amountOfThreeLetters = checksumCounter.filter((c) => c.hasThreeLetters).length;
 
-        log("Checksum: " + amountOfTwoLetters * amountOfThreeLetters);
-
-    }),
-    second: () => readLines((lines) => {
+        outputCallback("Checksum: " + amountOfTwoLetters * amountOfThreeLetters);
+    },
+    (lines, outputCallback) => {
         const stringLength = lines[0].length;
         for (let i = 0; i < stringLength; i++) {
             const spliced = lines.map((l) => l.slice(0, i) + l.slice(i + 1, l.length));
             const duplicates = new Set<string>();
             const hasFoundDuplicate = spliced.some((l) => {
                 if (duplicates.has(l)) {
-                    log(l);
+                    outputCallback(l);
                     return true;
                 } else {
                     duplicates.add(l);
@@ -62,7 +59,6 @@ const entry: Entry = {
                 return;
             }
         }
-        log("Something wen wrong");
-    }),
-};
-export default entry;
+        outputCallback("Something wen wrong");
+    }
+);

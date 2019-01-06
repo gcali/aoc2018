@@ -1,44 +1,85 @@
 import Vue from "vue";
-import Router from "vue-router";
+import Router, { RouteConfig } from "vue-router";
 import Home from "./views/Home.vue";
 import Entries from "./views/Entries.vue";
-import Frequency from "./views/entries/Frequency.vue";
 import SimpleEntryTemplate from "./views/entries/SimpleEntryTemplate.vue";
 import { entry as frequencyEntry } from "@/entries/single-entries/frequency";
+import { entry as inventoryEntry } from "@/entries/single-entries/inventory";
+
+import { entryList } from "@/entries/entryList";
 
 Vue.use(Router);
+
+const routes: RouteConfig[] = [
+  {
+    path: "/",
+    name: "home",
+    component: Home,
+  },
+  {
+    path: "/entry",
+    name: "entries",
+    component: Entries
+  }
+];
+
+//   {
+//     path: "/entry/frequency",
+//     name: "frequency",
+//     component: SimpleEntryTemplate,
+//     props: {
+//       id: 1,
+//       title: "Frequency",
+//       entry: frequencyEntry
+//     }
+//   },
+entryList.forEach((e, index) => routes.push({
+  name: e.name,
+  path: `/entry/${e.name}`,
+  component: e.component ? e.component : SimpleEntryTemplate,
+  props: {
+    id: index + 1,
+    title: e.title,
+    entry: e.entry
+  }
+}));
+
+
 
 export default new Router({
   mode: "hash",
   base: process.env.BASE_URL,
-  routes: [
-    {
-      path: "/",
-      name: "home",
-      component: Home,
-    },
-    {
-      path: "/about",
-      name: "about",
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ "./views/About.vue"),
-    },
-    {
-      path: "/entry",
-      name: "entries",
-      component: Entries
-    },
-    {
-      path: "/entry/frequency",
-      name: "frequency",
-      component: SimpleEntryTemplate,
-      props: {
-        id: 1,
-        title: "Frequency",
-        entry: frequencyEntry
-      }
-    }
-  ],
+  routes
+  // routes: [
+  //   {
+  //     path: "/",
+  //     name: "home",
+  //     component: Home,
+  //   },
+  //   {
+  //     path: "/entry",
+  //     name: "entries",
+  //     component: Entries
+  //   },
+  //   {
+  //     path: "/entry/frequency",
+  //     name: "frequency",
+  //     component: SimpleEntryTemplate,
+  //     props: {
+  //       id: 1,
+  //       title: "Frequency",
+  //       entry: frequencyEntry
+  //     }
+  //   },
+  //   {
+  //     path: "/entry/inventory",
+  //     name: "inventory",
+  //     component: SimpleEntryTemplate,
+  //     props: {
+  //       id: 2,
+  //       title: "Inventory Management System",
+  //       entry: inventoryEntry
+  //     }
+  //   }
+  // ],
 });

@@ -12,7 +12,12 @@ import { Component, Vue, Emit } from "vue-property-decorator";
 import { Choice } from "@/constants/choice";
 import { EntryFileHandling } from "@/entries/entry";
 
-@Component({})
+@Component({
+    components: {
+        EntryFileInput,
+        EntryChoice
+    }
+})
 export default class EntryInput extends Vue {
 
     private inputContent: string | null = null;

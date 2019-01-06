@@ -11,10 +11,20 @@
       router-link(:to="{name: 'entries'}") Entries
       .nav-entry
         //- label Entries
-        router-link(:to="{name: 'frequency'}") Frequency
+        router-link(:to="{name: entry.name}", v-for=("entry in entryList"), :key="entry.name") {{entry.title}}
   #content
     router-view
 </template>
+
+<script lang="ts">
+import { Component, Vue } from "vue-property-decorator";
+import { entryList } from "@/entries/entryList";
+@Component({})
+export default class App extends Vue {
+    private entryList = entryList;
+}
+</script>
+
 
 <style lang="scss">
 $text-color: navajowhite;

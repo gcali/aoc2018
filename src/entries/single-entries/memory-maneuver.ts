@@ -1,5 +1,5 @@
 import { entryForFile } from "../entry";
-import { log } from "@/support/log";
+// import { log } from "@/support/log";
 
 class Node {
     public nodes: Node[] = [];
@@ -25,7 +25,7 @@ class Node {
     }
 }
 
-function getTree(tokens: string[], startIndex: number): [Node, number] {
+function getTree(tokens: string[], startIndex: number, outputCallback: (s: any) => void): [Node, number] {
     let numberOfChildren = parseInt(tokens[startIndex], 10);
     const numberOfMetadata = parseInt(tokens[startIndex + 1], 10);
     startIndex += 2;
@@ -33,7 +33,7 @@ function getTree(tokens: string[], startIndex: number): [Node, number] {
         const metadata = tokens.slice(startIndex, startIndex + numberOfMetadata);
         const parsedMetadata = metadata.map((m) => parseInt(m, 10));
         if (parsedMetadata.some(isNaN)) {
-            log(parsedMetadata);
+            outputCallback(parsedMetadata);
         }
         const node = new Node();
         node.metadata = parsedMetadata;
@@ -42,22 +42,22 @@ function getTree(tokens: string[], startIndex: number): [Node, number] {
     } else {
         const node = new Node();
         while (numberOfChildren > 0) {
-            const [child, newStart] = getTree(tokens, startIndex);
+            const [child, newStart] = getTree(tokens, startIndex, outputCallback);
             node.nodes.push(child);
             startIndex = newStart;
             numberOfChildren--;
         }
         const metadata = tokens.slice(startIndex, startIndex + numberOfMetadata).map((e) => parseInt(e, 10));
         if (metadata.some(isNaN)) {
-            log(tokens.slice(startIndex, startIndex + numberOfMetadata));
+            outputCallback(tokens.slice(startIndex, startIndex + numberOfMetadata));
         }
         node.metadata = metadata;
         return [node, startIndex + numberOfMetadata];
     }
 }
 
-const entry = entryForFile(
-    (lines) => {
+export const entry = entryForFile(
+    (lines, outputCallback) => {
         const line = lines[0];
         const tokens = line.split(" ");
 
@@ -73,21 +73,19 @@ const entry = entryForFile(
         };
 
         function printMetadata(argTree: Node) {
-            log(argTree.metadata);
+            outputCallback(argTree.metadata);
             argTree.nodes.forEach((n) => printMetadata(n));
         }
 
-        const [tree, endIndex] = getTree(tokens, 0);
+        const [tree, endIndex] = getTree(tokens, 0, outputCallback);
         printMetadata(tree);
-        log("" + endIndex + " " + tokens.length);
-        log(calcMetadataSum(tree));
+        outputCallback("" + endIndex + " " + tokens.length);
+        outputCallback(calcMetadataSum(tree));
     },
-    (lines) => {
+    (lines, outputCallback) => {
         const line = lines[0];
         const tokens = line.split(" ");
-        const [tree, endIndex] = getTree(tokens, 0);
-        log(tree.value());
+        const [tree, endIndex] = getTree(tokens, 0, outputCallback);
+        outputCallback(tree.value());
     },
 );
-
-export default entry;

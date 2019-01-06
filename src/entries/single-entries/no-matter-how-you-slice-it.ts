@@ -1,7 +1,6 @@
-import { Entry } from "../entry";
+import { Entry, entryForFile } from "../entry";
 import readLines from "../../support/file-reader";
 import { Coordinate } from "../../support/geometry";
-import { log } from "@/support/log";
 
 interface Rectangle {
     id: number;
@@ -12,14 +11,14 @@ interface Rectangle {
 type Map = boolean[][];
 
 let isFirstTime = true;
-const parseRectangle = (line: string): Rectangle => {
+const parseRectangle = (line: string, output: (l: string) => void): Rectangle => {
     const trimmed = line.trim();
     const noSpaces = trimmed.replace(/ /g, "");
     const normalizedDelimiters = noSpaces.replace("#", "").replace("@", " ").replace(":", " ");
     if (isFirstTime) {
         isFirstTime = false;
-        log(noSpaces);
-        log(normalizedDelimiters);
+        output(noSpaces);
+        output(normalizedDelimiters);
     }
     const split = normalizedDelimiters.split(" ");
     const id = parseInt(split[0], 10);
@@ -39,16 +38,16 @@ const parseRectangle = (line: string): Rectangle => {
         size,
     };
 };
-const entry: Entry = {
-    first: () => readLines((lines) => {
-        const map = mapCreator(lines.map(parseRectangle));
+export const entry: Entry = entryForFile(
+    (lines, outputCallback) => {
+        const map = mapCreator(lines.map((e) => parseRectangle(e, outputCallback)), outputCallback);
 
         const total = map.reduce<number>((acc, current) => acc + current.filter((e) => e).length, 0);
-        log(total);
-    }),
-    second: () => readLines((lines) => {
-        const rectangles = lines.map(parseRectangle);
-        const map = mapCreator(rectangles);
+        outputCallback("" + total);
+    },
+    (lines, outputCallback) => {
+        const rectangles = lines.map((e) => parseRectangle(e, outputCallback));
+        const map = mapCreator(rectangles, outputCallback);
 
         const candidate = rectangles.find((r) => {
             let isCandidate = true;
@@ -59,20 +58,18 @@ const entry: Entry = {
             }, map);
             return isCandidate;
         });
-        log(candidate ? candidate.id : "null");
-    }),
-};
+        outputCallback(candidate ? "" + candidate.id : "null");
+    },
+);
 
-export default entry;
-
-function mapCreator(rectangles: Rectangle[]) {
+function mapCreator(rectangles: Rectangle[], output: (s: string) => void) {
     const size = 1000;
     const map: Map = new Array<boolean[]>(size);
     for (let i = 0; i < size; i++) {
         map[i] = new Array<boolean>(size);
     }
     const first = rectangles[0];
-    log(`First Rectangle: ${first.size.x}x${first.size.y}`);
+    output(`First Rectangle: ${first.size.x}x${first.size.y}`);
     const callback = (argMap: Map, coordinate: Coordinate) => {
         if (argMap[coordinate.x][coordinate.y] === undefined) {
             argMap[coordinate.x][coordinate.y] = false;

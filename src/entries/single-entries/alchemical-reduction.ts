@@ -1,20 +1,20 @@
 import { entryForFile } from "../entry";
 import Best from "../../support/best";
-import { log } from "../../support/log";
+// import { log } from "../../support/log";
 
-const entry = entryForFile(
-    (lines) => {
+export const entry = entryForFile(
+    (lines, outputCallback) => {
         if (lines.length > 1) {
             throw Error("Only one line expected");
         }
         let polymerText = lines[0];
 
-        log("Start length: " + polymerText.length);
+        outputCallback("Start length: " + polymerText.length);
         polymerText = explodePolymer(polymerText);
-        log(polymerText.length);
+        outputCallback(polymerText.length);
 
     },
-    (lines) => {
+    (lines, outputCallback) => {
         if (lines.length > 1) {
             throw Error("Only one line expected");
         }
@@ -28,11 +28,9 @@ const entry = entryForFile(
             const exploded = explodePolymer(cleanPolymer);
             max.add({ key: polymerText.length - exploded.length, value: exploded });
         });
-        log(max.currentBest!.value.length);
+        outputCallback(max.currentBest!.value.length);
     },
 );
-
-export default entry;
 
 function explodePolymer(polymerText: string) {
     let i = 0;

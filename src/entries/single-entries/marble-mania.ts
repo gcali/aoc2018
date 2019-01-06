@@ -1,7 +1,7 @@
 import { entryForFile } from "../entry";
 import { DoubleLinkedNode } from "../../support/data-structure";
 import { SimpleBest, maxNumber } from "../../support/best";
-import { log } from "@/support/log";
+// import { log } from "@/support/log";
 
 class Game {
     private marbleNodes: DoubleLinkedNode<number> | null = null;
@@ -53,8 +53,8 @@ class Game {
 
 }
 
-const entry = entryForFile(
-    (lines) => {
+export const entry = entryForFile(
+    (lines, outputCallback) => {
         const tokens = lines[0].split(" ");
         const players = parseInt(tokens[0], 10);
         const lastMarble = parseInt(tokens[6], 10);
@@ -62,9 +62,9 @@ const entry = entryForFile(
         while (game.addMarble()) {
             game.switchPlayer();
         }
-        log(game.highestScores());
+        outputCallback(game.highestScores());
     },
-    (lines) => {
+    (lines, outputCallback) => {
         const tokens = lines[0].split(" ");
         const players = parseInt(tokens[0], 10);
         const lastMarble = parseInt(tokens[6], 10) * 100;
@@ -72,7 +72,6 @@ const entry = entryForFile(
         while (game.addMarble()) {
             game.switchPlayer();
         }
-        log(game.highestScores());
+        outputCallback(game.highestScores());
     },
 );
-export default entry;
