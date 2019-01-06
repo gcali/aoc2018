@@ -1,6 +1,5 @@
 <template lang="pug">
     .wrapper
-        //- .header {{header}}
         .output {{text}}
 </template>
 
@@ -9,7 +8,6 @@ import { Component, Vue, Prop } from "vue-property-decorator";
 @Component({})
 export default class EntrySimpleOutput extends Vue {
     @Prop({ default: [] }) public lines!: string[];
-    @Prop() public header!: string;
 
     public get text() {
         return this.lines.join("\n");
