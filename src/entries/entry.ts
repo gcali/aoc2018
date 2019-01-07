@@ -27,7 +27,9 @@ export function executeEntry(entry: Entry, choice: Choice, lines: string[], outp
         callback = entry.second;
     }
     callback(lines, (outputLine) => {
-        if (typeof (outputLine) === "string") {
+        if (outputLine === null) {
+            output.length = 0;
+        } else if (typeof (outputLine) === "string") {
             output.push(outputLine);
         } else {
             output.push(JSON.stringify(outputLine, undefined, 4));

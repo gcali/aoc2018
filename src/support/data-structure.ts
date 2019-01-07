@@ -55,21 +55,83 @@ export class DefaultListDictionaryString<T> {
 }
 
 export class DoubleLinkedNode<T> {
-  // tslint:disable-next-line:variable-name
-  private _isEmpty: boolean = true;
-  // tslint:disable-next-line:variable-name
-  private _next: DoubleLinkedNode<T> | null = null;
-  // tslint:disable-next-line:variable-name
-  private _prev: DoubleLinkedNode<T> | null = null;
+  public next: DoubleLinkedNode<T> | null = null;
+  public prev: DoubleLinkedNode<T> | null = null;
   constructor(public value: T) {
-
   }
-  public get isEmpty() {
-    return this._isEmpty;
+
+  public visitToRight(maxLength: number | null = null): T[] {
+    let e: DoubleLinkedNode<T> | null = this;
+    const res = [];
+    while (e !== null && (maxLength === null || maxLength-- > 0)) {
+      res.push(e.value);
+      e = e.next;
+    }
+    return res;
   }
 
   public append(item: T): DoubleLinkedNode<T> {
-    const newNext = new DoubleLinkedNode<T>(item);
+    const oldNext = this.next;
+    const newNext = new DoubleLinkedNode(item);
+    newNext.prev = this;
+    this.next = newNext;
+    if (oldNext !== null) {
+      newNext.next = oldNext;
+      oldNext.prev = newNext;
+    }
+    return newNext;
+  }
+
+  public prepend(item: T): DoubleLinkedNode<T> {
+    const oldPrev = this.prev;
+    const newPrev = new DoubleLinkedNode(item);
+    newPrev.next = this;
+    this.prev = newPrev;
+    if (oldPrev !== null) {
+      oldPrev.next = newPrev;
+      newPrev.prev = oldPrev;
+    }
+    return newPrev;
+  }
+
+  public removePrev(): T | null {
+    if (this.prev === null) {
+      return null;
+    } else {
+      const value = this.prev.value;
+      this.prev = this.prev.prev;
+      if (this.prev !== null) {
+        this.prev.next = this;
+      }
+      return value;
+    }
+  }
+
+  public removeNext(): T | null {
+    if (this.next === null) {
+      return null;
+    } else {
+      const value = this.next.value;
+      this.next = this.next.next;
+      if (this.next !== null) {
+        this.next.prev = this;
+      }
+      return value;
+    }
+
+  }
+}
+
+export class CircularDoubleLinkedNode<T> {
+  // tslint:disable-next-line:variable-name
+  private _next: CircularDoubleLinkedNode<T> | null = null;
+  // tslint:disable-next-line:variable-name
+  private _prev: CircularDoubleLinkedNode<T> | null = null;
+  constructor(public value: T) {
+
+  }
+  public append(item: T): CircularDoubleLinkedNode<T> {
+    const newNext = new CircularDoubleLinkedNode<T>(item);
     if (this._next === null) {
       newNext._next = this;
       newNext._prev = this;
@@ -106,7 +168,7 @@ export class DoubleLinkedNode<T> {
     return this.next.next.removePrevious();
   }
 
-  public get prev(): DoubleLinkedNode<T> {
+  public get prev(): CircularDoubleLinkedNode<T> {
     if (this._prev === null) {
       return this;
     } else {
@@ -114,7 +176,7 @@ export class DoubleLinkedNode<T> {
     }
   }
 
-  public get next(): DoubleLinkedNode<T> {
+  public get next(): CircularDoubleLinkedNode<T> {
     if (this._next === null) {
       return this;
     } else {
@@ -122,7 +184,7 @@ export class DoubleLinkedNode<T> {
     }
   }
 
-  public prepend(item: T): DoubleLinkedNode<T> {
+  public prepend(item: T): CircularDoubleLinkedNode<T> {
     return this.prev.append(item);
   }
 }

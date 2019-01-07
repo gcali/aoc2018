@@ -1,10 +1,10 @@
 import { entryForFile } from "../entry";
-import { DoubleLinkedNode } from "../../support/data-structure";
+import { CircularDoubleLinkedNode } from "../../support/data-structure";
 import { SimpleBest, maxNumber } from "../../support/best";
 // import { log } from "@/support/log";
 
 class Game {
-    private marbleNodes: DoubleLinkedNode<number> | null = null;
+    private marbleNodes: CircularDoubleLinkedNode<number> | null = null;
     private nextMarble: number = 0;
     private scores: number[];
     private lastPlayer: number = 0;
@@ -23,7 +23,7 @@ class Game {
         const marble = this.nextMarble++;
         if (marble === 0 || marble % 23 !== 0) {
             if (marble === 0) {
-                this.marbleNodes = new DoubleLinkedNode<number>(marble);
+                this.marbleNodes = new CircularDoubleLinkedNode<number>(marble);
             } else {
                 this.marbleNodes = this.marbleNodes!.next.append(marble);
             }
