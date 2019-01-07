@@ -1,8 +1,8 @@
 <template lang="pug">
     .input
-        EntryFileInput(readFile="true", @file-content="readFileContent")
+        EntryFileInput(:key="this.$route.path", readFile="true", @file-content="readFileContent")
         .choices(:class="{hidden: hideChoices}")
-            EntryChoice(@execute="loadFile")
+            EntryChoice(:key="this.$route.path", @execute="loadFile")
 </template>
 
 <script lang="ts">

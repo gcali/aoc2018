@@ -1,11 +1,11 @@
 <template lang="pug">
     EntryTemplate(:title="title", :id="id", @file-loaded="readFile")
         .output
-            EntrySimpleOutput(:lines="output")
+            EntrySimpleOutput(:key="$route.path", :lines="output")
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from "vue-property-decorator";
+import { Component, Vue, Prop, Watch } from "vue-property-decorator";
 import EntryTemplate from "@/components/EntryTemplate.vue";
 import EntrySimpleOutput from "@/components/EntrySimpleOutput.vue";
 import { Entry, executeEntry, EntryFileHandling } from "@/entries/entry";
@@ -20,6 +20,10 @@ export default class Frequency extends Vue {
     @Prop() public id!: number;
     @Prop() public entry!: Entry;
     public output: string[] = [];
+    @Watch("$route")
+    public onRouteChanged() {
+        this.output = [];
+    }
     public readFile(fileHandling: EntryFileHandling) {
         this.output = [];
         executeEntry(this.entry, fileHandling.choice, fileHandling.content, this.output);
