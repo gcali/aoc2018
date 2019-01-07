@@ -1,29 +1,10 @@
-# aoc2018
+# AoC 2018
 
-## Project setup
+Vue.js based website displaying (some) solutions to the problems of the [Advent of Code 2018](https://adventofcode.com/).
+
+The website is deployed [here](https://gcali.github.io/aoc2018); to host it locally, run the following commands
+
 ```
 npm install
-```
-
-### Compiles and hot-reloads for development
-```
 npm run serve
 ```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Run your tests
-```
-npm run test
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
