@@ -1,4 +1,5 @@
 import { error } from "./log";
+
 export function readFileFromInput(file: File, onSuccess: ((content: string) => void)) {
     const fileReader = new FileReader();
     fileReader.onload = () => {
@@ -9,7 +10,6 @@ export function readFileFromInput(file: File, onSuccess: ((content: string) => v
     };
     fileReader.readAsText(file);
 }
-
 
 export default (callback: (lines: string[]) => void) => {
     const lines: string[] = [];

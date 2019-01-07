@@ -6,15 +6,21 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "deploy": "npm run build; push-dir --dir=dist --branch=gh-pages --cleanup"
+    "deploy": "npm run build; push-dir --dir=dist --branch=gh-pages --cleanup",
+    "console-build": "tsc -p console-tsconfig.json",
+    "console-watch": "tsc -p console-tsconfig.json -w",
+    "console-run": "node bin/console.js"
   },
   "dependencies": {
+    "minimist": "^1.2.0",
     "vue": "^2.5.21",
     "vue-class-component": "^6.0.0",
     "vue-property-decorator": "^7.0.0",
     "vue-router": "^3.0.1"
   },
   "devDependencies": {
+    "@types/minimist": "^1.2.0",
+    "@types/node": "^10.12.18",
     "@vue/cli-plugin-babel": "^3.2.0",
     "@vue/cli-plugin-typescript": "^3.2.0",
     "@vue/cli-service": "^3.2.0",

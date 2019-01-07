@@ -1,7 +1,6 @@
 import { entryForFile } from "../entry";
 import { Coordinate, sumCoordinate, getBoundaries, Bounds } from "../../support/geometry";
-import { writeImgFromPoints } from "../../support/output";
-import { log } from "@/support/log";
+// import { log } from "@/support/log";
 
 class MovablePoint {
 
@@ -10,7 +9,6 @@ class MovablePoint {
         const firstPart = line.slice(line.indexOf("<") + 1, line.indexOf(">"));
         let secondPart = line.slice(line.indexOf(">") + 1);
         secondPart = secondPart.slice(secondPart.indexOf("<") + 1, secondPart.indexOf(">"));
-        log(secondPart);
         const coordinateTokens = firstPart.split(",");
         const speedTokens = secondPart.split(",");
         return new MovablePoint(
@@ -40,10 +38,11 @@ class MovablePoint {
     }
 }
 
-const entry = entryForFile(
-    (lines) => {
+export const entry = entryForFile(
+    (lines, outputCallback) => {
         let points = lines.map((line) => MovablePoint.FromLine(line));
         let lastBoundaries: Bounds | null = null;
+        let lastPoints: typeof points | null = null;
         let done = false;
         function getArea(size: Coordinate) {
             return size.x * size.y;
@@ -53,28 +52,39 @@ const entry = entryForFile(
             const boundaries = getBoundaries(newPoints.map((p) => p.coordinates));
             if (lastBoundaries === null) {
                 lastBoundaries = boundaries;
-            } else if (lastBoundaries.size.x < boundaries.size.x &&
-                lastBoundaries.size.y < boundaries.size.y) {
-                log(lastBoundaries);
-                writeImgFromPoints(
-                    "stars.png",
-                    lastBoundaries,
-                    points.map((p) => ({
-                        color: 0xff0000ff,
-                        coordinates: p.coordinates,
-                    })),
-                    0.001,
-                    0x000000ff,
-                );
-                done = true;
+                lastPoints = newPoints;
+            } else {
+                if (getArea(lastBoundaries.size) < getArea(boundaries.size)) {
+                    done = true;
+                } else {
+                    lastBoundaries = boundaries;
+                    lastPoints = newPoints;
+                }
             }
             points = newPoints;
         }
-
+        const mappedPoints = lastPoints!.map((p) => p.coordinates)
+            .map((c) => ({
+                x: c.x - lastBoundaries!.topLeft.x,
+                y: c.y - lastBoundaries!.topLeft.y
+            }))
+            .sort((a, b) => (a.y - b.y) * 100000 + a.x - b.x);
+        const dataMatrix: string[][] = [];
+        for (let y = 0; y < lastBoundaries!.size.y; y++) {
+            const l = [];
+            for (let x = 0; x < lastBoundaries!.size.x; x++) {
+                l.push(" ");
+            }
+            dataMatrix.push(l);
+        }
+        mappedPoints.forEach((p) => {
+            dataMatrix[p.y][p.x] = "#";
+        });
+        dataMatrix.forEach((l) => {
+            outputCallback(l.join(""));
+        });
     },
     (lines) => {
         throw Error("Not implemented");
     },
 );
-
-export default entry;
