@@ -7,7 +7,7 @@ import bigInt from "big-integer";
 class FuelGrid {
 
     private sumTable: BigInteger[][] | null = null;
-    constructor(private seed: number) {
+    constructor(private seed: number, private outputCallback: (s: any) => void) {
     }
 
     public getRackID(c: Coordinate) {
@@ -16,12 +16,15 @@ class FuelGrid {
 
     public populate(size: number) {
         const table: BigInteger[][] = [];
+        const originalTable: BigInteger[][] = [];
         let countPositive = 0;
         let countNegative = 0;
         for (let y = 0; y < size; y++) {
             const line: BigInteger[] = [];
+            const originalLine: BigInteger[] = [];
             for (let x = 0; x < size; x++) {
                 const currentValue = bigInt(this.getFuelStatus({ x, y }));
+                originalLine.push(currentValue);
                 if (currentValue.lesser(0)) {
                     countNegative++;
                 } else if (currentValue.greater(0)) {
@@ -34,7 +37,7 @@ class FuelGrid {
                 if (x > 0) {
                     currentSum = currentSum.add(line[x - 1]);
                     if (y > 0) {
-                        currentSum = currentSum.add(table[y - 1][x - 1]);
+                        currentSum = currentSum.subtract(table[y - 1][x - 1]);
                     }
                 }
                 if (y > 0) {
@@ -43,14 +46,12 @@ class FuelGrid {
                 line.push(currentSum);
             }
             table.push(line);
+            originalTable.push(originalLine);
         }
         this.sumTable = table;
-        const diagonal = [];
-        for (let k = 0; k < size; k++) {
-            diagonal.push(table[k][k]);
-        }
-        console.log(diagonal.map((d) => d.toString()).join("\n"));
-        console.log(`>0 ${countPositive} <0 ${countNegative}`);
+        // this.printTable(originalTable);
+        // this.outputCallback("");
+        // this.printTable(table);
     }
 
     public getAreaSum(topLeft: Coordinate, size: Coordinate) {
@@ -63,12 +64,25 @@ class FuelGrid {
             y: size.y - 1
         };
 
-        // console.log(`${JSON.stringify(topLeft)} ${JSON.stringify(size)}`);
-        return this.sumTable[topLeft.y + size.y][topLeft.x + size.x]
-            .subtract(this.sumTable[topLeft.y + size.y][topLeft.x])
-            .subtract(this.sumTable[topLeft.y][topLeft.x + size.x])
-            .add(this.sumTable[topLeft.y][topLeft.x]);
+        let area = this.sumTable[topLeft.y + size.y][topLeft.x + size.x];
+        if (topLeft.y - 1 >= 0) {
+            area = area.subtract(this.sumTable[topLeft.y - 1][topLeft.x + size.x]);
+            if (topLeft.x - 1 >= 0) {
+                area = area.add(this.sumTable[topLeft.y - 1][topLeft.x - 1]);
+            }
+        }
+        if (topLeft.x - 1 >= 0) {
+            area = area.subtract(this.sumTable[topLeft.y + size.y][topLeft.x - 1]);
+        }
+
+        return area;
+
+        // return this.sumTable[topLeft.y + size.y][topLeft.x + size.x]
+        //     .subtract(this.sumTable[topLeft.y + size.y][topLeft.x])
+        //     .subtract(this.sumTable[topLeft.y][topLeft.x + size.x])
+        //     .add(this.sumTable[topLeft.y][topLeft.x]);
     }
+
 
     public getFuelStatus(c: Coordinate, throwIfMissing: boolean = false) {
         const id = this.getRackID(c);
@@ -82,6 +96,13 @@ class FuelGrid {
         }
         powerLevel -= 5;
         return powerLevel;
+    }
+
+    private printTable(table: BigInteger[][]) {
+        const output = table.map((line) => {
+            return line.map((c) => ("" + c).padStart(8, " ")).join(" ");
+        }).join("\n");
+        this.outputCallback(output);
     }
 
     // public getFuelSumForTopLeft(c: Coordinate, cellSize: number) {
@@ -100,16 +121,18 @@ class FuelGrid {
 
 function main(lines: string[], outputCallback: ((s: any) => void), cellSizes: number[]): void {
     const serial = parseInt(lines[0], 10);
-    const grid = new FuelGrid(serial);
+    const grid = new FuelGrid(serial, outputCallback);
     const size = 300;
     grid.populate(size);
-    const bestPoint = new CustomBest<BigInteger, Coordinate>((a, b) => a.subtract(b).toJSNumber());
+    const bestPoint = new CustomBest<BigInteger, Coordinate & { iteration: number }>(
+        (a, b) => a.subtract(b).toJSNumber()
+    );
     cellSizes.forEach((cellSize) => {
         outputCallback("Iteration " + cellSize);
         for (let x = 0; x < size - (cellSize - 1); x++) {
             for (let y = 0; y < size - (cellSize - 1); y++) {
                 bestPoint.add({
-                    value: { x, y },
+                    value: { x, y, iteration: cellSize },
                     key: grid.getAreaSum({ x, y }, { x: cellSize, y: cellSize })
                 });
             }

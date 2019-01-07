@@ -36,7 +36,7 @@ export default class EntrySimpleOutput extends Vue {
         border-radius: 4px;
         min-height: 2em;
         padding: 1em;
-        max-width: 40em;
+        max-width: 60em;
     }
 }
 </style>
