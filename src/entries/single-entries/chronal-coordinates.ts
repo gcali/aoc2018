@@ -3,7 +3,7 @@ import { Coordinate, sumCoordinate } from "../../support/geometry";
 import Best, { SimpleBest, CustomBest, maxNumber } from "../../support/best";
 import { FixedSizeMatrix } from "../../support/matrix";
 import { Queue } from "../../support/data-structure";
-import { log } from "@/support/log";
+// import { log } from "@/support/log";
 
 interface Territory {
   coordinate: Coordinate;
@@ -11,8 +11,8 @@ interface Territory {
   distance: number;
 }
 
-const entry = entryForFile(
-  (lines) => {
+export const entry = entryForFile(
+  (lines, outputCallback) => {
     let points: Coordinate[] = parsePoints(lines);
 
     const { minX, minY, size } = getBoundaries(points);
@@ -92,7 +92,7 @@ const entry = entryForFile(
           y: j,
         });
         if (status === undefined) {
-          log("" + i + " " + j);
+          outputCallback("" + i + " " + j);
         } else if (!status.id) {
           continue;
         } else if (status.coordinate.x === 0 || status.coordinate.y === 0
@@ -112,12 +112,12 @@ const entry = entryForFile(
     for (const key of Object.keys(currentCount)) {
       bestArea.add(currentCount[parseInt(key, 10)]);
     }
-    log(bestArea.currentBest);
+    outputCallback(bestArea.currentBest);
 
 
 
   },
-  (lines) => {
+  (lines, outputCallback) => {
     function manhattan(a: Coordinate, b: Coordinate) {
       return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
     }
@@ -136,11 +136,9 @@ const entry = entryForFile(
         }
       }
     }
-    log(count);
+    outputCallback(count);
   },
 );
-
-export default entry;
 
 function getBoundaries(points: Coordinate[]) {
   const minComparator = (a: number, b: number) => b - a;

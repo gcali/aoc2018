@@ -1,9 +1,7 @@
 import { entryForFile } from "../entry";
-import { log } from "@/support/log";
 
 export const entry = entryForFile(
     (lines, outputCallback) => {
-        log(lines);
         let currentFrequency = 0;
         lines.forEach((line) => {
             const trimmed = line.trim();
@@ -12,8 +10,6 @@ export const entry = entryForFile(
                 value *= -1;
             }
             currentFrequency += value;
-            log(line);
-            log(currentFrequency);
         });
         outputCallback("Result: " + currentFrequency);
     },

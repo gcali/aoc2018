@@ -1,28 +1,17 @@
 <template lang="pug">
-    div.wrapper
-        EntryTitle(:date="id", :name="title")
-        .content
-            EntryInput(readFile="true", @file-content="readFileContent")
-            .choices(:class="{hidden: hideChoices}")
-                EntryChoice(@execute="execute")
-            .output(:class="{hidden: hideOutput}")
-                EntrySimpleOutput(:lines="output", :header="outputHeader")
-
+    EntryTemplate(:title="title", :id="id", @file-loaded="readFile")
+        .output
+            EntrySimpleOutput(:lines="output")
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop } from "vue-property-decorator";
-import EntryTitle from "@/components/EntryTitle.vue";
-import EntryInput from "@/components/EntryInput.vue";
-import EntryChoice from "@/components/EntryChoice.vue";
+import EntryTemplate from "@/components/EntryTemplate.vue";
 import EntrySimpleOutput from "@/components/EntrySimpleOutput.vue";
-// import { entry } from "@/entries/single-entries/frequency";
-import { Entry } from "@/entries/entry";
+import { Entry, executeEntry, EntryFileHandling } from "@/entries/entry";
 @Component({
     components: {
-        EntryTitle,
-        EntryInput,
-        EntryChoice,
+        EntryTemplate,
         EntrySimpleOutput
     }
 })
@@ -30,41 +19,10 @@ export default class Frequency extends Vue {
     @Prop() public title!: string;
     @Prop() public id!: number;
     @Prop() public entry!: Entry;
-    public hideOutput: boolean = true;
     public output: string[] = [];
-    public outputHeader: string = "";
-    private inputContent: string | null = null;
-    public get hideChoices(): boolean {
-        return this.inputContent === null;
-    }
-    public readFileContent(content: string) {
-        this.inputContent = content;
-    }
-    public execute(choice: string) {
-        this.hideOutput = false;
-        this.outputHeader = choice;
-        if (this.inputContent) {
-            let contentToSplit = this.inputContent;
-            if (contentToSplit.endsWith("\n")) {
-                contentToSplit = contentToSplit.slice(
-                    0,
-                    contentToSplit.length - 1
-                );
-            }
-            const splitContent = contentToSplit.split("\n");
-            this.output = [];
-            if (choice === "first") {
-                this.entry.first(splitContent, (outputLine) =>
-                    this.output.push(outputLine)
-                );
-            } else if (choice === "second") {
-                this.entry.second(splitContent, (outputLine) =>
-                    this.output.push(outputLine)
-                );
-            } else {
-                this.output = ["INVALID CHOICE"];
-            }
-        }
+    public readFile(fileHandling: EntryFileHandling) {
+        this.output = [];
+        executeEntry(this.entry, fileHandling.choice, fileHandling.content, this.output);
     }
 }
 </script>
@@ -80,9 +38,9 @@ export default class Frequency extends Vue {
         .choices {
             margin-bottom: 2em;
         }
-        .output {
-            display: flex;
-        }
+    }
+    .output {
+        display: flex;
     }
 }
 </style>

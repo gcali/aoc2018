@@ -1,5 +1,6 @@
 import { DefaultListDictionaryString } from "../../support/data-structure";
-import { log } from "@/support/log";
+// import { log } from "@/support/log";
+import { entryForFile } from "@/entries/entry";
 
 class Graph {
     private nodes: { [key: string]: Node } = {};
@@ -71,8 +72,8 @@ class Node {
         return this.dependencies.some((d) => !d.isDone);
     }
 }
-export const entry = {
-    first: (lines: string[]) => {
+export const entry = entryForFile(
+    (lines, outputCallback) => {
         const graph = new Graph(lines);
         const nodes = [];
         while (true) {
@@ -84,9 +85,9 @@ export const entry = {
                 nodes.push(node.name);
             }
         }
-        log(nodes.join(""));
+        outputCallback(nodes.join(""));
     },
-    second: (lines: string[]) => {
+    (lines, outputCallback) => {
         const graph = new Graph(lines);
         const howManyWorkers = 5;
         const workers = new Array<Node | null>(howManyWorkers);
@@ -110,9 +111,9 @@ export const entry = {
                             workers[i] = nextNode;
                             const workerIndex = i;
                             const targetTime = (currentSecond + nextNode.duration());
-                            log("Adding to target " + targetTime + " node " + nextNode.name);
+                            outputCallback("Adding to target " + targetTime + " node " + nextNode.name);
                             callbacks.add("" + targetTime, () => {
-                                log("Node " + nextNode.name + " done");
+                                outputCallback("Node " + nextNode.name + " done");
                                 nextNode.isDone = true;
                                 nextNode.wip = false;
                                 workers[workerIndex] = null;
@@ -123,6 +124,6 @@ export const entry = {
                 currentSecond++;
             }
         }
-        log(currentSecond);
+        outputCallback(currentSecond);
     }
-};
+);

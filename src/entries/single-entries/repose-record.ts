@@ -1,6 +1,6 @@
 import { entryForFile } from "../entry";
 import Best from "../../support/best";
-import { log, warn } from "@/support/log";
+import { warn } from "@/support/log";
 
 class GuardSleep {
     public id: number;
@@ -80,8 +80,8 @@ class LogEntry {
     }
 }
 
-const entry = entryForFile(
-    (lines) => {
+export const entry = entryForFile(
+    (lines, outputCallback) => {
         const guardSleeps: {
             [key: number]: GuardSleep[];
         } = parseSleeps(lines);
@@ -110,10 +110,10 @@ const entry = entryForFile(
         }
         const mostSleepingMinute = bestMinute![1];
         const guardID = currentMax[1][0].id;
-        log(mostSleepingMinute * guardID);
+        outputCallback("" + mostSleepingMinute * guardID);
 
     },
-    (lines) => {
+    (lines, outputCallback) => {
         const guardSleeps = parseSleeps(lines);
         const totalMaxSleep = new Best<number>();
         for (const guardIDKey of Object.keys(guardSleeps)) {
@@ -129,12 +129,10 @@ const entry = entryForFile(
                 value: guardID * maxSleep.currentBest!.value,
             });
         }
-        log(totalMaxSleep.currentBest);
+        outputCallback("" + totalMaxSleep.currentBest!.value);
 
     },
 );
-
-export default entry;
 
 function parseSleeps(lines: string[]) {
     const entries = lines.map((l) => new LogEntry(l)).sort((a, b) => a.compare(b));
