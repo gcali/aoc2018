@@ -1,6 +1,6 @@
 import { entryForFile } from "../entry";
 import Best from "../../support/best";
-import { warn } from "@/support/log";
+import { warn } from "../../support/log";
 
 class GuardSleep {
     public id: number;

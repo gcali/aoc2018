@@ -1,6 +1,6 @@
 import { DefaultListDictionaryString } from "../../support/data-structure";
 // import { log } from "@/support/log";
-import { entryForFile } from "@/entries/entry";
+import { entryForFile } from "../entry";
 
 class Graph {
     private nodes: { [key: string]: Node } = {};

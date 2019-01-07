@@ -1,4 +1,3 @@
-import { Vue } from "vue-property-decorator";
 import { Entry } from "./entry";
 import { entry as frequencyEntry } from "./single-entries/frequency";
 import { entry as inventoryEntry } from "./single-entries/inventory";
@@ -9,12 +8,13 @@ import { entry as chronalCoordinates } from "./single-entries/chronal-coordinate
 import { entry as sumParts } from "./single-entries/the-sum-of-its-parts";
 import { entry as memoryManeuver } from "./single-entries/memory-maneuver";
 import { entry as marbleMania } from "./single-entries/marble-mania";
-import { VueConstructor } from "vue";
+import { entry as starsAlign } from "./single-entries/the-stars-align";
+import { entry as chronalCharge } from "./single-entries/chronal-charge";
 interface EntryRoute {
     name: string;
     title: string;
     entry: Entry;
-    component?: VueConstructor<Vue>;
+    hasCustomComponent?: boolean;
 }
 
 export const entryList: EntryRoute[] = [
@@ -62,6 +62,16 @@ export const entryList: EntryRoute[] = [
         name: "marble-mania",
         title: "Marble Mania",
         entry: marbleMania
+    },
+    {
+        name: "stars-align",
+        title: "The Stars Align",
+        entry: starsAlign
+    },
+    {
+        name: "chronal-charge",
+        title: "Chronal Charge",
+        entry: chronalCharge
     }
 ];
 

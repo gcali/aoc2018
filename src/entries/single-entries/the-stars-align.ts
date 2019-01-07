@@ -84,7 +84,32 @@ export const entry = entryForFile(
             outputCallback(l.join(""));
         });
     },
-    (lines) => {
-        throw Error("Not implemented");
+    (lines, outputCallback) => {
+        let points = lines.map((line) => MovablePoint.FromLine(line));
+        let lastBoundaries: Bounds | null = null;
+        let lastPoints: typeof points | null = null;
+        let done = false;
+        function getArea(size: Coordinate) {
+            return size.x * size.y;
+        }
+        let iterationCounter = 0;
+        while (!done) {
+            iterationCounter++;
+            const newPoints = points.map((p) => p.move());
+            const boundaries = getBoundaries(newPoints.map((p) => p.coordinates));
+            if (lastBoundaries === null) {
+                lastBoundaries = boundaries;
+                lastPoints = newPoints;
+            } else {
+                if (getArea(lastBoundaries.size) < getArea(boundaries.size)) {
+                    done = true;
+                } else {
+                    lastBoundaries = boundaries;
+                    lastPoints = newPoints;
+                }
+            }
+            points = newPoints;
+        }
+        outputCallback(iterationCounter - 1);
     },
 );

@@ -1,5 +1,4 @@
 import { Entry, entryForFile } from "../entry";
-import readLines from "../../support/file-reader";
 import { Coordinate } from "../../support/geometry";
 
 interface Rectangle {

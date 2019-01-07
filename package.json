@@ -12,6 +12,7 @@
     "console-run": "node bin/console.js"
   },
   "dependencies": {
+    "big-integer": "^1.6.40",
     "minimist": "^1.2.0",
     "vue": "^2.5.21",
     "vue-class-component": "^6.0.0",

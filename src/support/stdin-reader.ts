@@ -7,7 +7,7 @@ export function readStdin(callback: (lines: string[]) => void) {
         terminal: false
     });
     const lines: string[] = [];
-    i.on("line", (line) => {
+    i.on("line", (line: string) => {
         lines.push(line);
     });
     i.on("close", () => {

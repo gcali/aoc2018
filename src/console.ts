@@ -2,7 +2,7 @@ import minimist from "minimist";
 
 const args = (minimist as any)(process.argv.slice(2), {
     alias: { e: "entry", h: "help", s: "second" },
-    string: ["e"],
+    number: ["e"],
     boolean: ["help", "second"],
 });
 
@@ -37,7 +37,17 @@ if (!("e" in args)) {
 
 // const entryCallback = entryMap[entry];
 
-import { entry as entryCallback } from "./entries/single-entries/the-stars-align";
+import { entryList } from "./entries/entryList";
+
+const index: number = args.e - 1;
+if (index <= 0 || index >= entryList.length) {
+    error();
+}
+
+
+const entryCallback = entryList[index].entry;
+
+
 import { readStdin } from "./support/stdin-reader";
 
 readStdin((lines) => {

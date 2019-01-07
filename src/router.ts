@@ -36,7 +36,7 @@ const routes: RouteConfig[] = [
 entryList.forEach((e, index) => routes.push({
   name: e.name,
   path: `/entry/${e.name}`,
-  component: e.component ? e.component : SimpleEntryTemplate,
+  component: SimpleEntryTemplate,
   props: {
     id: index + 1,
     title: e.title,

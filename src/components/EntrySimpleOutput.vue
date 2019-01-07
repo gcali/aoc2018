@@ -26,6 +26,7 @@ export default class EntrySimpleOutput extends Vue {
     align-items: baseline;
     flex: 1 1 auto;
     .output {
+        font-family: monospace;
         flex: 0 1 auto;
         overflow-y: scroll;
         align-self: stretch;
