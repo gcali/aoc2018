@@ -1,5 +1,6 @@
 import { entryForFile } from "../entry";
-import { DoubleLinkedNode } from "@/support/data-structure";
+import { DoubleLinkedNode } from "../../support/data-structure";
+import { howManySameAtEnd } from "../../support/sequences";
 
 enum PlantStatus {
     full = "#",
@@ -20,12 +21,11 @@ interface Pattern {
 }
 
 class Greenhouse {
-    private startIndex: number;
     private start: DoubleLinkedNode<PlantStatus> | null = null;
     private end: DoubleLinkedNode<PlantStatus> | null = null;
 
-    constructor(initialStatus: PlantStatus[], private patterns: Pattern[]) {
-        this.startIndex = 0;
+    constructor(initialStatus: PlantStatus[], private patterns: Pattern[], private startIndex: number = 0) {
+        // this.startIndex = 0;
         initialStatus.forEach((s) => {
             if (this.start === null) {
                 this.start = new DoubleLinkedNode<PlantStatus>(s);
@@ -44,17 +44,32 @@ class Greenhouse {
         };
     }
 
-    public passGeneration() {
-        let e = this.start;
-        while (e !== null) {
-            const nextFour = e.visitToRight(4);
-            if (nextFour.length !== 4) {
+    public get sum() {
+        const status = this.status;
+        const filled = status
+            .status
+            .map((e, index) => ({
+                index: index + status.startIndex,
+                value: e
+            }))
+            .filter((e) => e.value === PlantStatus.full)
+            .map((e) => e.index);
+        const sum = filled.reduce((acc, next) => acc + next);
+        return sum;
+    }
+
+    public passGeneration(): Greenhouse {
+        const newStatus: PlantStatus[] = [PlantStatus.empty, PlantStatus.empty];
+        let e = this.start!.next!.next!;
+        while (e.next!.next !== null) {
+            const nextFive = e.prev!.prev!.visitToRight(5);
+            if (nextFive.length !== 5) {
                 break;
             }
-            this.patterns.some((p) => {
+            const found = this.patterns.some((p) => {
                 let foundDifferent: boolean = false;
-                for (let i = 0; i < 4; i++) {
-                    if (p.pattern[i] !== nextFour[i]) {
+                for (let i = 0; i < nextFive.length; i++) {
+                    if (p.pattern[i] !== nextFive[i]) {
                         foundDifferent = true;
                         break;
                     }
@@ -62,13 +77,19 @@ class Greenhouse {
                 if (foundDifferent) {
                     return false;
                 } else {
-                    e!.value = p.result;
+                    newStatus.push(p.result);
                     return true;
                 }
             });
-            e = e.next;
+            if (!found) {
+                newStatus.push(PlantStatus.empty);
+            }
+            e = e.next!;
         }
-        this.fixEmptyPots();
+        const newGreenhouse = new Greenhouse(newStatus, this.patterns, this.startIndex);
+        newGreenhouse.fixEmptyPots();
+        return newGreenhouse;
+        // this.fixEmptyPots();
     }
 
     public toString(): string {
@@ -80,7 +101,7 @@ class Greenhouse {
     }
 
     public fixEmptyPots() {
-        const emptyBufferSize = 3;
+        const emptyBufferSize = 4;
         let consecutiveEmptyPots = 0;
         let e = this.start;
         while (e !== null && e.value === PlantStatus.empty) {
@@ -117,39 +138,52 @@ class Greenhouse {
 
 export const entry = entryForFile(
     (lines, outputCallback) => {
-        const initialState = lines[0]
-            .slice(lines[0].indexOf(":") + 2)
-            .trim()
-            .split("")
-            .map((e) => e === "#" ? PlantStatus.full : PlantStatus.empty);
-
-        const patterns: Pattern[] = lines
-            .slice(2)
-            .map((l) => l.trim())
-            .filter((l) => l.indexOf(">") > 0)
-            .map((l) => l.replace(/ /g, "").replace(/>/g, "").split("="))
-            .map((couple) => ({
-                result: toPlantStatus(couple[1]),
-                pattern: couple[0].split("").map((p) => toPlantStatus(p))
-            }));
-        // outputCallback(patterns.map((p) => `${p.pattern.join("")} => ${p.result}`).join("\n"));
-        const greenhouse = new Greenhouse(initialState, patterns);
+        let greenhouse = parseLines(lines);
         for (let i = 0; i < 20; i++) {
-            greenhouse.passGeneration();
+            greenhouse = greenhouse.passGeneration();
         }
-        const status = greenhouse.status;
-        const filled = status
-            .status
-            .map((e, index) => ({
-                index: index + status.startIndex,
-                value: e
-            }))
-            .filter((e) => e.value === PlantStatus.full)
-            .map((e) => e.index);
-        const sum = filled.reduce((acc, next) => acc + next);
+        const sum = greenhouse.sum;
         outputCallback(sum);
     },
     (lines, outputCallback) => {
-        throw Error("Not implemented yet");
+        let greenhouse = parseLines(lines);
+        let lastSum: number | null = null;
+        const diffs: number[] = [];
+        const generations = 50000000000;
+        for (let i = 1; i < 1000; i++) {
+            greenhouse = greenhouse.passGeneration();
+            const sum = greenhouse.sum;
+            if (lastSum) {
+                diffs.push(sum - lastSum);
+            }
+            lastSum = sum;
+            if (diffs.length > 20 && howManySameAtEnd(diffs) >= 20) {
+                const step = diffs[diffs.length - 1];
+                const todo = generations - i;
+                outputCallback(sum + todo * step);
+                return;
+            }
+        }
+        outputCallback("No pattern found");
+        outputCallback(JSON.stringify(diffs));
     }
 );
+function parseLines(lines: string[]): Greenhouse {
+    const initialState = lines[0]
+        .slice(lines[0].indexOf(":") + 2)
+        .trim()
+        .split("")
+        .map((e) => e === "#" ? PlantStatus.full : PlantStatus.empty);
+    const patterns: Pattern[] = lines
+        .slice(2)
+        .map((l) => l.trim())
+        .filter((l) => l.indexOf(">") > 0)
+        .map((l) => l.replace(/ /g, "").replace(/>/g, "").split("="))
+        .map((couple) => ({
+            result: toPlantStatus(couple[1]),
+            pattern: couple[0].split("").map((p) => toPlantStatus(p))
+        }));
+    const greenhouse = new Greenhouse(initialState, patterns);
+    return greenhouse;
+}
+
