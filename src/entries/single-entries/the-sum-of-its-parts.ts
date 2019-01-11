@@ -1,6 +1,6 @@
 import { DefaultListDictionaryString } from "../../support/data-structure";
 // import { log } from "@/support/log";
-import { entryForFile } from "../entry";
+import { oldEntryForFile } from "../entry";
 
 class Graph {
     private nodes: { [key: string]: Node } = {};
@@ -72,8 +72,8 @@ class Node {
         return this.dependencies.some((d) => !d.isDone);
     }
 }
-export const entry = entryForFile(
-    (lines, outputCallback) => {
+export const entry = oldEntryForFile(
+    async (lines, outputCallback) => {
         const graph = new Graph(lines);
         const nodes = [];
         while (true) {
@@ -87,7 +87,7 @@ export const entry = entryForFile(
         }
         outputCallback(nodes.join(""));
     },
-    (lines, outputCallback) => {
+    async (lines, outputCallback) => {
         const graph = new Graph(lines);
         const howManyWorkers = 5;
         const workers = new Array<Node | null>(howManyWorkers);

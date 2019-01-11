@@ -24,9 +24,14 @@ export default class SimpleEntryTemplate extends Vue {
     public onRouteChanged() {
         this.output = [];
     }
-    public readFile(fileHandling: EntryFileHandling) {
+    public async readFile(fileHandling: EntryFileHandling) {
         this.output = [];
-        executeEntry(this.entry, fileHandling.choice, fileHandling.content, this.output);
+        await executeEntry(
+            this.entry,
+            fileHandling.choice,
+            fileHandling.content,
+            this.output
+        );
     }
 }
 </script>

@@ -1,7 +1,7 @@
-import { entryForFile } from "../entry";
+import { oldEntryForFile } from "../entry";
 
-export const entry = entryForFile(
-    (lines, outputCallback) => {
+export const entry = oldEntryForFile(
+    async (lines, outputCallback) => {
         let currentFrequency = 0;
         lines.forEach((line) => {
             const trimmed = line.trim();
@@ -13,7 +13,7 @@ export const entry = entryForFile(
         });
         outputCallback("Result: " + currentFrequency);
     },
-    (lines, outputCallback) => {
+    async (lines, outputCallback) => {
         const values: number[] = [];
         const firstRoundOfFrequencies: number[] = [];
         let currentFrequency: number = 0;

@@ -1,4 +1,4 @@
-import { entryForFile } from "../entry";
+import { oldEntryForFile } from "../entry";
 import { Coordinate, sumCoordinate } from "../../support/geometry";
 import { maxNumber } from "../../support/best";
 
@@ -207,8 +207,15 @@ function stringToCell(s: string) {
     }
 }
 
-export const entry = entryForFile(
-    (lines, outputCallback) => {
+type Output = Cell | "<" | ">" | "^" | "v" | "x";
+
+export interface Status {
+    carts: Cart[];
+    grid: Output[][];
+}
+
+export const entry = oldEntryForFile(
+    async (lines, outputCallback, statusCallback?: ((status: Status) => void)) => {
         const cartDirections = ["<", ">", "^", "v"];
         const fullGrid = lines.map((l) => l.split("").map((c) => cartDirections.indexOf(c) >= 0 ? c : stringToCell(c)));
         let carts: Cart[] = [];
@@ -219,16 +226,22 @@ export const entry = entryForFile(
                 }
             });
         });
-        const grid = fullGrid.map((l) => l.map((c) => stringToCell(c)));
+        const grid: Cell[][] = fullGrid.map((l) => l.map((c) => stringToCell(c)));
         carts = carts.sort((a, b) => a.compareTo(b));
         let collisions: ReturnType<typeof checkCollisions> = checkCollisions(carts);
         let iteration = 0;
         while (collisions === null || !collisions.collides) {
             carts = carts.map((c) => c.move(grid[c.coordinate.y][c.coordinate.x]));
             carts = carts.sort((a, b) => b.compareTo(a));
-            const output = grid.map((line) => line.map((c) => c as string));
+            const output = grid.map((line) => line.map((c) => c as Output));
             carts.forEach((c) => output[c.coordinate.y][c.coordinate.x] = directionToString(c.direction));
             collisions = checkCollisions(carts);
+            if (statusCallback) {
+                statusCallback({
+                    carts,
+                    grid: output
+                });
+            }
             if (++iteration % 100 === 0) {
                 outputCallback("Iteration " + iteration + " done");
                 break;
@@ -236,7 +249,7 @@ export const entry = entryForFile(
         }
         outputCallback(collisions!.prev.coordinate);
     },
-    (lines, outputCallback) => {
+    async (lines, outputCallback) => {
         throw Error("Not implemented");
     }
 );

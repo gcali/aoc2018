@@ -1,4 +1,4 @@
-import { entryForFile } from "../entry";
+import { oldEntryForFile } from "../entry";
 import { Coordinate, sumCoordinate, getBoundaries, Bounds } from "../../support/geometry";
 // import { log } from "@/support/log";
 
@@ -38,8 +38,8 @@ class MovablePoint {
     }
 }
 
-export const entry = entryForFile(
-    (lines, outputCallback) => {
+export const entry = oldEntryForFile(
+    async (lines, outputCallback) => {
         let points = lines.map((line) => MovablePoint.FromLine(line));
         let lastBoundaries: Bounds | null = null;
         let lastPoints: typeof points | null = null;
@@ -84,7 +84,7 @@ export const entry = entryForFile(
             outputCallback(l.join(""));
         });
     },
-    (lines, outputCallback) => {
+    async (lines, outputCallback) => {
         let points = lines.map((line) => MovablePoint.FromLine(line));
         let lastBoundaries: Bounds | null = null;
         let lastPoints: typeof points | null = null;

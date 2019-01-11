@@ -1,6 +1,6 @@
 import { CustomBest, maxNumber } from "./../../support/best";
 import { Coordinate } from "./../../support/geometry";
-import { entryForFile } from "../entry";
+import { oldEntryForFile } from "../entry";
 import { BigInteger } from "big-integer";
 import bigInt from "big-integer";
 
@@ -143,11 +143,11 @@ function main(lines: string[], outputCallback: ((s: any) => void), cellSizes: nu
     );
 }
 
-export const entry = entryForFile(
-    (lines, outputCallback) => {
+export const entry = oldEntryForFile(
+    async (lines, outputCallback) => {
         main(lines, outputCallback, [3]);
     },
-    (lines, outputCallback) => {
+    async (lines, outputCallback) => {
         const cellSizes: number[] = [];
         for (let i = 1; i < 301; i++) {
             cellSizes.push(i);

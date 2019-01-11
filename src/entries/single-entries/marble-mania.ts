@@ -1,4 +1,4 @@
-import { entryForFile } from "../entry";
+import { oldEntryForFile } from "../entry";
 import { CircularDoubleLinkedNode } from "../../support/data-structure";
 import { SimpleBest, maxNumber } from "../../support/best";
 // import { log } from "@/support/log";
@@ -53,8 +53,8 @@ class Game {
 
 }
 
-export const entry = entryForFile(
-    (lines, outputCallback) => {
+export const entry = oldEntryForFile(
+    async (lines, outputCallback) => {
         const tokens = lines[0].split(" ");
         const players = parseInt(tokens[0], 10);
         const lastMarble = parseInt(tokens[6], 10);
@@ -64,7 +64,7 @@ export const entry = entryForFile(
         }
         outputCallback(game.highestScores());
     },
-    (lines, outputCallback) => {
+    async (lines, outputCallback) => {
         const tokens = lines[0].split(" ");
         const players = parseInt(tokens[0], 10);
         const lastMarble = parseInt(tokens[6], 10) * 100;

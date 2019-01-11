@@ -1,4 +1,4 @@
-import { entryForFile } from "../entry";
+import { oldEntryForFile } from "../entry";
 import { DoubleLinkedNode } from "../../support/data-structure";
 import { howManySameAtEnd } from "../../support/sequences";
 
@@ -136,8 +136,8 @@ class Greenhouse {
     }
 }
 
-export const entry = entryForFile(
-    (lines, outputCallback) => {
+export const entry = oldEntryForFile(
+    async (lines, outputCallback) => {
         let greenhouse = parseLines(lines);
         for (let i = 0; i < 20; i++) {
             greenhouse = greenhouse.passGeneration();
@@ -145,7 +145,7 @@ export const entry = entryForFile(
         const sum = greenhouse.sum;
         outputCallback(sum);
     },
-    (lines, outputCallback) => {
+    async (lines, outputCallback) => {
         let greenhouse = parseLines(lines);
         let lastSum: number | null = null;
         const diffs: number[] = [];

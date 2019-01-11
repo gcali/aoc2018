@@ -3,10 +3,9 @@ import Router, { RouteConfig } from "vue-router";
 import Home from "./views/Home.vue";
 import Entries from "./views/Entries.vue";
 import SimpleEntryTemplate from "./views/entries/SimpleEntryTemplate.vue";
-import { entry as frequencyEntry } from "@/entries/single-entries/frequency";
-import { entry as inventoryEntry } from "@/entries/single-entries/inventory";
 
 import { entryList } from "@/entries/entryList";
+import { map as entryComponentMap } from "@/entries/entryMap";
 
 Vue.use(Router);
 
@@ -22,8 +21,6 @@ const routes: RouteConfig[] = [
     component: Entries
   }
 ];
-
-const entryComponentMap: { [key: string]: VueConstructor<Vue> } = {};
 
 // name: "mine-cart-madness",
 entryList.forEach((e, index) => routes.push({

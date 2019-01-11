@@ -1,7 +1,7 @@
-import { Entry, entryForFile } from "../entry";
+import { Entry, oldEntryForFile } from "../entry";
 
-export const entry: Entry = entryForFile(
-    (lines, outputCallback) => {
+export const entry: Entry = oldEntryForFile(
+    async (lines, outputCallback) => {
         interface WordCounter { [key: string]: number; }
         function createWordCounter(word: string) {
             const currentCount: WordCounter = {};
@@ -41,7 +41,7 @@ export const entry: Entry = entryForFile(
 
         outputCallback("Checksum: " + amountOfTwoLetters * amountOfThreeLetters);
     },
-    (lines, outputCallback) => {
+    async (lines, outputCallback) => {
         const stringLength = lines[0].length;
         for (let i = 0; i < stringLength; i++) {
             const spliced = lines.map((l) => l.slice(0, i) + l.slice(i + 1, l.length));

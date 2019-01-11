@@ -5,7 +5,7 @@ function moveElf(position: number, recipes: number[]) {
 }
 
 export const entry = entryForFile(
-    (lines, outputCallback) => {
+    async ({ lines, outputCallback }) => {
         const interestingRecipes = 10;
         const numberOfSteps = parseInt(lines[0], 10);
         const recipes = [3, 7];
@@ -32,7 +32,7 @@ export const entry = entryForFile(
 
         outputCallback(output.join(""));
     },
-    (lines, outputCallback) => {
+    async ({ lines, outputCallback, pause }) => {
         const targetPattern = lines[0].split("").map((e) => parseInt(e, 10));
         let memory: number[] = [];
         function checkIfSame(target: number[], memory: number[]) {
@@ -58,7 +58,12 @@ export const entry = entryForFile(
         let currentFirst = 0;
         let currentSecond = 1;
 
+        let iteration = 0;
+
         while (true) {
+            if (++iteration % 10000 === 0) {
+                await outputCallback("Iteration " + iteration + " done", true);
+            }
             const result = recipes[currentFirst] + recipes[currentSecond];
             if (result < 10) {
                 recipes.push(result);

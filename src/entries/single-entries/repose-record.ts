@@ -1,4 +1,4 @@
-import { entryForFile } from "../entry";
+import { oldEntryForFile } from "../entry";
 import Best from "../../support/best";
 import { warn } from "../../support/log";
 
@@ -80,8 +80,8 @@ class LogEntry {
     }
 }
 
-export const entry = entryForFile(
-    (lines, outputCallback) => {
+export const entry = oldEntryForFile(
+    async (lines, outputCallback) => {
         const guardSleeps: {
             [key: number]: GuardSleep[];
         } = parseSleeps(lines);
@@ -113,7 +113,7 @@ export const entry = entryForFile(
         outputCallback("" + mostSleepingMinute * guardID);
 
     },
-    (lines, outputCallback) => {
+    async (lines, outputCallback) => {
         const guardSleeps = parseSleeps(lines);
         const totalMaxSleep = new Best<number>();
         for (const guardIDKey of Object.keys(guardSleeps)) {

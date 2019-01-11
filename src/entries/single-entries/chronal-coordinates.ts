@@ -1,4 +1,4 @@
-import { entryForFile } from "../entry";
+import { oldEntryForFile } from "../entry";
 import { Coordinate, sumCoordinate } from "../../support/geometry";
 import Best, { SimpleBest, CustomBest, maxNumber } from "../../support/best";
 import { FixedSizeMatrix } from "../../support/matrix";
@@ -11,8 +11,8 @@ interface Territory {
   distance: number;
 }
 
-export const entry = entryForFile(
-  (lines, outputCallback) => {
+export const entry = oldEntryForFile(
+  async (lines, outputCallback) => {
     let points: Coordinate[] = parsePoints(lines);
 
     const { minX, minY, size } = getBoundaries(points);
@@ -117,7 +117,7 @@ export const entry = entryForFile(
 
 
   },
-  (lines, outputCallback) => {
+  async (lines, outputCallback) => {
     function manhattan(a: Coordinate, b: Coordinate) {
       return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
     }

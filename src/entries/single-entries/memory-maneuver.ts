@@ -1,4 +1,4 @@
-import { entryForFile } from "../entry";
+import { oldEntryForFile } from "../entry";
 // import { log } from "@/support/log";
 
 class Node {
@@ -56,8 +56,8 @@ function getTree(tokens: string[], startIndex: number, outputCallback: (s: any) 
     }
 }
 
-export const entry = entryForFile(
-    (lines, outputCallback) => {
+export const entry = oldEntryForFile(
+    async (lines, outputCallback) => {
         const line = lines[0];
         const tokens = line.split(" ");
 
@@ -82,7 +82,7 @@ export const entry = entryForFile(
         outputCallback("" + endIndex + " " + tokens.length);
         outputCallback(calcMetadataSum(tree));
     },
-    (lines, outputCallback) => {
+    async (lines, outputCallback) => {
         const line = lines[0];
         const tokens = line.split(" ");
         const [tree, endIndex] = getTree(tokens, 0, outputCallback);

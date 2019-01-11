@@ -1,9 +1,9 @@
-import { entryForFile } from "../entry";
+import { oldEntryForFile } from "../entry";
 import Best from "../../support/best";
 // import { log } from "../../support/log";
 
-export const entry = entryForFile(
-    (lines, outputCallback) => {
+export const entry = oldEntryForFile(
+    async (lines, outputCallback) => {
         if (lines.length > 1) {
             throw Error("Only one line expected");
         }
@@ -14,7 +14,7 @@ export const entry = entryForFile(
         outputCallback(polymerText.length);
 
     },
-    (lines, outputCallback) => {
+    async (lines, outputCallback) => {
         if (lines.length > 1) {
             throw Error("Only one line expected");
         }

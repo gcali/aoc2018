@@ -1,4 +1,4 @@
-import { Entry, entryForFile } from "../entry";
+import { Entry, oldEntryForFile } from "../entry";
 import { Coordinate } from "../../support/geometry";
 
 interface Rectangle {
@@ -37,14 +37,14 @@ const parseRectangle = (line: string, output: (l: string) => void): Rectangle =>
         size,
     };
 };
-export const entry: Entry = entryForFile(
-    (lines, outputCallback) => {
+export const entry: Entry = oldEntryForFile(
+    async (lines, outputCallback) => {
         const map = mapCreator(lines.map((e) => parseRectangle(e, outputCallback)), outputCallback);
 
         const total = map.reduce<number>((acc, current) => acc + current.filter((e) => e).length, 0);
         outputCallback("" + total);
     },
-    (lines, outputCallback) => {
+    async (lines, outputCallback) => {
         const rectangles = lines.map((e) => parseRectangle(e, outputCallback));
         const map = mapCreator(rectangles, outputCallback);
 
