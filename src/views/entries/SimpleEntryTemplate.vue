@@ -15,7 +15,7 @@ import { Entry, executeEntry, EntryFileHandling } from "@/entries/entry";
         EntrySimpleOutput
     }
 })
-export default class Frequency extends Vue {
+export default class SimpleEntryTemplate extends Vue {
     @Prop() public title!: string;
     @Prop() public id!: number;
     @Prop() public entry!: Entry;

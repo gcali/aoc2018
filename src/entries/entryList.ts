@@ -11,6 +11,8 @@ import { entry as marbleMania } from "./single-entries/marble-mania";
 import { entry as starsAlign } from "./single-entries/the-stars-align";
 import { entry as chronalCharge } from "./single-entries/chronal-charge";
 import { entry as subterranean } from "./single-entries/subterranean";
+import { entry as mineCart } from "./single-entries/mine-cart-madness";
+
 interface EntryRoute {
     name: string;
     title: string;
@@ -78,6 +80,11 @@ export const entryList: EntryRoute[] = [
         name: "subterranean",
         title: "Subterranean Substainability",
         entry: subterranean
+    },
+    {
+        name: "mine-cart-madness",
+        title: "Mine Cart Madness",
+        entry: mineCart
     }
 ];
 

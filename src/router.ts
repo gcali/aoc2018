@@ -1,4 +1,4 @@
-import Vue from "vue";
+import Vue, { VueConstructor } from "vue";
 import Router, { RouteConfig } from "vue-router";
 import Home from "./views/Home.vue";
 import Entries from "./views/Entries.vue";
@@ -23,20 +23,13 @@ const routes: RouteConfig[] = [
   }
 ];
 
-//   {
-//     path: "/entry/frequency",
-//     name: "frequency",
-//     component: SimpleEntryTemplate,
-//     props: {
-//       id: 1,
-//       title: "Frequency",
-//       entry: frequencyEntry
-//     }
-//   },
+const entryComponentMap: { [key: string]: VueConstructor<Vue> } = {};
+
+// name: "mine-cart-madness",
 entryList.forEach((e, index) => routes.push({
   name: e.name,
   path: `/entry/${e.name}`,
-  component: SimpleEntryTemplate,
+  component: e.hasCustomComponent ? entryComponentMap[e.name] : SimpleEntryTemplate,
   props: {
     id: index + 1,
     title: e.title,
