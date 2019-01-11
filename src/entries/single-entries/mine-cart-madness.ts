@@ -228,7 +228,6 @@ export const entry = entryForFile(
             carts = carts.sort((a, b) => b.compareTo(a));
             const output = grid.map((line) => line.map((c) => c as string));
             carts.forEach((c) => output[c.coordinate.y][c.coordinate.x] = directionToString(c.direction));
-            // outputCallback(output.map((line) => line.join("")).join("\n"));
             collisions = checkCollisions(carts);
             if (++iteration % 100 === 0) {
                 outputCallback("Iteration " + iteration + " done");
