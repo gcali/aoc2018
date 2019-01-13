@@ -8,7 +8,12 @@
 import { Component, Vue, Prop, Watch } from "vue-property-decorator";
 import EntryTemplate from "@/components/EntryTemplate.vue";
 import EntrySimpleOutput from "@/components/EntrySimpleOutput.vue";
-import { Entry, executeEntry, EntryFileHandling } from "@/entries/entry";
+import {
+    Entry,
+    executeEntry,
+    EntryFileHandling,
+    simpleOutputCallbackFactory
+} from "@/entries/entry";
 @Component({
     components: {
         EntryTemplate,
@@ -30,7 +35,7 @@ export default class SimpleEntryTemplate extends Vue {
             this.entry,
             fileHandling.choice,
             fileHandling.content,
-            this.output
+            simpleOutputCallbackFactory(this.output)
         );
     }
 }

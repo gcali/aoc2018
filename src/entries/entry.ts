@@ -38,7 +38,44 @@ export interface EntryFileHandling {
     content: string[];
 }
 
-export async function executeEntry(entry: Entry, choice: Choice, lines: string[], output: string[]) {
+export function simpleOutputCallbackFactory(output: string[]) {
+    return (outputLine: string, shouldClear?: boolean): Promise<void> => {
+        if (shouldClear) {
+            output.length = 0;
+        }
+
+        if (outputLine === null) {
+            output.length = 0;
+        } else if (typeof (outputLine) === "string") {
+            output.push(outputLine);
+        } else {
+            output.push(JSON.stringify(outputLine, undefined, 4));
+        }
+        return new Promise<void>((resolve) => setTimeout(resolve, 0));
+    };
+}
+
+// export function simpleOutputCallback(output: string[], outputLine: string, shouldClear?: boolean) {
+//     if (shouldClear) {
+//         output.length = 0;
+//     }
+
+//     if (outputLine === null) {
+//         output.length = 0;
+//     } else if (typeof (outputLine) === "string") {
+//         output.push(outputLine);
+//     } else {
+//         output.push(JSON.stringify(outputLine, undefined, 4));
+//     }
+//     return new Promise<void>((resolve) => setTimeout(resolve, 0));
+// }
+
+export async function executeEntry(
+    entry: Entry,
+    choice: Choice,
+    lines: string[],
+    outputCallback: EntryCallbackArg["outputCallback"]
+       /*output: string[]*/) {
     let callback: EntryCallback;
     if (choice === Choice.first) {
         callback = entry.first;
@@ -47,20 +84,21 @@ export async function executeEntry(entry: Entry, choice: Choice, lines: string[]
     }
     await callback({
         lines,
-        outputCallback: (outputLine, shouldClear) => {
-            if (shouldClear) {
-                output.length = 0;
-            }
+        outputCallback,
+        // outputCallback: (outputLine, shouldClear) => {
+        //     if (shouldClear) {
+        //         output.length = 0;
+        //     }
 
-            if (outputLine === null) {
-                output.length = 0;
-            } else if (typeof (outputLine) === "string") {
-                output.push(outputLine);
-            } else {
-                output.push(JSON.stringify(outputLine, undefined, 4));
-            }
-            return new Promise<void>((resolve) => setTimeout(resolve, 0));
-        },
+        //     if (outputLine === null) {
+        //         output.length = 0;
+        //     } else if (typeof (outputLine) === "string") {
+        //         output.push(outputLine);
+        //     } else {
+        //         output.push(JSON.stringify(outputLine, undefined, 4));
+        //     }
+        //     return new Promise<void>((resolve) => setTimeout(resolve, 0));
+        // },
         pause: () => new Promise<void>((resolve) => setTimeout(() => {
             resolve();
         }, 0))
