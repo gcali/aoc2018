@@ -1,14 +1,19 @@
 <template lang="pug">
     .input
-        EntryFileInput(:key="this.$route.path", readFile="true", @file-content="readFileContent")
+        EntryFileInput(
+            :key="this.$route.path",
+            readFile="true",
+            @file-content="readFileContent",
+            :disabled="disabled"
+        )
         .choices(:class="{hidden: hideChoices}")
-            EntryChoice(:key="this.$route.path", @execute="loadFile")
+            EntryChoice(:key="this.$route.path", @execute="loadFile", :disabled="disabled")
 </template>
 
 <script lang="ts">
 import EntryFileInput from "@/components/EntryFileInput.vue";
 import EntryChoice from "@/components/EntryChoice.vue";
-import { Component, Vue, Emit } from "vue-property-decorator";
+import { Component, Vue, Emit, Prop } from "vue-property-decorator";
 import { Choice } from "@/constants/choice";
 import { EntryFileHandling } from "@/entries/entry";
 
@@ -19,6 +24,8 @@ import { EntryFileHandling } from "@/entries/entry";
     }
 })
 export default class EntryInput extends Vue {
+
+    @Prop({ default: false }) public disabled!: boolean;
 
     private inputContent: string | null = null;
 
@@ -55,8 +62,8 @@ export default class EntryInput extends Vue {
 
 <style lang="scss" scoped>
 .input {
-    display: flex;
-    flex-direction: column;
+    // display: flex;
+    // flex-direction: column;
     .choices {
         margin-bottom: 2em;
     }

@@ -1,5 +1,5 @@
 <template lang="pug">
-    EntryTemplate(:title="title", :id="id", @file-loaded="readFile")
+    EntryTemplate(:title="title", :id="id", @file-loaded="readFile", :disabled="disabled")
         .output
             EntrySimpleOutput(:key="$route.path", :lines="output")
 </template>
@@ -29,14 +29,17 @@ export default class SimpleEntryTemplate extends Vue {
     public onRouteChanged() {
         this.output = [];
     }
+    private disabled: boolean = false;
     public async readFile(fileHandling: EntryFileHandling) {
         this.output = [];
+        this.disabled = true;
         await executeEntry(
             this.entry,
             fileHandling.choice,
             fileHandling.content,
             simpleOutputCallbackFactory(this.output)
         );
+        this.disabled = false;
     }
 }
 </script>
@@ -55,6 +58,7 @@ export default class SimpleEntryTemplate extends Vue {
     }
     .output {
         display: flex;
+        align-items: stretch;
     }
 }
 </style>

@@ -1,13 +1,17 @@
 <template lang="pug">
     .wrapper(:class="{hidden: hideOutput}")
-        .output {{text}}
+        .output(ref="output") {{text}}
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from "vue-property-decorator";
+import { Component, Vue, Prop, Watch } from "vue-property-decorator";
 @Component({})
 export default class EntrySimpleOutput extends Vue {
     @Prop({ default: [] }) public lines!: string[];
+
+    public $refs!: {
+        output: HTMLDivElement
+    }
 
     public get hideOutput(): boolean {
         return this.lines.length <= 0;
@@ -15,6 +19,11 @@ export default class EntrySimpleOutput extends Vue {
 
     public get text() {
         return this.lines.join("\n");
+    }
+
+    @Watch('text')
+    public onTextChanged(val: string[], oldVal: string[]) {
+        this.$refs.output.scrollTop = this.$refs.output.scrollHeight;
     }
 }
 </script> 

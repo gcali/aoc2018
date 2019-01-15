@@ -3,12 +3,12 @@
     label.question Which entry?
     .choices
         label 
-            input(type="radio", value="first", v-model="choice")
+            input(type="radio", value="first", v-model="choice", :disabled="disabled")
             | First
         label 
-            input(type="radio", value="second", v-model="choice")
+            input(type="radio", value="second", v-model="choice", :disabled="disabled")
             | Second
-    button(@click="show") Execute
+    button(@click="show", :disabled="disabled") Execute
 </template>
 
 <script lang="ts">
@@ -16,6 +16,7 @@ import { Component, Vue, Prop } from "vue-property-decorator";
 @Component({})
 export default class EntryChoice extends Vue {
     @Prop({ default: false }) public hidden!: boolean;
+    @Prop({ default: false }) public disabled!: boolean;
     private choice: string = "first";
     public show() {
         this.$emit("execute", this.choice);

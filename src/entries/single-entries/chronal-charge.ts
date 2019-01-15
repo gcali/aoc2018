@@ -3,6 +3,7 @@ import { Coordinate } from "./../../support/geometry";
 import { oldEntryForFile } from "../entry";
 import { BigInteger } from "big-integer";
 import bigInt from "big-integer";
+import { forEachAsync } from "../../support/async";
 
 class FuelGrid {
 
@@ -119,7 +120,7 @@ class FuelGrid {
     // }
 }
 
-function main(lines: string[], outputCallback: ((s: any) => void), cellSizes: number[]): void {
+async function main(lines: string[], outputCallback: ((s: any) => void), cellSizes: number[]) {
     const serial = parseInt(lines[0], 10);
     const grid = new FuelGrid(serial, outputCallback);
     const size = 300;
@@ -127,8 +128,8 @@ function main(lines: string[], outputCallback: ((s: any) => void), cellSizes: nu
     const bestPoint = new CustomBest<BigInteger, Coordinate & { iteration: number }>(
         (a, b) => a.subtract(b).toJSNumber()
     );
-    cellSizes.forEach((cellSize) => {
-        outputCallback("Iteration " + cellSize);
+    await forEachAsync(cellSizes, async (cellSize) => {
+        await outputCallback("Iteration " + cellSize);
         for (let x = 0; x < size - (cellSize - 1); x++) {
             for (let y = 0; y < size - (cellSize - 1); y++) {
                 bestPoint.add({
@@ -138,20 +139,20 @@ function main(lines: string[], outputCallback: ((s: any) => void), cellSizes: nu
             }
         }
     });
-    outputCallback(
+    await outputCallback(
         `Coordinate: ${JSON.stringify(bestPoint.currentBest!.value)} with ${bestPoint.currentBest!.key}`
     );
 }
 
 export const entry = oldEntryForFile(
     async (lines, outputCallback) => {
-        main(lines, outputCallback, [3]);
+        await main(lines, outputCallback, [3]);
     },
     async (lines, outputCallback) => {
         const cellSizes: number[] = [];
         for (let i = 1; i < 301; i++) {
             cellSizes.push(i);
         }
-        main(lines, outputCallback, cellSizes);
+        await main(lines, outputCallback, cellSizes);
     }
 );

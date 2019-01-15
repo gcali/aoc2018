@@ -1,6 +1,6 @@
 <template lang="pug">
     .file-selection
-        button.selection-action(@click="clickSelectionAction") {{this.selectionLabel}}
+        button.selection-action(@click="clickSelectionAction", :disabled="disabled") {{this.selectionLabel}}
         input(type="file" ref="file-input" @change="filesUpdated")
         label.selected-file(:class="{hidden: !this.isFileSelected}") {{this.shownName}}
         hr(:class="{hidden: !this.isFileSelected}")
@@ -11,6 +11,7 @@ import { Component, Vue, Prop } from "vue-property-decorator";
 import { readFileFromInput } from "@/support/file-reader";
 @Component({})
 export default class EntryFileInput extends Vue {
+    @Prop({ default: false }) public disabled!: boolean;
     @Prop({ default: false }) public readFile!: boolean;
     public shownName: string = "";
     public isFileSelected: boolean = false;

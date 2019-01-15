@@ -85,7 +85,8 @@ export const entryList: EntryRoute[] = [
     {
         name: "mine-cart-madness",
         title: "Mine Cart Madness",
-        entry: mineCart
+        entry: mineCart,
+        hasCustomComponent: true
     },
     {
         name: "chocolate-charts",

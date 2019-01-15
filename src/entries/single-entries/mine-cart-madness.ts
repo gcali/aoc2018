@@ -1,4 +1,4 @@
-import { oldEntryForFile } from "../entry";
+import { oldEntryForFile, entryForFile } from "../entry";
 import { Coordinate, sumCoordinate } from "../../support/geometry";
 import { maxNumber } from "../../support/best";
 
@@ -214,8 +214,8 @@ export interface Status {
     grid: Output[][];
 }
 
-export const entry = oldEntryForFile(
-    async (lines, outputCallback, statusCallback?: ((status: Status) => void)) => {
+export const entry = entryForFile(
+    async ({ lines, outputCallback, statusCallback, isCancelled }) => {
         const cartDirections = ["<", ">", "^", "v"];
         const fullGrid = lines.map((l) => l.split("").map((c) => cartDirections.indexOf(c) >= 0 ? c : stringToCell(c)));
         let carts: Cart[] = [];
@@ -231,6 +231,9 @@ export const entry = oldEntryForFile(
         let collisions: ReturnType<typeof checkCollisions> = checkCollisions(carts);
         let iteration = 0;
         while (collisions === null || !collisions.collides) {
+            if (isCancelled && isCancelled()) {
+                break;
+            }
             carts = carts.map((c) => c.move(grid[c.coordinate.y][c.coordinate.x]));
             carts = carts.sort((a, b) => b.compareTo(a));
             const output = grid.map((line) => line.map((c) => c as Output));
@@ -242,14 +245,55 @@ export const entry = oldEntryForFile(
                     grid: output
                 });
             }
-            if (++iteration % 100 === 0) {
-                outputCallback("Iteration " + iteration + " done");
-                break;
-            }
+            // if (++iteration % 100 === 0) {
+            await outputCallback("Iteration " + (iteration++) + " done");
+            //     break;
+            // }
         }
-        outputCallback(collisions!.prev.coordinate);
+        if (isCancelled && isCancelled()) {
+            await outputCallback("Cancelled by user");
+        } else {
+            await outputCallback(collisions!.prev.coordinate);
+        }
     },
-    async (lines, outputCallback) => {
+    async ({ lines, outputCallback }) => {
         throw Error("Not implemented");
     }
+    // async ({lines, outputCallback, statusCallback?: ((status: Status) => void)}) => {
+    //     const cartDirections = ["<", ">", "^", "v"];
+    //     const fullGrid = lines.map((l) => l.split("").map((c) => cartDirections.indexOf(c) >= 0 ? c : stringToCell(c)));
+    //     let carts: Cart[] = [];
+    //     fullGrid.forEach((line, y) => {
+    //         line.forEach((cell, x) => {
+    //             if (cartDirections.indexOf(cell) >= 0) {
+    //                 carts.push(new Cart({ x, y }, stringToDirection(cell)));
+    //             }
+    //         });
+    //     });
+    //     const grid: Cell[][] = fullGrid.map((l) => l.map((c) => stringToCell(c)));
+    //     carts = carts.sort((a, b) => a.compareTo(b));
+    //     let collisions: ReturnType<typeof checkCollisions> = checkCollisions(carts);
+    //     let iteration = 0;
+    //     while (collisions === null || !collisions.collides) {
+    //         carts = carts.map((c) => c.move(grid[c.coordinate.y][c.coordinate.x]));
+    //         carts = carts.sort((a, b) => b.compareTo(a));
+    //         const output = grid.map((line) => line.map((c) => c as Output));
+    //         carts.forEach((c) => output[c.coordinate.y][c.coordinate.x] = directionToString(c.direction));
+    //         collisions = checkCollisions(carts);
+    //         if (statusCallback) {
+    //             statusCallback({
+    //                 carts,
+    //                 grid: output
+    //             });
+    //         }
+    //         // if (++iteration % 100 === 0) {
+    //         await outputCallback("Iteration " + (iteration++) + " done");
+    //         //     break;
+    //         // }
+    //     }
+    //     await outputCallback(collisions!.prev.coordinate);
+    // },
+    // async ({lines, outputCallback}) => {
+    //     throw Error("Not implemented");
+    // }
 );

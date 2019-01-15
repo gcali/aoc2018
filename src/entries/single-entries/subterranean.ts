@@ -143,7 +143,7 @@ export const entry = oldEntryForFile(
             greenhouse = greenhouse.passGeneration();
         }
         const sum = greenhouse.sum;
-        outputCallback(sum);
+        await outputCallback(sum);
     },
     async (lines, outputCallback) => {
         let greenhouse = parseLines(lines);
@@ -160,12 +160,12 @@ export const entry = oldEntryForFile(
             if (diffs.length > 20 && howManySameAtEnd(diffs) >= 20) {
                 const step = diffs[diffs.length - 1];
                 const todo = generations - i;
-                outputCallback(sum + todo * step);
+                await outputCallback(sum + todo * step);
                 return;
             }
         }
-        outputCallback("No pattern found");
-        outputCallback(JSON.stringify(diffs));
+        await outputCallback("No pattern found");
+        await outputCallback(JSON.stringify(diffs));
     }
 );
 function parseLines(lines: string[]): Greenhouse {
