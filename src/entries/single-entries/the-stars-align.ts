@@ -80,9 +80,9 @@ export const entry = oldEntryForFile(
         mappedPoints.forEach((p) => {
             dataMatrix[p.y][p.x] = "#";
         });
-        dataMatrix.forEach((l) => {
-            outputCallback(l.join(""));
-        });
+        for (const l of dataMatrix) {
+            await outputCallback(l.join(""));
+        }
     },
     async (lines, outputCallback) => {
         let points = lines.map((line) => MovablePoint.FromLine(line));
@@ -110,6 +110,6 @@ export const entry = oldEntryForFile(
             }
             points = newPoints;
         }
-        outputCallback(iterationCounter - 1);
+        await outputCallback(iterationCounter - 1);
     },
 );

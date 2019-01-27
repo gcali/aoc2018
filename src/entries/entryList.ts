@@ -14,6 +14,7 @@ import { entry as subterranean } from "./single-entries/subterranean";
 import { entry as mineCart } from "./single-entries/mine-cart-madness";
 import { entry as chocolateCharts } from "./single-entries/chocolate-charts";
 import { entry as beverageBandits } from "./single-entries/beverage-bandits";
+import { entry as chronalClassification } from "./single-entries/chronal-classification";
 
 interface EntryRoute {
     name: string;
@@ -98,6 +99,11 @@ export const entryList: EntryRoute[] = [
         name: "beverage-bandits",
         title: "Beverage Bandits",
         entry: beverageBandits
+    },
+    {
+        name: "chronal-classification",
+        title: "Chronal Classification",
+        entry: chronalClassification
     }
 ];
 

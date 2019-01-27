@@ -85,7 +85,7 @@ export const entry = oldEntryForFile(
                 nodes.push(node.name);
             }
         }
-        outputCallback(nodes.join(""));
+        await outputCallback(nodes.join(""));
     },
     async (lines, outputCallback) => {
         const graph = new Graph(lines);
@@ -94,12 +94,14 @@ export const entry = oldEntryForFile(
         for (let i = 0; i < howManyWorkers; i++) {
             workers[i] = null;
         }
-        const callbacks = new DefaultListDictionaryString<() => void>();
+        const callbacks = new DefaultListDictionaryString<() => Promise<void>>();
         let done = false;
         let currentSecond = 0;
         while (!done) {
             const call = callbacks.get("" + currentSecond);
-            call.forEach((c) => c());
+            for (const c of call) {
+                await c();
+            }
             callbacks.remove("" + currentSecond);
             if (graph.isDone()) {
                 done = true;
@@ -111,9 +113,9 @@ export const entry = oldEntryForFile(
                             workers[i] = nextNode;
                             const workerIndex = i;
                             const targetTime = (currentSecond + nextNode.duration());
-                            outputCallback("Adding to target " + targetTime + " node " + nextNode.name);
-                            callbacks.add("" + targetTime, () => {
-                                outputCallback("Node " + nextNode.name + " done");
+                            await outputCallback("Adding to target " + targetTime + " node " + nextNode.name);
+                            callbacks.add("" + targetTime, async () => {
+                                await outputCallback("Node " + nextNode.name + " done");
                                 nextNode.isDone = true;
                                 nextNode.wip = false;
                                 workers[workerIndex] = null;
@@ -124,6 +126,6 @@ export const entry = oldEntryForFile(
                 currentSecond++;
             }
         }
-        outputCallback(currentSecond);
+        await outputCallback(currentSecond);
     }
 );

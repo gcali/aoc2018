@@ -39,7 +39,7 @@ export const entry: Entry = oldEntryForFile(
         const amountOfTwoLetters = checksumCounter.filter((c) => c.hasTwoLetters).length;
         const amountOfThreeLetters = checksumCounter.filter((c) => c.hasThreeLetters).length;
 
-        outputCallback("Checksum: " + amountOfTwoLetters * amountOfThreeLetters);
+        await outputCallback("Checksum: " + amountOfTwoLetters * amountOfThreeLetters);
     },
     async (lines, outputCallback) => {
         const stringLength = lines[0].length;
@@ -48,6 +48,7 @@ export const entry: Entry = oldEntryForFile(
             const duplicates = new Set<string>();
             const hasFoundDuplicate = spliced.some((l) => {
                 if (duplicates.has(l)) {
+                    // tslint:disable-next-line:no-floating-promises
                     outputCallback(l);
                     return true;
                 } else {
@@ -59,6 +60,6 @@ export const entry: Entry = oldEntryForFile(
                 return;
             }
         }
-        outputCallback("Something wen wrong");
+        await outputCallback("Something wen wrong");
     }
 );

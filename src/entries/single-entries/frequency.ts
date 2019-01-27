@@ -11,7 +11,7 @@ export const entry = oldEntryForFile(
             }
             currentFrequency += value;
         });
-        outputCallback("Result: " + currentFrequency);
+        await outputCallback("Result: " + currentFrequency);
     },
     async (lines, outputCallback) => {
         const values: number[] = [];
@@ -35,6 +35,7 @@ export const entry = oldEntryForFile(
             found = values.some((v) => {
                 current += v;
                 if (foundFrequencies.has(current)) {
+                    // tslint:disable-next-line:no-floating-promises
                     outputCallback("Found: " + current);
                     return true;
                 } else {

@@ -13,3 +13,18 @@ export function howManySameAtEnd<T>(sequence: T[]): number {
     }
     return counter;
 }
+
+export function groupBy<T>(sequence: T[], n: number): T[][] {
+    const result = [];
+    let next = [];
+    let current = 0;
+    for (const e of sequence) {
+        next.push(e);
+        if (++current === n) {
+            result.push(next);
+            next = [];
+            current = 0;
+        }
+    }
+    return result;
+}

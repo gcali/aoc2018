@@ -72,20 +72,22 @@ export const entry = oldEntryForFile(
             return sum;
         };
 
-        function printMetadata(argTree: Node) {
-            outputCallback(argTree.metadata);
-            argTree.nodes.forEach((n) => printMetadata(n));
+        async function printMetadata(argTree: Node) {
+            await outputCallback(argTree.metadata);
+            for (const n of argTree.nodes) {
+                await printMetadata(n);
+            }
         }
 
         const [tree, endIndex] = getTree(tokens, 0, outputCallback);
-        printMetadata(tree);
-        outputCallback("" + endIndex + " " + tokens.length);
-        outputCallback(calcMetadataSum(tree));
+        await printMetadata(tree);
+        await outputCallback("" + endIndex + " " + tokens.length);
+        await outputCallback(calcMetadataSum(tree));
     },
     async (lines, outputCallback) => {
         const line = lines[0];
         const tokens = line.split(" ");
         const [tree, endIndex] = getTree(tokens, 0, outputCallback);
-        outputCallback(tree.value());
+        await outputCallback(tree.value());
     },
 );

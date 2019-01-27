@@ -62,7 +62,7 @@ export const entry = oldEntryForFile(
         while (game.addMarble()) {
             game.switchPlayer();
         }
-        outputCallback(game.highestScores());
+        await outputCallback(game.highestScores());
     },
     async (lines, outputCallback) => {
         const tokens = lines[0].split(" ");
@@ -72,6 +72,6 @@ export const entry = oldEntryForFile(
         while (game.addMarble()) {
             game.switchPlayer();
         }
-        outputCallback(game.highestScores());
+        await outputCallback(game.highestScores());
     },
 );

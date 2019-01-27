@@ -26,5 +26,7 @@
     "trailing-comma": false,
     "arrow-parens": true,
     "no-floating-promises": true,
+    "no-shadowed-variable": true,
+    "no-bitwise": false
   }
 }

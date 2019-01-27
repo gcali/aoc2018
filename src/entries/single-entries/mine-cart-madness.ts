@@ -240,7 +240,7 @@ export const entry = entryForFile(
             carts.forEach((c) => output[c.coordinate.y][c.coordinate.x] = directionToString(c.direction));
             collisions = checkCollisions(carts);
             if (statusCallback) {
-                statusCallback({
+                await statusCallback({
                     carts,
                     grid: output
                 });
@@ -261,7 +261,9 @@ export const entry = entryForFile(
     }
     // async ({lines, outputCallback, statusCallback?: ((status: Status) => void)}) => {
     //     const cartDirections = ["<", ">", "^", "v"];
-    //     const fullGrid = lines.map((l) => l.split("").map((c) => cartDirections.indexOf(c) >= 0 ? c : stringToCell(c)));
+    //     const fullGrid = lines.map((l) => l.split("").map(
+    //     (c) => cartDirections.indexOf(c) >= 0 ? c : stringToCell(c))
+    // );
     //     let carts: Cart[] = [];
     //     fullGrid.forEach((line, y) => {
     //         line.forEach((cell, x) => {

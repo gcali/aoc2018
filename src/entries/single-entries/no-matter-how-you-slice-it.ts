@@ -42,7 +42,7 @@ export const entry: Entry = oldEntryForFile(
         const map = mapCreator(lines.map((e) => parseRectangle(e, outputCallback)), outputCallback);
 
         const total = map.reduce<number>((acc, current) => acc + current.filter((e) => e).length, 0);
-        outputCallback("" + total);
+        await outputCallback("" + total);
     },
     async (lines, outputCallback) => {
         const rectangles = lines.map((e) => parseRectangle(e, outputCallback));
@@ -57,7 +57,7 @@ export const entry: Entry = oldEntryForFile(
             }, map);
             return isCandidate;
         });
-        outputCallback(candidate ? "" + candidate.id : "null");
+        await outputCallback(candidate ? "" + candidate.id : "null");
     },
 );
 

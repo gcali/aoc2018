@@ -30,27 +30,27 @@ export const entry = entryForFile(
             output.push(recipes[numberOfSteps + i]);
         }
 
-        outputCallback(output.join(""));
+        await outputCallback(output.join(""));
     },
     async ({ lines, outputCallback, pause }) => {
         const targetPattern = lines[0].split("").map((e) => parseInt(e, 10));
         let memory: number[] = [];
-        function checkIfSame(target: number[], memory: number[]) {
-            if (target.length !== memory.length) {
+        function checkIfSame(target: number[], nestedMemory: number[]) {
+            if (target.length !== nestedMemory.length) {
                 return false;
             }
             for (let i = 0; i < target.length; i++) {
-                if (target[i] !== memory[i]) {
+                if (target[i] !== nestedMemory[i]) {
                     return false;
                 }
             }
             return true;
         }
-        function addMemory(memory: number[], target: number[], newElement: number): number[] {
-            if (memory.length < target.length) {
-                return memory.concat([newElement]);
+        function addMemory(nestedMemory: number[], target: number[], newElement: number): number[] {
+            if (nestedMemory.length < target.length) {
+                return nestedMemory.concat([newElement]);
             } else {
-                return addMemory(memory.slice(1), target, newElement);
+                return addMemory(nestedMemory.slice(1), target, newElement);
             }
         }
 
@@ -69,7 +69,7 @@ export const entry = entryForFile(
                 recipes.push(result);
                 memory = addMemory(memory, targetPattern, result);
                 if (checkIfSame(targetPattern, memory)) {
-                    outputCallback(recipes.length - targetPattern.length);
+                    await outputCallback(recipes.length - targetPattern.length);
                     return;
                 }
             } else {
@@ -78,13 +78,13 @@ export const entry = entryForFile(
                 recipes.push(first);
                 memory = addMemory(memory, targetPattern, first);
                 if (checkIfSame(targetPattern, memory)) {
-                    outputCallback(recipes.length - targetPattern.length);
+                    await outputCallback(recipes.length - targetPattern.length);
                     return;
                 }
                 recipes.push(second);
                 memory = addMemory(memory, targetPattern, second);
                 if (checkIfSame(targetPattern, memory)) {
-                    outputCallback(recipes.length - targetPattern.length);
+                    await outputCallback(recipes.length - targetPattern.length);
                     return;
                 }
             }

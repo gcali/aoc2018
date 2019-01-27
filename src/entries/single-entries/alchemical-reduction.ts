@@ -9,9 +9,9 @@ export const entry = oldEntryForFile(
         }
         let polymerText = lines[0];
 
-        outputCallback("Start length: " + polymerText.length);
+        await outputCallback("Start length: " + polymerText.length);
         polymerText = explodePolymer(polymerText);
-        outputCallback(polymerText.length);
+        await outputCallback(polymerText.length);
 
     },
     async (lines, outputCallback) => {
@@ -28,7 +28,7 @@ export const entry = oldEntryForFile(
             const exploded = explodePolymer(cleanPolymer);
             max.add({ key: polymerText.length - exploded.length, value: exploded });
         });
-        outputCallback(max.currentBest!.value.length);
+        await outputCallback(max.currentBest!.value.length);
     },
 );
 

@@ -110,7 +110,7 @@ export const entry = oldEntryForFile(
         }
         const mostSleepingMinute = bestMinute![1];
         const guardID = currentMax[1][0].id;
-        outputCallback("" + mostSleepingMinute * guardID);
+        await outputCallback("" + mostSleepingMinute * guardID);
 
     },
     async (lines, outputCallback) => {
@@ -129,7 +129,7 @@ export const entry = oldEntryForFile(
                 value: guardID * maxSleep.currentBest!.value,
             });
         }
-        outputCallback("" + totalMaxSleep.currentBest!.value);
+        await outputCallback("" + totalMaxSleep.currentBest!.value);
 
     },
 );

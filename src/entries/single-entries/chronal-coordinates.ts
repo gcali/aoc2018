@@ -92,7 +92,7 @@ export const entry = oldEntryForFile(
           y: j,
         });
         if (status === undefined) {
-          outputCallback("" + i + " " + j);
+          await outputCallback("" + i + " " + j);
         } else if (!status.id) {
           continue;
         } else if (status.coordinate.x === 0 || status.coordinate.y === 0
@@ -112,7 +112,7 @@ export const entry = oldEntryForFile(
     for (const key of Object.keys(currentCount)) {
       bestArea.add(currentCount[parseInt(key, 10)]);
     }
-    outputCallback(bestArea.currentBest);
+    await outputCallback(bestArea.currentBest);
 
 
 
@@ -136,7 +136,7 @@ export const entry = oldEntryForFile(
         }
       }
     }
-    outputCallback(count);
+    await outputCallback(count);
   },
 );
 

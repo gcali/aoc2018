@@ -11,7 +11,7 @@ export default class EntrySimpleOutput extends Vue {
 
     public $refs!: {
         output: HTMLDivElement
-    }
+    };
 
     public get hideOutput(): boolean {
         return this.lines.length <= 0;
@@ -21,7 +21,7 @@ export default class EntrySimpleOutput extends Vue {
         return this.lines.join("\n");
     }
 
-    @Watch('text')
+    @Watch("text")
     public onTextChanged(val: string[], oldVal: string[]) {
         this.$refs.output.scrollTop = this.$refs.output.scrollHeight;
     }
