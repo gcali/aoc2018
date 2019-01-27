@@ -1,9 +1,9 @@
 import minimist from "minimist";
 
 const args = (minimist as any)(process.argv.slice(2), {
-    alias: { e: "entry", h: "help", s: "second" },
+    alias: { e: "entry", h: "help", s: "second", l: "list" },
     number: ["e"],
-    boolean: ["help", "second"],
+    boolean: ["help", "second", "list"],
 });
 
 
@@ -12,14 +12,25 @@ const usage =
 
 Options:
     -h, --help: print help
-    -e, --entry <entry>: [REQUIRED] Identify which entry to run,
+    -e, --entry <entry>: [REQUIRED] Identify which entry to run
     -s, --second: choose second part instead of first
+    -l, --list: list entries
 `;
 
 const error = () => { console.log(usage); process.exit(1); };
 
 if (args.h) {
-    // console.log(usage);
+    console.log(usage);
+    process.exit(0);
+}
+
+import { entryList } from "./entries/entryList";
+
+if (args.l) {
+    let i = 0;
+    for (const entry of entryList) {
+        console.log(`${++i} - ${entry.title}`);
+    }
     process.exit(0);
 }
 
@@ -27,17 +38,6 @@ if (!("e" in args)) {
     error();
 }
 
-// const entry: string = args.e;
-
-// import entryMap from "./entries/entryMap";
-
-// if (!(entry in entryMap)) {
-//     error();
-// }
-
-// const entryCallback = entryMap[entry];
-
-import { entryList } from "./entries/entryList";
 
 const index: number = args.e - 1;
 if (index <= 0 || index >= entryList.length) {
@@ -50,13 +50,25 @@ const entryCallback = entryList[index].entry;
 
 import { readStdin } from "./support/stdin-reader";
 
-readStdin((lines) => {
+readStdin(async (lines) => {
     // tslint:disable-next-line:no-console
-    const outputCallback = (line: string) => console.log(line);
+    const outputCallback = async (line: string) => console.log(line);
     if (args.s) {
-        entryCallback.second(lines, outputCallback);
+        await entryCallback.second({
+            isCancelled: () => false,
+            lines,
+            outputCallback,
+            // tslint:disable-next-line:no-empty
+            pause: async () => { }
+        }/*, lines, outputCallback*/);
     } else {
-        entryCallback.first(lines, outputCallback);
+        await entryCallback.first({
+            lines,
+            outputCallback,
+            isCancelled: () => false,
+            // tslint:disable-next-line:no-empty
+            pause: async () => { }
+        });
     }
 });
 

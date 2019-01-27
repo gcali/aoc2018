@@ -1,6 +1,6 @@
 import * as readline from "readline";
 
-export function readStdin(callback: (lines: string[]) => void) {
+export function readStdin(callback: (lines: string[]) => Promise<void>) {
     const i = readline.createInterface({
         input: process.stdin,
         output: process.stdout,
@@ -10,8 +10,10 @@ export function readStdin(callback: (lines: string[]) => void) {
     i.on("line", (line: string) => {
         lines.push(line);
     });
-    i.on("close", () => {
-        callback(lines);
+    const promise = new Promise<void>((resolve) => {
+        i.on("close", () => {
+            callback(lines).then((value) => resolve());
+        });
     });
 }
 
