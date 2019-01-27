@@ -25,11 +25,11 @@ export default class SimpleEntryTemplate extends Vue {
     @Prop() public id!: number;
     @Prop() public entry!: Entry;
     public output: string[] = [];
+    private disabled: boolean = false;
     @Watch("$route")
     public onRouteChanged() {
         this.output = [];
     }
-    private disabled: boolean = false;
     public async readFile(fileHandling: EntryFileHandling) {
         this.output = [];
         this.disabled = true;

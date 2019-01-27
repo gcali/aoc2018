@@ -1,4 +1,4 @@
-import { SimpleBest } from "./best";
+import { SimpleBest, ascending } from "./best";
 
 export interface Coordinate {
     x: number;
@@ -17,6 +17,17 @@ export interface Bounds {
     size: Coordinate;
 }
 
+export function ascendingCompare(a: Coordinate, b: Coordinate) {
+    if (b.y === a.y) {
+        return ascending(a.x, b.x);
+    } else {
+        return ascending(a.y, b.y);
+    }
+}
+
+export function isInBounds(c: Coordinate, bounds: Bounds) {
+    return c.x >= bounds.topLeft.x && c.y >= bounds.topLeft.y && c.x < bounds.size.x && c.y < bounds.size.y;
+}
 export const getBoundaries = (points: Coordinate[]): Bounds => {
     const minComparator = (a: number, b: number) => b - a;
     const maxComparator = (a: number, b: number) => a - b;

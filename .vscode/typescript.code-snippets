@@ -21,10 +21,10 @@
 			"import { entryForFile } from \"../entry\";",
 			"",
 			"export const entry = entryForFile(",
-			"    (lines, outputCallback) => {",
+			"    async ({ lines, outputCallback }) => {",
 			"        throw Error(\"Not implemented\");",
 			"    },",
-			"    (lines, outputCallback) => {",
+			"    async ({ lines, outputCallback }) => {",
 			"        throw Error(\"Not implemented\");",
 			"    }",
 			");"

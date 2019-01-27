@@ -8,6 +8,9 @@ type Comparator<T> = (a: T, b: T) => number;
 export const maxNumber: Comparator<number> = (a, b) => a - b;
 export const minNumber: Comparator<number> = (a, b) => maxNumber(a, b) * -1;
 
+export const ascending = maxNumber;
+export const descending = minNumber;
+
 
 export class CustomBest<T, U> {
     public currentBest: BestArg<T, U> | null = null;

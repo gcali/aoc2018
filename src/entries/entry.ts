@@ -14,6 +14,8 @@ type OldEntryCallback = (
     statusCallback?: ((outputStatus: any) => Promise<void>)
 ) => Promise<void>;
 
+export type OutputCallback = ((outputLine: any, shouldClear?: boolean) => Promise<void>);
+
 type EntryCallback = (arg: EntryCallbackArg) => Promise<void>;
 
 export interface Entry {

@@ -50,12 +50,13 @@ export default class MineCartEntryView extends Vue {
                     } else {
                         this.output.push(JSON.stringify(line));
                     }
-                    return new Promise<void>((resolve) => that.resolver = resolve);
+                    return new Promise<void>(
+                        (resolve) => (that.resolver = resolve)
+                    );
                 },
                 () => that.shouldStop
             );
-        }
-        catch (e) {
+        } catch (e) {
             this.output.push("Error:");
             this.output.push(JSON.stringify(e));
         }
