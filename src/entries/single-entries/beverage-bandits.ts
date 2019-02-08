@@ -1,7 +1,7 @@
 import { entryForFile, OutputCallback } from "../entry";
 import { Coordinate, sumCoordinate, Bounds, isInBounds, ascendingCompare } from "../../support/geometry";
-import { ascending } from "@/support/best";
-import { Queue } from "@/support/data-structure";
+import { ascending } from "../../support/best";
+import { Queue } from "../../support/data-structure";
 import { __values } from "tslib";
 
 class EditableField {
