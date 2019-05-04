@@ -16,6 +16,7 @@ import { entry as chocolateCharts } from "./single-entries/chocolate-charts";
 import { entry as beverageBandits } from "./single-entries/beverage-bandits";
 import { entry as chronalClassification } from "./single-entries/chronal-classification";
 import { entry as reservoirResearch } from "./single-entries/reservoir-research";
+import { entry as settlers } from "./single-entries/settlers-of-the-north-pole";
 
 interface EntryRoute {
     name: string;
@@ -110,6 +111,12 @@ export const entryList: EntryRoute[] = [
         name: "reservoir-research",
         title: "Reservoir Research",
         entry: reservoirResearch
+    },
+    {
+        name: "settlers-of-the-north-pole",
+        title: "Settlers of the North Pole",
+        entry: settlers,
+        hasCustomComponent: true
     }
 ];
 

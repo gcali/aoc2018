@@ -5,12 +5,28 @@ export interface Coordinate {
     y: number;
 }
 
+function isBounds(c: Coordinate | Bounds): c is Bounds {
+    return (c as Bounds).size !== undefined;
+}
+
 export class CCoordinate implements Coordinate {
     public constructor(public x: number, public y: number) {
 
     }
 
-    public isInBounds = (b: Bounds) => isInBounds(this, b);
+    public isInBounds = (b: Bounds | Coordinate): boolean => {
+        if (isBounds(b)) {
+            return isInBounds(this, b);
+        } else {
+            return isInBounds(this, {
+                size: b,
+                topLeft: {
+                    x: 0,
+                    y: 0
+                }
+            });
+        }
+    }
 
     public sum = (other: Coordinate) => {
         const result = sumCoordinate(this, other);
@@ -26,6 +42,28 @@ export class CCoordinate implements Coordinate {
         return `(${this.x},${this.y})`;
     }
 }
+
+export const directions = {
+    up: new CCoordinate(0, -1),
+    down: new CCoordinate(0, 1),
+    left: new CCoordinate(-1, 0),
+    right: new CCoordinate(1, 0),
+    upLeft: new CCoordinate(-1, -1),
+    upRight: new CCoordinate(1, -1),
+    downLeft: new CCoordinate(-1, 1),
+    downRight: new CCoordinate(1, 1)
+};
+
+export const directionList = [
+    directions.up,
+    directions.down,
+    directions.left,
+    directions.right,
+    directions.upLeft,
+    directions.upRight,
+    directions.downLeft,
+    directions.downRight
+];
 
 function fillWithZero(c: Coordinate): Coordinate {
     return {

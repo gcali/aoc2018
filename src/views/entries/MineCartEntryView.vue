@@ -47,6 +47,8 @@ export default class MineCartEntryView extends Vue {
                         this.output = [];
                     } else if (typeof line === "string") {
                         this.output.push(line);
+                    } else if (Array.isArray(line)) {
+                        this.output.push(line.join("\n"));
                     } else {
                         this.output.push(JSON.stringify(line));
                     }

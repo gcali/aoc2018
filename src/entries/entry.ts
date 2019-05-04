@@ -42,7 +42,7 @@ export interface EntryFileHandling {
 }
 
 export function simpleOutputCallbackFactory(output: string[]) {
-    return (outputLine: string, shouldClear?: boolean): Promise<void> => {
+    return (outputLine: any, shouldClear?: boolean): Promise<void> => {
         if (shouldClear) {
             output.length = 0;
         }
@@ -51,6 +51,8 @@ export function simpleOutputCallbackFactory(output: string[]) {
             output.length = 0;
         } else if (typeof (outputLine) === "string") {
             output.push(outputLine);
+        } else if (Array.isArray(outputLine)) {
+            output.push(outputLine.join("\n"));
         } else {
             output.push(JSON.stringify(outputLine, undefined, 4));
         }

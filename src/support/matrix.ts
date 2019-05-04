@@ -2,7 +2,7 @@ import { Coordinate } from "./geometry";
 
 export class FixedSizeMatrix<T> {
     public data: T[];
-    constructor(private size: Coordinate) {
+    constructor(public size: Coordinate) {
         this.data = new Array<T>(size.x * size.y);
     }
     public get(c: Coordinate): T {
@@ -19,7 +19,16 @@ export class FixedSizeMatrix<T> {
         return newMatrix;
     }
 
+    public *overRows() {
+        for (let rowIndex = 0; rowIndex < this.size.y; rowIndex++) {
+            yield this.data.slice(
+                this.indexCalculator({ x: 0, y: rowIndex }),
+                this.indexCalculator({ x: this.size.x, y: rowIndex })
+            );
+        }
+    }
+
     private indexCalculator(c: Coordinate): number {
-        return c.x * this.size.y + c.y;
+        return c.y * this.size.x + c.x;
     }
 }
