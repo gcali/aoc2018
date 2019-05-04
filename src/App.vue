@@ -59,14 +59,14 @@ body {
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         color: #2c3e50;
-        height: 100vh;
+        min-height: 100vh;
     }
     #content {
         flex: 1 1 auto;
         padding: 2em;
         max-height: 100%;
-        max-height: 100vh;
-        overflow: hidden;
+        //max-height: 100vh;
+        // overflow: hidden;
         // overflow-y: scroll;
         color: #242729;
         display: flex;

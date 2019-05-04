@@ -5,6 +5,28 @@ export interface Coordinate {
     y: number;
 }
 
+export class CCoordinate implements Coordinate {
+    public constructor(public x: number, public y: number) {
+
+    }
+
+    public isInBounds = (b: Bounds) => isInBounds(this, b);
+
+    public sum = (other: Coordinate) => {
+        const result = sumCoordinate(this, other);
+        return new CCoordinate(result.x, result.y);
+    }
+
+    public diff = (other: Coordinate) => {
+        const result = sumCoordinate(this, { x: -other.x, y: -other.y });
+        return new CCoordinate(result.x, result.y);
+    }
+
+    public toString(): string {
+        return `(${this.x},${this.y})`;
+    }
+}
+
 function fillWithZero(c: Coordinate): Coordinate {
     return {
         x: c.x ? c.x : 0,
@@ -26,7 +48,7 @@ export function ascendingCompare(a: Coordinate, b: Coordinate) {
 }
 
 export function isInBounds(c: Coordinate, bounds: Bounds) {
-    return c.x >= bounds.topLeft.x && c.y >= bounds.topLeft.y && c.x < bounds.size.x && c.y < bounds.size.y;
+    return c.x >= bounds.topLeft.x && c.y >= bounds.topLeft.y && c.x < bounds.topLeft.x + bounds.size.x && c.y < bounds.topLeft.y + bounds.size.y;
 }
 export const getBoundaries = (points: Coordinate[]): Bounds => {
     const minComparator = (a: number, b: number) => b - a;
