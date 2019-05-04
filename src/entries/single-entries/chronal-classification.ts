@@ -247,7 +247,7 @@ export const entry = entryForFile(
         const instructions = puzzleLines.map((line) => {
             const g = line.split(" ").map((l) => l.trim()).filter((l) => l.length > 0);
             const p = (s: string) => parseInt(s, 10);
-            return new Instruction(mapping[p(line[0])], p(line[1]), p(line[2]), p(line[3]));
+            return new Instruction(mapping[p(g[0])], p(g[1]), p(g[2]), p(g[3]));
         });
 
         let m = new Machine();
