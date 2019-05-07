@@ -1,7 +1,7 @@
 import { entryForFile } from "../entry";
 import { groupBy } from "../../support/sequences";
 
-type OpCode =
+export type OpCode =
     "addr" | "addi" |
     "mulr" | "muli" |
     "banr" | "bani" |
@@ -20,8 +20,20 @@ const codeList: OpCode[] = [
     "eqir", "eqri", "eqrr"
 ];
 
+export class Instruction {
 
-class Instruction {
+    public static fromLines(lines: string[], mapping: (s: string) => OpCode): Instruction[] {
+        lines = lines.map((l) => l.replace(/\/\/.*/g, ""));
+        const instructions = lines.map((line) => {
+            let g = line.split(" ").map((l) => l.trim()).filter((l) => l.length > 0);
+            if (g.length < 4) {
+                g = g.fill("0", g.length, 4);
+            }
+            const p = (s: string) => parseInt(s, 10);
+            return new Instruction(mapping(g[0]), p(g[1]), p(g[2]), p(g[3]));
+        });
+        return instructions;
+    }
     constructor(public code: OpCode | number, public a: number, public b: number, public output: number) {
     }
 
@@ -32,43 +44,71 @@ class Instruction {
     public allCodes(): Instruction[] {
         return codeList.map((code) => this.setCode(code));
     }
+
+    public toString() {
+        return `${this.code} ${this.a} ${this.b} ${this.output}`;
+    }
 }
 
-// "banr" | "bani" |
-// "borr" | "bori" |
-// "setr" | "seti" |
-// "gtir" | "gtri" | "gtrr" |
-// "eqir" | "eqri" | "eqrr";
-
-class Machine {
-    constructor(public registers = [0, 0, 0, 0]) {
+export class Machine {
+    constructor(public registers = [0, 0, 0, 0], public instructionPointerRegister?: number) {
     }
 
     public sameAs(other: Machine): boolean {
-        return [0, 1, 2, 3].map((i) => this.registers[i] === other.registers[i]).reduce((acc, v) => acc && v, true);
+        if (this.registers.length !== other.registers.length) {
+            return false;
+        }
+        return this.registers
+            .map((e, i) => this.registers[i] === other.registers[i])
+            .reduce((acc, v) => acc && v, true);
     }
+
+    public get nextInstructionAddress(): number {
+        if (this.instructionPointerRegister === undefined) {
+            return 0;
+        } else {
+            return this.registers[this.instructionPointerRegister];
+        }
+    }
+
+    public isExecutable(instructionRange: number): boolean {
+        if (this.instructionPointerRegister === undefined) {
+            return true;
+        } else {
+            const newI = this.nextInstructionAddress;
+            return newI >= 0 && newI < instructionRange;
+        }
+    }
+
 
     public execute(instruction: Instruction): Machine {
-        if (instruction.output < 0 || instruction.output > 3) {
+        if (instruction.output < 0 || instruction.output > this.registers.length) {
             throw RangeError("Output outside of valid range");
         }
-        return this.set(instruction.output, this.calculateValue(instruction));
+        const calculatedValue = this.calculateValue(instruction);
+        return this.set(
+            instruction.output,
+            calculatedValue
+        );
     }
 
-    private set(registerAddress: number, registerValue: number): Machine {
+    private set(registerAddress: number, value: number): Machine {
         const newRegisters = Array.from(this.registers);
-        newRegisters[registerAddress] = registerValue;
-        return new Machine(newRegisters);
+        newRegisters[registerAddress] = value;
+        if (this.instructionPointerRegister !== undefined) {
+            newRegisters[this.instructionPointerRegister]++;
+        }
+        return new Machine(newRegisters, this.instructionPointerRegister);
     }
 
     private calculateValue(instruction: Instruction): number {
-        function r(...ns: number[]) {
+        const r = (...ns: number[]) => {
             for (const n of ns) {
-                if (n < 0 || n > 3) {
+                if (n < 0 || n > this.registers.length) {
                     throw RangeError("Register address out of range");
                 }
             }
-        }
+        };
         const i = instruction;
         function rab() {
             r(i.a, i.b);
@@ -79,53 +119,56 @@ class Machine {
         function rb() {
             r(i.b);
         }
+
+        const existing = (n: number): number => n;
+
         switch (i.code) {
             case "addr":
                 rab();
-                return this.registers[i.a] + this.registers[i.b];
+                return existing(this.registers[i.a] + this.registers[i.b]);
             case "addi":
                 ra();
-                return this.registers[i.a] + i.b;
+                return existing(this.registers[i.a] + i.b);
             case "mulr":
                 rab();
-                return this.registers[i.a] * this.registers[i.b];
+                return existing(this.registers[i.a] * this.registers[i.b]);
             case "muli":
                 ra();
-                return this.registers[i.a] * i.b;
+                return existing(this.registers[i.a] * i.b);
             case "banr":
                 rab();
-                return this.registers[i.a] & this.registers[i.b];
+                return existing(this.registers[i.a] & this.registers[i.b]);
             case "bani":
                 ra();
-                return this.registers[i.a] & i.b;
+                return existing(this.registers[i.a] & i.b);
             case "borr":
                 rab();
-                return this.registers[i.a] | this.registers[i.b];
+                return existing(this.registers[i.a] | this.registers[i.b]);
             case "bori":
                 ra();
-                return this.registers[i.a] | i.b;
+                return existing(this.registers[i.a] | i.b);
 
             case "setr":
                 ra();
-                return this.registers[i.a];
+                return existing(this.registers[i.a]);
             case "seti":
-                return i.a;
+                return existing(i.a);
 
             case "gtir":
-                return i.a > this.registers[i.b] ? 1 : 0;
+                return existing(i.a > this.registers[i.b] ? 1 : 0);
             case "gtri":
-                return this.registers[i.a] > i.b ? 1 : 0;
+                return existing(this.registers[i.a] > i.b ? 1 : 0);
             case "gtrr":
-                return this.registers[i.a] > this.registers[i.b] ? 1 : 0;
+                return existing(this.registers[i.a] > this.registers[i.b] ? 1 : 0);
 
             case "eqir":
-                return i.a === this.registers[i.b] ? 1 : 0;
+                return existing(i.a === this.registers[i.b] ? 1 : 0);
             case "eqri":
-                return this.registers[i.a] === i.b ? 1 : 0;
+                return existing(this.registers[i.a] === i.b ? 1 : 0);
             case "eqrr":
-                return this.registers[i.a] === this.registers[i.b] ? 1 : 0;
+                return existing(this.registers[i.a] === this.registers[i.b] ? 1 : 0);
             default:
-                throw Error("Cannot execute instruction if no op code is given");
+                throw RangeError("Cannot execute instruction if no op code is given");
 
         }
 
@@ -244,11 +287,7 @@ export const entry = entryForFile(
         }
         await outputCallback("Calibration done");
         const puzzleLines = parseLines(lines).puzzleLines.filter((l) => l.trim().length > 0);
-        const instructions = puzzleLines.map((line) => {
-            const g = line.split(" ").map((l) => l.trim()).filter((l) => l.length > 0);
-            const p = (s: string) => parseInt(s, 10);
-            return new Instruction(mapping[p(g[0])], p(g[1]), p(g[2]), p(g[3]));
-        });
+        const instructions = Instruction.fromLines(puzzleLines, ((s) => mapping[parseInt(s, 10)]));
 
         let m = new Machine();
         let ln = 0;
@@ -263,15 +302,6 @@ export const entry = entryForFile(
         }
 
         await outputCallback("First register: " + m.registers[0]);
-        // const execute = (m: Machine, ins: Instruction[]): Machine => {
-        //     if (ins.length === 0) {
-        //         return m;
-        //     } else {
-        //         return execute(m.execute(ins[0]), ins.slice(1));
-        //     }
-        // };
-
-        // await outputCallback("First register: " + execute(new Machine(), instructions));
     }
 );
 

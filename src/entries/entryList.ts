@@ -17,6 +17,7 @@ import { entry as beverageBandits } from "./single-entries/beverage-bandits";
 import { entry as chronalClassification } from "./single-entries/chronal-classification";
 import { entry as reservoirResearch } from "./single-entries/reservoir-research";
 import { entry as settlers } from "./single-entries/settlers-of-the-north-pole";
+import { entry as flow } from "./single-entries/go-with-the-flow";
 
 interface EntryRoute {
     name: string;
@@ -116,6 +117,12 @@ export const entryList: EntryRoute[] = [
         name: "settlers-of-the-north-pole",
         title: "Settlers of the North Pole",
         entry: settlers,
+        hasCustomComponent: true
+    },
+    {
+        name: "go-with-the-flow",
+        title: "Go with the flow",
+        entry: flow,
         hasCustomComponent: true
     }
 ];
