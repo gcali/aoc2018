@@ -1,6 +1,6 @@
 import { entryForFile } from "../entry";
-import { FixedSizeMatrix } from "@/support/matrix";
-import { CCoordinate, Coordinate, directions, directionList } from "@/support/geometry";
+import { FixedSizeMatrix } from "../../support/matrix";
+import { CCoordinate, Coordinate, directions, directionList } from "../../support/geometry";
 
 import wu from "wu";
 

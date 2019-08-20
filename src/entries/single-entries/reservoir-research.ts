@@ -1,5 +1,5 @@
 import { entryForFile } from "../entry";
-import { Coordinate, CCoordinate, getBoundaries, Bounds, isInBounds } from "@/support/geometry";
+import { Coordinate, CCoordinate, getBoundaries, Bounds, isInBounds } from "../../support/geometry";
 
 type Cell = "." | "|" | "~" | "#";
 
