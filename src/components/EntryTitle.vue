@@ -7,7 +7,7 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from "vue-property-decorator";
-import { ordinalOf } from "@/support/string";
+import { ordinalOf } from "../support/string";
 @Component({})
 export default class EntryTitle extends Vue {
     @Prop() private date!: number;

@@ -4,8 +4,8 @@ import Home from "./views/Home.vue";
 import Entries from "./views/Entries.vue";
 import SimpleEntryTemplate from "./views/entries/SimpleEntryTemplate.vue";
 
-import { entryList } from "@/entries/entryList";
-import { map as entryComponentMap } from "@/entries/entryMap";
+import { entryList } from "./entries/entryList";
+import { map as entryComponentMap } from "./entries/entryMap";
 
 Vue.use(Router);
 
@@ -23,16 +23,19 @@ const routes: RouteConfig[] = [
 ];
 
 // name: "mine-cart-madness",
-entryList.forEach((e, index) => routes.push({
-  name: e.name,
-  path: `/entry/${e.name}`,
-  component: e.hasCustomComponent ? entryComponentMap[e.name] : SimpleEntryTemplate,
-  props: {
-    id: index + 1,
-    title: e.title,
-    entry: e.entry
-  }
-}));
+const flat = [entryList["2018"], entryList["2019"]].filter(e => e);
+flat.flatMap(e => e).forEach((e, index) => {
+  routes.push({
+    name: e.name,
+    path: `/entry/${e.name}`,
+    component: e.hasCustomComponent ? entryComponentMap[e.name] : SimpleEntryTemplate,
+    props: {
+      id: index + 1,
+      title: e.title,
+      entry: e.entry
+    }
+  });
+});
 
 
 

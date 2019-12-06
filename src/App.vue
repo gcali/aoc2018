@@ -2,6 +2,8 @@
 #app
   #nav
     .header
+      .years
+        a(v-for="year in years", @click="selectYear(year.year)") {{year.year}}
       .title Advent of Code
       .author gicali
       hr
@@ -18,10 +20,37 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { entryList } from "@/entries/entryList";
+import { entryList, EntryRoute } from "./entries/entryList";
 @Component({})
 export default class App extends Vue {
-    private entryList = entryList;
+    private years = [
+        {
+            year: 2018,
+            selected: true
+        },
+        {
+            year: 2019,
+            selected: false
+        }
+    ];
+
+    private selectYear(year: number) {
+        this.years.forEach(y => {
+            y.selected = y.year === year;
+        });
+    }
+
+    private get selectedYear() {
+        return this.years.filter(y => y.selected === true).map(y => y.year)[0];
+    }
+    private entryByYears = entryList;
+    // { [key: string]: EntryRoute[] } = {
+    //     "2018": entryList,
+    //     "2019": []
+    // };
+    private get entryList() {
+        return this.entryByYears[this.selectedYear];
+    }
 }
 </script>
 
@@ -35,6 +64,19 @@ $text-color: navajowhite;
     color: $text-color;
     &:not(:first-child) {
         margin-top: 1em;
+    }
+}
+
+.header {
+    .years {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: center;
+        a {
+            cursor: pointer;
+            border-bottom: 1px solid navajowhite;
+        }
     }
 }
 
@@ -99,6 +141,13 @@ body {
                 border-color: $text-color;
             }
         }
+        .links a {
+            @include nav-entry;
+            &.router-link-exact-active {
+                color: #42b983;
+            }
+        }
+
         .nav-entry {
             display: flex;
             flex-direction: column;
@@ -109,13 +158,6 @@ body {
                 margin-left: 2em;
                 font-size: 90%;
                 font-weight: normal;
-            }
-        }
-
-        a {
-            @include nav-entry;
-            &.router-link-exact-active {
-                color: #42b983;
             }
         }
     }

@@ -18,112 +18,122 @@ import { entry as chronalClassification } from "./single-entries/chronal-classif
 import { entry as reservoirResearch } from "./single-entries/reservoir-research";
 import { entry as settlers } from "./single-entries/settlers-of-the-north-pole";
 import { entry as flow } from "./single-entries/go-with-the-flow";
+import { entry as rocketTyranny } from "./single-entries/rocket-tyranny";
 
-interface EntryRoute {
+export interface EntryRoute {
     name: string;
     title: string;
     entry: Entry;
     hasCustomComponent?: boolean;
 }
 
-export const entryList: EntryRoute[] = [
-    {
-        name: "frequency",
-        title: "Chronal Calibration",
-        entry: frequencyEntry
-    },
-    {
-        name: "inventory",
-        title: "Inventory Management System",
-        entry: inventoryEntry
-    },
-    {
-        name: "no-matter-how-you-slice-it",
-        title: "No Matter How You Slice It",
-        entry: matterSliceEntry
-    },
-    {
-        name: "repose-record",
-        title: "Repose Record",
-        entry: reposeRecordEntry
-    },
-    {
-        name: "alchemical-reduction",
-        title: "Alchemical Reduction",
-        entry: alchemicalReduction
-    },
-    {
-        name: "chronal-coordinates",
-        title: "Chronal Coordinates",
-        entry: chronalCoordinates
-    },
-    {
-        name: "the-sum-of-its-parts",
-        title: "The Sum of Its Parts",
-        entry: sumParts
-    },
-    {
-        name: "memory-maneuver",
-        title: "Memory Maneuver",
-        entry: memoryManeuver
-    },
-    {
-        name: "marble-mania",
-        title: "Marble Mania",
-        entry: marbleMania
-    },
-    {
-        name: "stars-align",
-        title: "The Stars Align",
-        entry: starsAlign
-    },
-    {
-        name: "chronal-charge",
-        title: "Chronal Charge",
-        entry: chronalCharge
-    },
-    {
-        name: "subterranean",
-        title: "Subterranean Substainability",
-        entry: subterranean
-    },
-    {
-        name: "mine-cart-madness",
-        title: "Mine Cart Madness",
-        entry: mineCart,
-        hasCustomComponent: true
-    },
-    {
-        name: "chocolate-charts",
-        title: "Chocolate Charts",
-        entry: chocolateCharts
-    },
-    {
-        name: "beverage-bandits",
-        title: "Beverage Bandits",
-        entry: beverageBandits
-    },
-    {
-        name: "chronal-classification",
-        title: "Chronal Classification",
-        entry: chronalClassification
-    },
-    {
-        name: "reservoir-research",
-        title: "Reservoir Research",
-        entry: reservoirResearch
-    },
-    {
-        name: "settlers-of-the-north-pole",
-        title: "Settlers of the North Pole",
-        entry: settlers,
-        hasCustomComponent: true
-    },
-    {
-        name: "go-with-the-flow",
-        title: "Go with the flow",
-        entry: flow,
-        hasCustomComponent: true
-    }
-];
+export const entryList: { [key: string]: EntryRoute[] } = {
+    "2018": [
+        {
+            name: "frequency",
+            title: "Chronal Calibration",
+            entry: frequencyEntry
+        },
+        {
+            name: "inventory",
+            title: "Inventory Management System",
+            entry: inventoryEntry
+        },
+        {
+            name: "no-matter-how-you-slice-it",
+            title: "No Matter How You Slice It",
+            entry: matterSliceEntry
+        },
+        {
+            name: "repose-record",
+            title: "Repose Record",
+            entry: reposeRecordEntry
+        },
+        {
+            name: "alchemical-reduction",
+            title: "Alchemical Reduction",
+            entry: alchemicalReduction
+        },
+        {
+            name: "chronal-coordinates",
+            title: "Chronal Coordinates",
+            entry: chronalCoordinates
+        },
+        {
+            name: "the-sum-of-its-parts",
+            title: "The Sum of Its Parts",
+            entry: sumParts
+        },
+        {
+            name: "memory-maneuver",
+            title: "Memory Maneuver",
+            entry: memoryManeuver
+        },
+        {
+            name: "marble-mania",
+            title: "Marble Mania",
+            entry: marbleMania
+        },
+        {
+            name: "stars-align",
+            title: "The Stars Align",
+            entry: starsAlign
+        },
+        {
+            name: "chronal-charge",
+            title: "Chronal Charge",
+            entry: chronalCharge
+        },
+        {
+            name: "subterranean",
+            title: "Subterranean Substainability",
+            entry: subterranean
+        },
+        {
+            name: "mine-cart-madness",
+            title: "Mine Cart Madness",
+            entry: mineCart,
+            hasCustomComponent: true
+        },
+        {
+            name: "chocolate-charts",
+            title: "Chocolate Charts",
+            entry: chocolateCharts
+        },
+        {
+            name: "beverage-bandits",
+            title: "Beverage Bandits",
+            entry: beverageBandits
+        },
+        {
+            name: "chronal-classification",
+            title: "Chronal Classification",
+            entry: chronalClassification
+        },
+        {
+            name: "reservoir-research",
+            title: "Reservoir Research",
+            entry: reservoirResearch
+        },
+        {
+            name: "settlers-of-the-north-pole",
+            title: "Settlers of the North Pole",
+            entry: settlers,
+            hasCustomComponent: true
+        },
+        {
+            name: "go-with-the-flow",
+            title: "Go with the flow",
+            entry: flow,
+            hasCustomComponent: true
+        }
+    ],
+    "2019": [
+        {
+            name: "rocket-tyranny",
+            title: "The Tyranny of the Rocket Equation",
+            entry: rocketTyranny
+        }
+    ]
+};
 

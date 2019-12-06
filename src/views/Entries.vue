@@ -12,7 +12,7 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 
-import { entryList } from "@/entries/entryList";
+import { entryList } from "../entries/entryList";
 
 interface Entry {
     name: string;
@@ -21,6 +21,8 @@ interface Entry {
 
 @Component({})
 export default class Entries extends Vue {
-    public entries: Entry[] = entryList;
+    public entries: Entry[] = [entryList["2018"], entryList["2019"]].flatMap(
+        e => e
+    );
 }
 </script>

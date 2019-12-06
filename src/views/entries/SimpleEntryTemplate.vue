@@ -13,7 +13,7 @@ import {
     executeEntry,
     EntryFileHandling,
     simpleOutputCallbackFactory
-} from "@/entries/entry";
+} from "../../entries/entry";
 @Component({
     components: {
         EntryTemplate,

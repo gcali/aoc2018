@@ -1,6 +1,6 @@
 <template lang="pug">
   .home
-    | Solutions for the Advent of Code 2018
+    | Solutions for the Advent of Code
     //- img(alt="Vue logo" src="../assets/logo.png")
     //- HelloWorld(msg="Welcome to Your Vue.js + TypeScript App")
 </template>

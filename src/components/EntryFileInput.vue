@@ -8,7 +8,7 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from "vue-property-decorator";
-import { readFileFromInput } from "@/support/file-reader";
+import { readFileFromInput } from "../support/file-reader";
 @Component({})
 export default class EntryFileInput extends Vue {
     @Prop({ default: false }) public disabled!: boolean;

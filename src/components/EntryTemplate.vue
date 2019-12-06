@@ -9,11 +9,11 @@
 import { Component, Vue, Prop, Emit } from "vue-property-decorator";
 import EntryTitle from "@/components/EntryTitle.vue";
 import EntryInput from "@/components/EntryInput.vue";
-import { EntryFileHandling, executeEntry } from "@/entries/entry";
+import { EntryFileHandling, executeEntry } from "../entries/entry";
 @Component({
     components: {
         EntryTitle,
-        EntryInput,
+        EntryInput
     }
 })
 export default class EntryTemplate extends Vue {

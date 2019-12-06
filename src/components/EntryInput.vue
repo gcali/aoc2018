@@ -14,8 +14,8 @@
 import EntryFileInput from "@/components/EntryFileInput.vue";
 import EntryChoice from "@/components/EntryChoice.vue";
 import { Component, Vue, Emit, Prop } from "vue-property-decorator";
-import { Choice } from "@/constants/choice";
-import { EntryFileHandling } from "@/entries/entry";
+import { Choice } from "../constants/choice";
+import { EntryFileHandling } from "../entries/entry";
 
 @Component({
     components: {
@@ -24,7 +24,6 @@ import { EntryFileHandling } from "@/entries/entry";
     }
 })
 export default class EntryInput extends Vue {
-
     @Prop({ default: false }) public disabled!: boolean;
 
     private inputContent: string | null = null;
@@ -45,10 +44,7 @@ export default class EntryInput extends Vue {
 
         let contentToSplit = this.inputContent;
         if (contentToSplit.endsWith("\n")) {
-            contentToSplit = contentToSplit.slice(
-                0,
-                contentToSplit.length - 1
-            );
+            contentToSplit = contentToSplit.slice(0, contentToSplit.length - 1);
         }
         const splitContent = contentToSplit.split("\n");
 

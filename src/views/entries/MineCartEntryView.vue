@@ -9,7 +9,7 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from "vue-property-decorator";
-import { Entry, EntryFileHandling, executeEntry } from "@/entries/entry";
+import { Entry, EntryFileHandling, executeEntry } from "../../entries/entry";
 import EntryTemplate from "@/components/EntryTemplate.vue";
 import EntrySimpleOutput from "@/components/EntrySimpleOutput.vue";
 @Component({
@@ -53,7 +53,7 @@ export default class MineCartEntryView extends Vue {
                         this.output.push(JSON.stringify(line));
                     }
                     return new Promise<void>(
-                        (resolve) => (that.resolver = resolve)
+                        resolve => (that.resolver = resolve)
                     );
                 },
                 () => that.shouldStop
