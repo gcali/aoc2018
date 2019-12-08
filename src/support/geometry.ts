@@ -122,3 +122,9 @@ export const sumCoordinate = (a: Coordinate, b: Coordinate): Coordinate => {
         y: a.y + b.y,
     };
 };
+
+export const scalarCoordinates = (a: Coordinate, l: number) => ({ x: a.x * l, y: a.y * l });
+
+export const oppositeCoordinate = (a: Coordinate): Coordinate => ({ x: -a.x, y: -a.y });
+
+export const diffCoordinate = (a: Coordinate, b: Coordinate): Coordinate => sumCoordinate(a, oppositeCoordinate(b));

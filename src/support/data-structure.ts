@@ -122,6 +122,22 @@ export class DoubleLinkedNode<T> {
   }
 }
 
+export class Tree<T> {
+  private _subNodes: Tree<T>[] = [];
+  constructor(private element: T) { }
+
+  public get children(): Tree<T>[] {
+    return [...this._subNodes];
+  }
+
+  public append(e: T, to: T) {
+    if (this.element === to) {
+      this._subNodes.push(new Tree<T>(e));
+    }
+  }
+
+}
+
 export class CircularDoubleLinkedNode<T> {
   // tslint:disable-next-line:variable-name
   private _next: CircularDoubleLinkedNode<T> | null = null;

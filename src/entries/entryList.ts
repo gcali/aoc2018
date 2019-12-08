@@ -19,6 +19,10 @@ import { entry as reservoirResearch } from "./single-entries/reservoir-research"
 import { entry as settlers } from "./single-entries/settlers-of-the-north-pole";
 import { entry as flow } from "./single-entries/go-with-the-flow";
 import { entry as rocketTyranny } from "./single-entries/rocket-tyranny";
+import { programAlarm } from './single-entries/program-alarm';
+import { crossedWires } from './single-entries/crossed-wires';
+import { secureContainer } from './single-entries/secure-container';
+import { sunnyAsteroids } from './single-entries/sunny-asteroids';
 
 export interface EntryRoute {
     name: string;
@@ -133,6 +137,26 @@ export const entryList: { [key: string]: EntryRoute[] } = {
             name: "rocket-tyranny",
             title: "The Tyranny of the Rocket Equation",
             entry: rocketTyranny
+        },
+        {
+            name: "program-alarm",
+            title: "1202 Program Alarm",
+            entry: programAlarm
+        },
+        {
+            name: "corssed-wires",
+            title: "Crossed Wires",
+            entry: crossedWires
+        },
+        {
+            name: "secure-container",
+            title: "Secure Container",
+            entry: secureContainer
+        },
+        {
+            name: "sunny-asteroids",
+            title: "Sunny with a Change of Asteroids",
+            entry: sunnyAsteroids
         }
     ]
 };

@@ -28,3 +28,9 @@ export function groupBy<T>(sequence: T[], n: number): T[][] {
     }
     return result;
 }
+
+export function* range(n: number) {
+    for (let i = 0; i < n; i++) {
+        yield i;
+    }
+}
