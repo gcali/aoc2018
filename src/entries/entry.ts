@@ -73,6 +73,7 @@ export async function executeEntry(
     } else {
         callback = entry.second;
     }
+    console.log(entry);
     await callback({
         lines,
         outputCallback,

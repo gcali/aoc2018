@@ -23,6 +23,8 @@ import { programAlarm } from './single-entries/program-alarm';
 import { crossedWires } from './single-entries/crossed-wires';
 import { secureContainer } from './single-entries/secure-container';
 import { sunnyAsteroids } from './single-entries/sunny-asteroids';
+import { universalObritMap } from './single-entries/universal-orbit-map';
+import { amplificationCircuit } from './single-entries/amplification-circuit';
 
 export interface EntryRoute {
     name: string;
@@ -157,6 +159,16 @@ export const entryList: { [key: string]: EntryRoute[] } = {
             name: "sunny-asteroids",
             title: "Sunny with a Change of Asteroids",
             entry: sunnyAsteroids
+        },
+        {
+            name: "universal-orbit-map",
+            title: "Universal Orbit Map",
+            entry: universalObritMap
+        },
+        {
+            name: "amplification-circuit",
+            title: "Amplification Circuit",
+            entry: amplificationCircuit
         }
     ]
 };

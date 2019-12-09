@@ -1,8 +1,11 @@
 import minimist from "minimist";
 
 const args = (minimist as any)(process.argv.slice(2), {
-    alias: { e: "entry", h: "help", s: "second", l: "list" },
-    number: ["e"],
+    alias: { e: "entry", h: "help", s: "second", l: "list", y: "year" },
+    number: ["e", "y"],
+    default: {
+        "y": "2019"
+    },
     boolean: ["help", "second", "list"],
 });
 
@@ -14,7 +17,8 @@ Options:
     -h, --help: print help
     -e, --entry <entry>: [REQUIRED] Identify which entry to run
     -s, --second: choose second part instead of first
-    -l, --list: list entries
+    -l, --list: list entries,
+    -y, --year: year
 `;
 
 const error = () => { console.log(usage); process.exit(1); };
@@ -28,7 +32,7 @@ import { entryList } from "./entries/entryList";
 
 if (args.l) {
     let i = 0;
-    for (const entry of entryList) {
+    for (const entry of entryList[args.y]) {
         console.log(`${++i} - ${entry.title}`);
     }
     process.exit(0);
@@ -40,12 +44,12 @@ if (!("e" in args)) {
 
 
 const index: number = args.e - 1;
-if (index <= 0 || index >= entryList.length) {
+if (index <= 0 || index >= entryList[args.y].length) {
     error();
 }
 
 
-const entryCallback = entryList[index].entry;
+const entryCallback = entryList[args.y][index].entry;
 
 
 import { readStdin } from "./support/stdin-reader";

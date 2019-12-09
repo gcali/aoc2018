@@ -135,7 +135,6 @@ export class Tree<T> {
       this._subNodes.push(new Tree<T>(e));
     }
   }
-
 }
 
 export class CircularDoubleLinkedNode<T> {

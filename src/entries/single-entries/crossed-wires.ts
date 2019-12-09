@@ -9,11 +9,6 @@ interface Movement {
     length: number;
 }
 
-interface Extremities {
-    min: Position;
-    max: Position;
-}
-
 interface StepCoordinate {
     step: number;
     coordinate: Coordinate;
@@ -53,16 +48,18 @@ function getIntersection<T, U>(a: T[], b: T[], comparer: (a: T, b: T) => number,
     a = [...a];
     b = [...b];
     const result = [];
-    while (a.length > 0 && b.length > 0) {
-        const comparison = comparer(a[0], b[0]);
+    let aIndex = 0;
+    let bIndex = 0;
+    while (aIndex < a.length - 1 && bIndex < b.length - 1) {
+        const comparison = comparer(a[aIndex], b[bIndex]);
         if (comparison === 0) {
-            result.push(mapper(a[0], b[0]));
-            a = a.slice(1);
-            b = b.slice(1);
+            result.push(mapper(a[aIndex], b[bIndex]));
+            aIndex++;
+            bIndex++;
         } else if (comparison < 0) {
-            a = a.slice(1);
+            aIndex++;
         } else {
-            b = b.slice(1);
+            bIndex++;
         }
     }
     return result;
