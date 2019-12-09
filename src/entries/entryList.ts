@@ -25,6 +25,7 @@ import { secureContainer } from './single-entries/secure-container';
 import { sunnyAsteroids } from './single-entries/sunny-asteroids';
 import { universalObritMap } from './single-entries/universal-orbit-map';
 import { amplificationCircuit } from './single-entries/amplification-circuit';
+import { spaceImageFormat } from './single-entries/space-image-format';
 
 export interface EntryRoute {
     name: string;
@@ -169,6 +170,11 @@ export const entryList: { [key: string]: EntryRoute[] } = {
             name: "amplification-circuit",
             title: "Amplification Circuit",
             entry: amplificationCircuit
+        },
+        {
+            name: "space-image-format",
+            title: "Space Image Format",
+            entry: spaceImageFormat
         }
     ]
 };

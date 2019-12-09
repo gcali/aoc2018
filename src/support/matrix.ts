@@ -5,6 +5,13 @@ export class FixedSizeMatrix<T> {
     constructor(public size: Coordinate) {
         this.data = new Array<T>(size.x * size.y);
     }
+
+    public setFlatData(a: T[]) {
+        if (a.length !== this.data.length) {
+            throw new Error("Wrong size!");
+        }
+        this.data = [...a];
+    }
     public get(c: Coordinate): T {
         return this.data[this.indexCalculator(c)];
     }
