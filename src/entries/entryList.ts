@@ -26,6 +26,8 @@ import { sunnyAsteroids } from './single-entries/sunny-asteroids';
 import { universalObritMap } from './single-entries/universal-orbit-map';
 import { amplificationCircuit } from './single-entries/amplification-circuit';
 import { spaceImageFormat } from './single-entries/space-image-format';
+import { sensorBoost } from './single-entries/sensor-boost';
+import { monitoringStation } from './single-entries/monitoring-station';
 
 export interface EntryRoute {
     name: string;
@@ -175,6 +177,16 @@ export const entryList: { [key: string]: EntryRoute[] } = {
             name: "space-image-format",
             title: "Space Image Format",
             entry: spaceImageFormat
+        },
+        {
+            name: "sensor-boost",
+            title: "Sensor Boost",
+            entry: sensorBoost
+        },
+        {
+            name: "monitoring-station",
+            title: "Monitoring Station",
+            entry: monitoringStation
         }
     ]
 };
