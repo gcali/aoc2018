@@ -1,6 +1,6 @@
 if (process.env.NODE_ENV === "production") {
     module.exports = {
-        baseUrl: '/aoc2018',
+        baseUrl: '/aoc',
         configureWebpack: {
             devtool: 'source-map'
         }
