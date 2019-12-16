@@ -1,5 +1,5 @@
 import { entryForFile } from "../entry";
-import { Tree } from 'src/support/data-structure';
+import { Tree } from '@/support/data-structure';
 
 interface Planet {
     code: string;
