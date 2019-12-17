@@ -1,7 +1,7 @@
 import { entryForFile } from "../entry";
-import { FixedSizeMatrix } from '@/support/matrix';
+import { FixedSizeMatrix } from '../../support/matrix';
 import wu from 'wu';
-import { Coordinate, diffCoordinate } from '@/support/geometry';
+import { Coordinate, diffCoordinate } from '../../support/geometry';
 
 type Cell = "." | "#";
 

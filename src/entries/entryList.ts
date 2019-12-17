@@ -28,6 +28,8 @@ import { amplificationCircuit } from './single-entries/amplification-circuit';
 import { spaceImageFormat } from './single-entries/space-image-format';
 import { sensorBoost } from './single-entries/sensor-boost';
 import { monitoringStation } from './single-entries/monitoring-station';
+import { spacePolice } from './single-entries/space-police';
+import { nBodyProblem } from './single-entries/n-body-problem';
 
 export interface EntryRoute {
     name: string;
@@ -187,6 +189,16 @@ export const entryList: { [key: string]: EntryRoute[] } = {
             name: "monitoring-station",
             title: "Monitoring Station",
             entry: monitoringStation
+        },
+        {
+            name: "space=police",
+            title: "Space Police",
+            entry: spacePolice
+        },
+        {
+            name: "n-body-problem",
+            title: "N-Body Problem",
+            entry: nBodyProblem
         }
     ]
 };

@@ -9,14 +9,14 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
-    "baseUrl": ".",
+    "baseUrl": "src",
     "outDir": "./bin/",
     "types": [
       "node"
     ],
     "lib": [
       "esnext"
-    ]
+    ],
   },
   "include": [
     "src/console.ts"

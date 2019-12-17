@@ -94,7 +94,7 @@ interface ExecutionArgs {
     memory: Memory
     input: () => Promise<number>
     output: (x: number) => void,
-    close?: () => void,
+    close?: () => void | Promise<void>,
     data?: Data,
     debug?: (e: any) => Promise<void>
 }
@@ -112,12 +112,14 @@ export async function execute({ memory, input, output, close, data, debug }: Exe
     while ((getMemoryAddress(memory, instructionPointer) % 100) !== 99) {
         [instructionPointer, memory] = await executeInstruction(instructionPointer, memory, input, output, data);
         if (debug) {
-            // await debug({ instructionPointer, cell: memory[instructionPointer] });
             await debug(memoryDump(memory, instructionPointer));
         }
     }
     if (close) {
-        close();
+        const closeResult = close();
+        if (voidIsPromise(closeResult)) {
+            await closeResult;
+        }
     }
     return memory;
 }
@@ -170,7 +172,7 @@ export function isInterpretedError(e: Error): e is InterpreterError {
     return false;
 }
 
-type OperationExecutor = (operation: Operation, instructionPointer: number, memory: Memory, input: () => Promise<number>, output: (x: number) => void, data: Data) => Promise<number | void>;
+type OperationExecutor = (operation: Operation, instructionPointer: number, memory: Memory, input: () => Promise<number>, output: (x: number) => void | Promise<void>, data: Data) => Promise<number | void>;
 
 function getOperationParameter(n: number, address: number, memory: Memory, operation: Operation, data: Data) {
     return getParameter(address + n, memory, operation.parameterModes[n - 1], data);
@@ -182,11 +184,9 @@ function getParameters(address: number, memory: Memory, operation: Operation, da
         params.push(getOperationParameter(i + 1, address, memory, operation, data));
     }
     return params;
-    // return getParameter(address + n, memory, operation.parameterModes[n - 1], data);
 }
 
 function writeMemory(memory: Memory, parameterNumber: number, address: number, operation: Operation, data: Data, result: number) {
-    // memory[getOperationParameter(parameterNumber, address, memory, operation, data)] = result;
     switch (operation.parameterModes[parameterNumber - 1]) {
         case "Immediate":
             throw new InterpreterError("Cannot write in immediate mode", "WriteError");
@@ -199,6 +199,11 @@ function writeMemory(memory: Memory, parameterNumber: number, address: number, o
         default:
             throw new InterpreterError("Cannot find parameter mode", "WriteError");
     }
+}
+
+function voidIsPromise(e: void | Promise<void>): e is Promise<void> {
+    const casted = e as Promise<void>;
+    return casted && casted.then !== undefined;
 }
 
 const operationExecutorMap: { [key: number]: OperationExecutor } = {
@@ -215,18 +220,19 @@ const operationExecutorMap: { [key: number]: OperationExecutor } = {
     },
     4: async (operation, instructionPointer, memory, input, output, data) => {
         const [parameter] = getParameters(instructionPointer, memory, operation, data);
-        output(parameter);
+        const result = output(parameter);
+        if (voidIsPromise(result)) {
+            await result;
+        }
     },
     5: async (operation, instructionPointer, memory, input, output, data) => {
         const [parameter, ret] = getParameters(instructionPointer, memory, operation, data);
-        // console.log(parameter, ret, operation.parameterModes);
         if (parameter !== 0) {
             return ret;
         }
     },
     6: async (operation, instructionPointer, memory, input, output, data) => {
         const [parameter, ret] = getParameters(instructionPointer, memory, operation, data);
-        // console.log([parameter, ret]);
         if (parameter === 0) {
             return ret;
         }
@@ -238,7 +244,6 @@ const operationExecutorMap: { [key: number]: OperationExecutor } = {
             result = 1;
         }
         writeMemory(memory, 3, instructionPointer, operation, data, result);
-        // memory[getParameter(instructionPointer + 3, memory, 'Immediate', data)] = result;
     },
     8: async (operation, instructionPointer, memory, input, output, data) => {
         const [firstParameter, secondParameter] = getParameters(instructionPointer, memory, operation, data);

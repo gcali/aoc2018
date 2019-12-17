@@ -1,5 +1,5 @@
 import { entryForFile } from "../entry";
-import { Tree } from '@/support/data-structure';
+import { Tree } from '../../support/data-structure';
 
 interface Planet {
     code: string;
@@ -124,7 +124,5 @@ export const universalObritMap = entryForFile(
         console.log(santaChain);
         const result = mineChain.indexOf(firstIntersection) + santaChain.indexOf(firstIntersection);
         await outputCallback(result);
-
-        // const mineChain = 
     }
 );

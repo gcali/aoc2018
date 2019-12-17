@@ -14,6 +14,7 @@
   "dependencies": {
     "big-integer": "^1.6.40",
     "js-combinatorics": "^0.5.4",
+    "mathjs": "^6.2.5",
     "minimist": "^1.2.0",
     "vue": "^2.5.21",
     "vue-class-component": "^6.0.0",
@@ -22,6 +23,7 @@
     "wu": "^2.1.0"
   },
   "devDependencies": {
+    "@types/mathjs": "^6.0.2",
     "@types/minimist": "^1.2.0",
     "@types/node": "^10.12.18",
     "@types/wu": "^2.1.39",
