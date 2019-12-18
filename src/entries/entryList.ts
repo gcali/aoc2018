@@ -30,6 +30,7 @@ import { sensorBoost } from './single-entries/sensor-boost';
 import { monitoringStation } from './single-entries/monitoring-station';
 import { spacePolice } from './single-entries/space-police';
 import { nBodyProblem } from './single-entries/n-body-problem';
+import { carePackage } from './single-entries/care-package';
 
 export interface EntryRoute {
     name: string;
@@ -199,6 +200,11 @@ export const entryList: { [key: string]: EntryRoute[] } = {
             name: "n-body-problem",
             title: "N-Body Problem",
             entry: nBodyProblem
+        },
+        {
+            name: "care-package",
+            title: "Care Package",
+            entry: carePackage
         }
     ]
 };
