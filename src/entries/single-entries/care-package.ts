@@ -110,7 +110,7 @@ async function updateTileFeedback(tiles: Cell[], currentPaddleX: number, current
     currentBallX = tiles.filter(t => t.tile === "ball")[0].coordinates.x;
     await outputCallback(null);
     await outputCallback(visualization);
-    await setTimeoutAsync(() => { }, 5);
+    await setTimeoutAsync(5);
     return { currentPaddleX, currentBallX };
 }
 

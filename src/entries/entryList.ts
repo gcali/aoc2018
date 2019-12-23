@@ -31,6 +31,7 @@ import { monitoringStation } from './single-entries/monitoring-station';
 import { spacePolice } from './single-entries/space-police';
 import { nBodyProblem } from './single-entries/n-body-problem';
 import { carePackage } from './single-entries/care-package';
+import { spaceStoichiometry } from './single-entries/space-stoichiometry';
 
 export interface EntryRoute {
     name: string;
@@ -205,6 +206,11 @@ export const entryList: { [key: string]: EntryRoute[] } = {
             name: "care-package",
             title: "Care Package",
             entry: carePackage
+        },
+        {
+            name: "space-stoichiometry",
+            title: "Space Stoichiometry",
+            entry: spaceStoichiometry
         }
     ]
 };
