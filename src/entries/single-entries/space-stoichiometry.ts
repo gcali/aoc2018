@@ -79,8 +79,10 @@ async function oreRequirement(target: Element, c: Chain[], r: Remaining, d?: Deb
     const closed = i;
     const log = async (s: any) => {
         const intLog = (d && d.log) || (async () => { });
-        await intLog("ID: " + closed);
-        await intLog(s);
+        if (closed === 1) {
+            await intLog("ID: " + closed);
+            await intLog(s);
+        }
     };
     await log("Trying to build:");
     await log(target);
@@ -154,17 +156,18 @@ export const spaceStoichiometry = entryForFile(
         const target = chains.filter((e) => e.target.name === targetName)[0].target;
         while (current < storageOres) {
             targetAmount *= 2;
-            target.amount = targetAmount;
-            current = (await oreRequirement(target, chains, new Remaining())).youNeed;
+            const newTarget = { ...target, amount: targetAmount };
+            current = (await oreRequirement(newTarget, chains, new Remaining())).youNeed;
             await outputCallback("Current guess:");
             await outputCallback({ targetAmount, current });
         }
         let under = Math.floor(targetAmount / 2);
         let over = targetAmount;
-        let guess = Math.ceil((under + over) / 2);
+        let guess = Math.floor((under + over) / 2);
         while (under < over) {
-            target.amount = guess;
-            const needed = (await oreRequirement(target, chains, new Remaining())).youNeed;
+            // target.amount = guess;
+            const newTarget = { ...target, amount: guess };
+            const needed = (await oreRequirement(newTarget, chains, new Remaining())).youNeed;
             if (needed === storageOres) {
                 break;
             } else if (needed > storageOres) {
@@ -172,7 +175,7 @@ export const spaceStoichiometry = entryForFile(
             } else if (needed < storageOres) {
                 under = guess;
             }
-            guess = Math.ceil((under + over) / 2);
+            guess = Math.floor((under + over) / 2);
             await outputCallback("New status:");
             await outputCallback({ under, over, guess });
             if (guess === under) {
