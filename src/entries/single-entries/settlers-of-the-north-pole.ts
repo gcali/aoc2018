@@ -77,7 +77,7 @@ class World {
             for (let x = 0; x < world.size.x; x++) {
                 for (let y = 0; y < world.size.y; y++) {
                     const adjacents = Array.from(world.adjacent({ x, y }));
-                    const oldCell = world.data.get({ x, y });
+                    const oldCell = world.data.get({ x, y })!;
                     newWorld.data.set({ x, y }, this.calculateNew(oldCell, adjacents));
                 }
             }
@@ -123,7 +123,7 @@ class World {
     private *adjacent(c: Coordinate): Iterable<Cell> {
         for (const direction of directionList) {
             if (direction.sum(c).isInBounds(this.size)) {
-                yield this.data.get(direction.sum(c));
+                yield this.data.get(direction.sum(c))!;
             }
         }
     }

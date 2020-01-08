@@ -2,7 +2,7 @@ import { entryForFile } from "../entry";
 import { FixedSizeMatrix } from '../../support/matrix';
 
 import * as geometry from "../../support/geometry";
-import { Coordinate, CCoordinate } from '../../support/geometry';
+import { Coordinate, CCoordinate, rotate, Rotation } from '../../support/geometry';
 import { execute, parseMemory } from '../..//support/intcode';
 import { ascending } from '../../support/best';
 import wu from 'wu';
@@ -11,20 +11,10 @@ type Color = "Black" | "White";
 
 type Cell = "#" | ".";
 
-type Rotation = "Clockwise" | "Counterclockwise";
 
 interface Step {
     coordinate: Coordinate;
     color: Color;
-}
-
-function rotate(coordinate: CCoordinate, direction: Rotation): CCoordinate {
-    switch (direction) {
-        case "Clockwise":
-            return new CCoordinate(coordinate.y, -coordinate.x);
-        case "Counterclockwise":
-            return new CCoordinate(-coordinate.y, coordinate.x);
-    }
 }
 
 function deserializeRotation(n: number): Rotation {

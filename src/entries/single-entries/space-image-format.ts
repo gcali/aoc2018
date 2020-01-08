@@ -45,7 +45,7 @@ export const spaceImageFormat = entryForFile(
                 while (layers[currentLayer].get({ x, y }) === 2) {
                     currentLayer++;
                 }
-                result.set({ x, y }, layers[currentLayer].get({ x, y }));
+                result.set({ x, y }, layers[currentLayer].get({ x, y })!);
             }
         }
 

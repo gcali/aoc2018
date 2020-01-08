@@ -34,3 +34,14 @@ export function* range(n: number) {
         yield i;
     }
 }
+
+export function* subsequenceGenerator<T>(array: T[]): Iterable<T[]> {
+    const start = 0;
+    const end = array.length;
+
+    for (let s = start; s < end; s++) {
+        for (let e = s + 1; e < end; e++) {
+            yield array.slice(s, e + 1);
+        }
+    }
+}

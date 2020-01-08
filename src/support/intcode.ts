@@ -1,3 +1,4 @@
+import { voidIsPromise } from './async';
 
 type Memory = number[];
 
@@ -110,7 +111,14 @@ export async function execute({ memory, input, output, close, data, debug }: Exe
         await debug(memoryDump(memory, instructionPointer));
     }
     while ((getMemoryAddress(memory, instructionPointer) % 100) !== 99) {
-        [instructionPointer, memory] = await executeInstruction(instructionPointer, memory, input, output, data);
+        try {
+            [instructionPointer, memory] = await executeInstruction(instructionPointer, memory, input, output, data);
+        } catch (e) {
+            if (isStopExecution(e)) {
+                break;
+            }
+            throw e;
+        }
         if (debug) {
             await debug(memoryDump(memory, instructionPointer));
         }
@@ -122,6 +130,18 @@ export async function execute({ memory, input, output, close, data, debug }: Exe
         }
     }
     return memory;
+}
+
+class StopExecution extends Error {
+    readonly flag = "IS_STOP_EXECUTION";
+}
+
+function isStopExecution(e: Error): e is StopExecution {
+    return (e as StopExecution).flag === "IS_STOP_EXECUTION";
+}
+
+export function stopExecution() {
+    throw new StopExecution();
 }
 
 export function parseMemory(line: string): Memory {
@@ -199,11 +219,6 @@ function writeMemory(memory: Memory, parameterNumber: number, address: number, o
         default:
             throw new InterpreterError("Cannot find parameter mode", "WriteError");
     }
-}
-
-function voidIsPromise(e: void | Promise<void>): e is Promise<void> {
-    const casted = e as Promise<void>;
-    return casted && casted.then !== undefined;
 }
 
 const operationExecutorMap: { [key: number]: OperationExecutor } = {

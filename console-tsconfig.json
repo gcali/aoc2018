@@ -16,7 +16,7 @@
     ],
     "lib": [
       "esnext"
-    ],
+    ]
   },
   "include": [
     "src/console.ts"

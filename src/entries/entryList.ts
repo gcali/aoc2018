@@ -32,6 +32,9 @@ import { spacePolice } from './single-entries/space-police';
 import { nBodyProblem } from './single-entries/n-body-problem';
 import { carePackage } from './single-entries/care-package';
 import { spaceStoichiometry } from './single-entries/space-stoichiometry';
+import { oxygenSystem } from './single-entries/oxygen-system';
+import { flawedFrequencyTransmission } from './single-entries/flawed-frequency-transmission';
+import { setAndForget } from './single-entries/set-and-forget';
 
 export interface EntryRoute {
     name: string;
@@ -211,6 +214,21 @@ export const entryList: { [key: string]: EntryRoute[] } = {
             name: "space-stoichiometry",
             title: "Space Stoichiometry",
             entry: spaceStoichiometry
+        },
+        {
+            name: 'oxygen-system',
+            title: "Oxygen System",
+            entry: oxygenSystem
+        },
+        {
+            name: "flawed-frequency-transmission",
+            title: "Flawed Frequency Transmission",
+            entry: flawedFrequencyTransmission
+        },
+        {
+            name: "set-and-forget",
+            title: "Set and Forget",
+            entry: setAndForget
         }
     ]
 };

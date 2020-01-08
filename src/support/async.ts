@@ -15,3 +15,12 @@ export async function mapAsync<T, U>(data: T[], action: ((e: T) => Promise<U>)):
 export function setTimeoutAsync(timeout: number): Promise<void> {
     return new Promise<void>((resolve, reject) => setTimeout(() => resolve(), timeout));
 }
+export function voidIsPromise(e: void | Promise<void>): e is Promise<void> {
+    const casted = e as Promise<void>;
+    return casted && casted.then !== undefined;
+}
+
+export function isPromise(e: void | Promise<any>): e is Promise<any> {
+    const casted = e as Promise<any>;
+    return casted && casted.then !== undefined;
+}

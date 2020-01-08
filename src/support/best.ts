@@ -17,7 +17,7 @@ export class CustomBest<T, U> {
     constructor(private comparator: Comparator<T>) {
     }
     public add(e: BestArg<T, U>) {
-        if (!this.currentBest || this.comparator(this.currentBest.key, e.key) < 0) {
+        if ((this.currentBest === null) || this.comparator(this.currentBest.key, e.key) < 0) {
             this.currentBest = e;
         }
     }
@@ -36,7 +36,7 @@ export class SimpleBest<T> {
     }
 
     public add(e: T) {
-        if (!this.currentBest || this.comparator(this.currentBest, e) < 0) {
+        if ((this.currentBest === null) || this.comparator(this.currentBest, e) < 0) {
             this.currentBest = e;
         }
     }
