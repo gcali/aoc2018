@@ -152,3 +152,20 @@ export function getRanges(points: Coordinate[]) {
     });
     return { maxX, minX, maxY, minY };
 }
+
+
+export const serialization = {
+    serialize(c: Coordinate): string {
+        return `${c.x}|${c.y}`;
+    },
+    deserialize(s: string): Coordinate {
+        const split = s.split("|");
+        if (split.length !== 2) {
+            throw new RangeError("Could not deserialize " + s);
+        }
+        return {
+            x: parseInt(split[0], 10),
+            y: parseInt(split[1], 10)
+        };
+    }
+}

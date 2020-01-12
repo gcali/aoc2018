@@ -27,6 +27,17 @@ export class FixedSizeMatrix<T> {
         }
     }
 
+    public findOne(predicate: (cell: T) => boolean): Coordinate | null {
+        for (let x = 0; x < this.size.x; x++) {
+            for (let y = 0; y < this.size.y; y++) {
+                if (predicate(this.get({ x, y })!)) {
+                    return { x, y };
+                }
+            }
+        }
+        return null;
+    }
+
     public async onEveryCell<U>(callback: (c: Coordinate, e: T | undefined) => Promise<U | undefined> | void): Promise<U | undefined> {
         for (let x = 0; x < this.size.x; x++) {
             for (let y = 0; y < this.size.y; y++) {

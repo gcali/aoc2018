@@ -23,16 +23,17 @@ const routes: RouteConfig[] = [
 ];
 
 // name: "mine-cart-madness",
-const flat = [entryList["2018"].map((e, index) => ({ entry: e, index })), entryList["2019"].map((e, index) => ({ entry: e, index }))].filter(e => e);
+const flat = ["2018", "2019"].map(year => entryList[year].map((e, index) => ({ entry: e, index, year }))).filter(e => e);
 flat.flatMap(e => e).forEach(e => {
   routes.push({
     name: e.entry.name,
-    path: `/entry/${e.entry.name}`,
+    path: `/${e.year}/entry/${e.entry.name}`,
     component: e.entry.hasCustomComponent ? entryComponentMap[e.entry.name] : SimpleEntryTemplate,
     props: {
       id: e.index + 1,
       title: e.entry.title,
-      entry: e.entry.entry
+      entry: e.entry.entry,
+      year: e.year
     }
   });
 });

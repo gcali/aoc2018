@@ -1,40 +1,41 @@
 import { Entry } from "./entry";
-import { entry as frequencyEntry } from "./single-entries/frequency";
-import { entry as inventoryEntry } from "./single-entries/inventory";
-import { entry as matterSliceEntry } from "./single-entries/no-matter-how-you-slice-it";
-import { entry as reposeRecordEntry } from "./single-entries/repose-record";
-import { entry as alchemicalReduction } from "./single-entries/alchemical-reduction";
-import { entry as chronalCoordinates } from "./single-entries/chronal-coordinates";
-import { entry as sumParts } from "./single-entries/the-sum-of-its-parts";
-import { entry as memoryManeuver } from "./single-entries/memory-maneuver";
-import { entry as marbleMania } from "./single-entries/marble-mania";
-import { entry as starsAlign } from "./single-entries/the-stars-align";
-import { entry as chronalCharge } from "./single-entries/chronal-charge";
-import { entry as subterranean } from "./single-entries/subterranean";
-import { entry as mineCart } from "./single-entries/mine-cart-madness";
-import { entry as chocolateCharts } from "./single-entries/chocolate-charts";
-import { entry as beverageBandits } from "./single-entries/beverage-bandits";
-import { entry as chronalClassification } from "./single-entries/chronal-classification";
-import { entry as reservoirResearch } from "./single-entries/reservoir-research";
-import { entry as settlers } from "./single-entries/settlers-of-the-north-pole";
-import { entry as flow } from "./single-entries/go-with-the-flow";
-import { entry as rocketTyranny } from "./single-entries/rocket-tyranny";
-import { programAlarm } from './single-entries/program-alarm';
-import { crossedWires } from './single-entries/crossed-wires';
-import { secureContainer } from './single-entries/secure-container';
-import { sunnyAsteroids } from './single-entries/sunny-asteroids';
-import { universalObritMap } from './single-entries/universal-orbit-map';
-import { amplificationCircuit } from './single-entries/amplification-circuit';
-import { spaceImageFormat } from './single-entries/space-image-format';
-import { sensorBoost } from './single-entries/sensor-boost';
-import { monitoringStation } from './single-entries/monitoring-station';
-import { spacePolice } from './single-entries/space-police';
-import { nBodyProblem } from './single-entries/n-body-problem';
-import { carePackage } from './single-entries/care-package';
-import { spaceStoichiometry } from './single-entries/space-stoichiometry';
-import { oxygenSystem } from './single-entries/oxygen-system';
-import { flawedFrequencyTransmission } from './single-entries/flawed-frequency-transmission';
-import { setAndForget } from './single-entries/set-and-forget';
+import { entry as frequencyEntry } from "./single-entries/2018/frequency";
+import { entry as inventoryEntry } from "./single-entries/2018/inventory";
+import { entry as matterSliceEntry } from "./single-entries/2018/no-matter-how-you-slice-it";
+import { entry as reposeRecordEntry } from "./single-entries/2018/repose-record";
+import { entry as alchemicalReduction } from "./single-entries/2018/alchemical-reduction";
+import { entry as chronalCoordinates } from "./single-entries/2018/chronal-coordinates";
+import { entry as sumParts } from "./single-entries/2018/the-sum-of-its-parts";
+import { entry as memoryManeuver } from "./single-entries/2018/memory-maneuver";
+import { entry as marbleMania } from "./single-entries/2018/marble-mania";
+import { entry as starsAlign } from "./single-entries/2018/the-stars-align";
+import { entry as chronalCharge } from "./single-entries/2018/chronal-charge";
+import { entry as subterranean } from "./single-entries/2018/subterranean";
+import { entry as mineCart } from "./single-entries/2018/mine-cart-madness";
+import { entry as chocolateCharts } from "./single-entries/2018/chocolate-charts";
+import { entry as beverageBandits } from "./single-entries/2018/beverage-bandits";
+import { entry as chronalClassification } from "./single-entries/2018/chronal-classification";
+import { entry as reservoirResearch } from "./single-entries/2018/reservoir-research";
+import { entry as settlers } from "./single-entries/2018/settlers-of-the-north-pole";
+import { entry as flow } from "./single-entries/2018/go-with-the-flow";
+import { entry as rocketTyranny } from "./single-entries/2019/rocket-tyranny";
+import { programAlarm } from './single-entries/2019/program-alarm';
+import { crossedWires } from './single-entries/2019/crossed-wires';
+import { secureContainer } from './single-entries/2019/secure-container';
+import { sunnyAsteroids } from './single-entries/2019/sunny-asteroids';
+import { universalObritMap } from './single-entries/2019/universal-orbit-map';
+import { amplificationCircuit } from './single-entries/2019/amplification-circuit';
+import { spaceImageFormat } from './single-entries/2019/space-image-format';
+import { sensorBoost } from './single-entries/2019/sensor-boost';
+import { monitoringStation } from './single-entries/2019/monitoring-station';
+import { spacePolice } from './single-entries/2019/space-police';
+import { nBodyProblem } from './single-entries/2019/n-body-problem';
+import { carePackage } from './single-entries/2019/care-package';
+import { spaceStoichiometry } from './single-entries/2019/space-stoichiometry';
+import { oxygenSystem } from './single-entries/2019/oxygen-system';
+import { flawedFrequencyTransmission } from './single-entries/2019/flawed-frequency-transmission';
+import { setAndForget } from './single-entries/2019/set-and-forget';
+import { manyWorldInterpretation } from './single-entries/2019/many-worlds-interpretation';
 
 export interface EntryRoute {
     name: string;
@@ -229,6 +230,11 @@ export const entryList: { [key: string]: EntryRoute[] } = {
             name: "set-and-forget",
             title: "Set and Forget",
             entry: setAndForget
+        },
+        {
+            name: "many-world-interpretation",
+            title: "Many World Interpretation",
+            entry: manyWorldInterpretation
         }
     ]
 };

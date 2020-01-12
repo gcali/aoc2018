@@ -1,5 +1,5 @@
 <template lang="pug">
-    EntryTemplate(:title="title", :id="id", @file-loaded="readFile", :disabled="disabled")
+    EntryTemplate(:title="title", :id="id", :year="year", @file-loaded="readFile", :disabled="disabled")
         .output
             EntrySimpleOutput(:key="$route.path", :lines="output")
 </template>
@@ -24,6 +24,8 @@ export default class SimpleEntryTemplate extends Vue {
     @Prop() public title!: string;
     @Prop() public id!: number;
     @Prop() public entry!: Entry;
+    @Prop() public year!: string;
+
     public output: string[] = [];
     private disabled: boolean = false;
     @Watch("$route")

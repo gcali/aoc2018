@@ -12,8 +12,9 @@ import { ordinalOf } from "../support/string";
 export default class EntryTitle extends Vue {
     @Prop() private date!: number;
     @Prop() private name!: string;
+    @Prop() private year!: string;
     private get fullDate() {
-        return `December ${ordinalOf(this.date)}, 2018`;
+        return `December ${ordinalOf(this.date)}, ${this.year}`;
     }
 }
 </script>
