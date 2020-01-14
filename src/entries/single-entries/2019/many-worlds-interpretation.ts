@@ -1,7 +1,7 @@
 import { entryForFile } from "../../entry";
-import { FixedSizeMatrix } from '../../../support/matrix';
-import { calculateDistances } from '../../../support/labyrinth';
-import { manhattanDistance, getSurrounding, Coordinate } from '../../../support/geometry';
+import { FixedSizeMatrix } from "../../../support/matrix";
+import { calculateDistances } from "../../../support/labyrinth";
+import { manhattanDistance, getSurrounding, Coordinate } from "../../../support/geometry";
 
 interface Door {
     key: string;
@@ -22,8 +22,10 @@ function isKey(e: LabyrinthCell): e is Key {
 }
 
 export class Labyrinth {
+
+    private readonly startCoordinate: Coordinate;
     constructor(private matrix: FixedSizeMatrix<LabyrinthCell>) {
-        const startCoordinate = matrix.findOne(c => c === "@");
+        const startCoordinate = matrix.findOne((c) => c === "@");
         if (!startCoordinate) {
             throw new RangeError("Could not find starting cell");
         }
@@ -31,7 +33,7 @@ export class Labyrinth {
     }
 
     public toString(): string {
-        return this.matrix.toString(e => {
+        return this.matrix.toString((e) => {
             if (e === undefined) {
                 return "";
             } else if (typeof (e) === "string") {
@@ -41,21 +43,19 @@ export class Labyrinth {
             } else {
                 return e.name;
             }
-        })
+        });
     }
-
-    private readonly startCoordinate: Coordinate;
 
     public getDistances() {
 
         const distanceMap = calculateDistances(
-            c => this.matrix.get(c),
+            (c) => this.matrix.get(c),
             (a, b) => {
                 const destination = this.matrix.get(b);
                 if (!destination || destination === "#" || isDoor(destination)) {
                     return null;
                 } else {
-                    return manhattanDistance(a.coordinate, b) + a.distance!
+                    return manhattanDistance(a.coordinate, b) + a.distance!;
                 }
             },
             getSurrounding,
@@ -69,7 +69,7 @@ export class Labyrinth {
 }
 
 function parseLines(lines: string[]): Labyrinth {
-    const flat = lines.flatMap(line => line.split("").map((token: string): LabyrinthCell => {
+    const flat = lines.flatMap((line) => line.split("").map((token: string): LabyrinthCell => {
         switch (token) {
             case "#":
             case ".":
@@ -96,8 +96,14 @@ export const manyWorldInterpretation = entryForFile(
     async ({ lines, outputCallback, pause, isCancelled }) => {
         const labyrinth = parseLines(lines);
         await outputCallback(labyrinth.toString());
-        await outputCallback(labyrinth.getDistances().map(d => d.cell).filter(c => c !== ".").map(c => JSON.stringify(c)));
+        await outputCallback(
+            labyrinth
+                .getDistances()
+                .map((d) => d.cell)
+                .filter((c) => c !== ".")
+                .map((c) => JSON.stringify(c))
+        );
     },
     async ({ lines, outputCallback, pause, isCancelled }) => {
     }
-); 
+);

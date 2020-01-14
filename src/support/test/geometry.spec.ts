@@ -1,6 +1,6 @@
 import "mocha";
 import { expect } from "chai";
-import { getBoundaries, getRanges } from '../geometry';
+import { getBoundaries, getRanges } from "../geometry";
 
 describe("Boundaries", () => {
 

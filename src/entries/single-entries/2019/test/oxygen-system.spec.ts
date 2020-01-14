@@ -1,7 +1,7 @@
 import "mocha";
 
 import { expect } from "chai";
-import { Field, getCandidates, coordinateToKey, commands as commandRegistry } from '../oxygen-system';
+import { Field, getCandidates, coordinateToKey, commands as commandRegistry } from "../oxygen-system";
 
 function getField(labyrinth: string[]): Field {
     return Field.fromSerialization(labyrinth.join("\n"));
@@ -26,11 +26,11 @@ describe("Oxygen System", async () => {
     it("should skip empty cells on deserialization", () => {
         const labyrinth = "#X#";
         const parsed = Field.fromSerialization(labyrinth);
-        const valorized = [0, 1, 2].map(col => parsed.getCell({ x: col, y: 0 }));
+        const valorized = [0, 1, 2].map((col) => parsed.getCell({ x: col, y: 0 }));
         expect(valorized).to.have.length(3);
-        expect(valorized.filter(e => e)).to.have.length(2);
+        expect(valorized.filter((e) => e)).to.have.length(2);
         expect(valorized[0]!.coordinate.x).to.equal(0);
-        expect(valorized[1]).to.be.undefined;
+        const _ = expect(valorized[1]).to.be.undefined;
         expect(valorized[2]!.coordinate.x).to.equal(2);
     });
 

@@ -1,7 +1,7 @@
 import "mocha";
 
 import { expect } from "chai";
-import { Pattern, applyPattern, applyPatternIteratively } from '../flawed-frequency-transmission';
+import { Pattern, applyPattern, applyPatternIteratively } from "../flawed-frequency-transmission";
 
 describe("Pattern", async () => {
     it("should be cyclic", () => {
@@ -53,7 +53,7 @@ describe("Pattern", async () => {
         const expected = "48226158";
 
         const transformed = applyPattern(baseList, pattern);
-        expect(transformed.map(e => e.toString()).join("")).to.equal(expected);
+        expect(transformed.map((e) => e.toString()).join("")).to.equal(expected);
 
     });
 
@@ -63,7 +63,7 @@ describe("Pattern", async () => {
         const baseList = [1, 2, 3, 4, 5, 6, 7, 8];
 
         const transformed = applyPattern(applyPattern(baseList, pattern), pattern);
-        expect(transformed.map(e => e.toString()).join("")).to.equal(expected);
+        expect(transformed.map((e) => e.toString()).join("")).to.equal(expected);
 
     });
 
@@ -72,7 +72,7 @@ describe("Pattern", async () => {
         const pattern = Pattern.default();
         const baseList = [1, 2, 3, 4, 5, 6, 7, 8];
         const transformed = await applyPatternIteratively(baseList, pattern, 3);
-        expect(transformed.map(e => e.toString()).join("")).to.equal(expected);
+        expect(transformed.map((e) => e.toString()).join("")).to.equal(expected);
     });
 
 });

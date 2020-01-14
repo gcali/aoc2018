@@ -13,7 +13,7 @@ const intelligentFuelCalculator = (mass: number): number => {
 export const entry = entryForFile(
     async ({ lines, outputCallback, pause, isCancelled }) => {
         const requirement = lines
-            .map(line => parseInt(line, 10))
+            .map((line) => parseInt(line, 10))
             .map(fuelCalculator)
             .reduce((acc, next) => acc + next, 0);
 
@@ -21,7 +21,7 @@ export const entry = entryForFile(
     },
     async ({ lines, outputCallback, pause, isCancelled }) => {
         const requirement = lines
-            .map(line => parseInt(line, 10))
+            .map((line) => parseInt(line, 10))
             .map(intelligentFuelCalculator)
             .reduce((acc, next) => acc + next, 0);
 

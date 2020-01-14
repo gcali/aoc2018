@@ -1,16 +1,16 @@
 import { Coordinate, serialization } from "./geometry";
-import { Queue } from './data-structure';
+import { Queue } from "./data-structure";
 
 type FieldGetter<T> = (c: Coordinate) => T | undefined;
 export interface CellWithDistance<T> {
     cell: T;
     coordinate: Coordinate;
     distance: number | null;
-};
+}
 
 interface DistanceGetter<T> {
+    list: Array<CellWithDistance<T>>;
     map(c: Coordinate): (number | null);
-    list: CellWithDistance<T>[];
 }
 
 type DistanceCalculator<T> = (start: CellWithDistance<T>, end: Coordinate) => number | null;
@@ -40,7 +40,7 @@ export function calculateDistances<T>(
     while (!visitQueue.isEmpty) {
         const node = visitQueue.get()!;
         const surrounding = getSurrounding(node.coordinate);
-        surrounding.forEach(s => {
+        surrounding.forEach((s) => {
             const withDistance = distanceMap[serialization.serialize(s)];
             if (!withDistance) {
                 const cell = fieldGetter(s);

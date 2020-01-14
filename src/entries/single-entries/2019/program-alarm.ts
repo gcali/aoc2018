@@ -2,8 +2,8 @@ import { entryForFile } from "../../entry";
 
 const parse = (lines: string[]) => {
     const joined = lines.join("").split(",");
-    return joined.map(e => parseInt(e, 10));
-}
+    return joined.map((e) => parseInt(e, 10));
+};
 
 function handleSum(instructionPointer: number, memory: number[]): [number, number[]] {
     return handleCode(instructionPointer, (a, b) => a + b, memory);
@@ -61,12 +61,11 @@ export const programAlarm = entryForFile(
                 try {
                     const [_, result] = iterate(0, memory);
                     if (result[0] === 19690720) {
-                        await outputCallback(`Result: ${i}${j < 10 ? "0" : ""}${j}`)
+                        await outputCallback(`Result: ${i}${j < 10 ? "0" : ""}${j}`);
                         return;
                     }
 
-                }
-                catch {
+                } catch {
 
                 }
             }

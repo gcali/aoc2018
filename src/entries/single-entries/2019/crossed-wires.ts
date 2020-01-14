@@ -1,8 +1,7 @@
 import { entryForFile } from "../../entry";
-import { Coordinate, directions, sumCoordinate, getBoundaries, Bounds, diffCoordinate, oppositeCoordinate, scalarCoordinates } from '../../../support/geometry';
-import { FixedSizeMatrix } from '../../../support/matrix';
-import wu from 'wu';
-import { range } from '../../../support/sequences';
+import { Coordinate, directions, sumCoordinate } from "../../../support/geometry";
+import wu from "wu";
+import { range } from "../../../support/sequences";
 
 interface Movement {
     direction: "L" | "R" | "D" | "U";
@@ -14,7 +13,7 @@ interface StepCoordinate {
     coordinate: Coordinate;
 }
 
-function mapDirection(direction: Movement['direction']): Coordinate {
+function mapDirection(direction: Movement["direction"]): Coordinate {
     switch (direction) {
         case "D":
             return directions.down;
@@ -29,20 +28,20 @@ function mapDirection(direction: Movement['direction']): Coordinate {
 
 function updatePosition(position: Coordinate, movement: Movement): Coordinate[] {
     const directionCoordinate = mapDirection(movement.direction);
-    return wu(range(movement.length)).map(i => {
+    return wu(range(movement.length)).map((i) => {
         position = sumCoordinate(position, directionCoordinate);
         return position;
     }).toArray();
 }
 
 function parseWire(s: string) {
-    return s.split(",").map(e => ({
+    return s.split(",").map((e) => ({
         direction: e[0],
         length: parseInt(e.slice(1), 10)
     }) as Movement);
 }
 
-type Cell = undefined | 'b' | 'a' | '+';
+type Cell = undefined | "b" | "a" | "+";
 
 function getIntersection<T, U>(a: T[], b: T[], comparer: (a: T, b: T) => number, mapper: (a: T, b: T) => U): U[] {
     a = [...a];
@@ -67,8 +66,8 @@ function getIntersection<T, U>(a: T[], b: T[], comparer: (a: T, b: T) => number,
 
 export const crossedWires = entryForFile(
     async ({ lines, outputCallback, pause, isCancelled }) => {
-        var firstWire = parseWire(lines[0]);
-        var secondWire = parseWire(lines[1]);
+        const firstWire = parseWire(lines[0]);
+        const secondWire = parseWire(lines[1]);
 
         const comparer = (a: Coordinate, b: Coordinate) => a.x === b.x ? (b.y - a.y) : b.x - a.x;
         const firstCoordinates = getCoordinates({ x: 0, y: 0 }, firstWire).sort(comparer);
@@ -78,15 +77,20 @@ export const crossedWires = entryForFile(
 
         const intersection = getIntersection(firstCoordinates, secondCoordinates, comparer, (a, b) => a);
 
-        const minDistance = intersection.map(i => Math.abs(i.x) + Math.abs(i.y)).reduce((acc, next) => Math.min(acc, next));
+        const minDistance = intersection
+            .map((i) => Math.abs(i.x) + Math.abs(i.y))
+            .reduce((acc, next) => Math.min(acc, next));
 
         await outputCallback(`Result: ${minDistance}`);
     },
     async ({ lines, outputCallback, pause, isCancelled }) => {
-        var firstWire = parseWire(lines[0]);
-        var secondWire = parseWire(lines[1]);
+        const firstWire = parseWire(lines[0]);
+        const secondWire = parseWire(lines[1]);
 
-        const comparer = (a: StepCoordinate, b: StepCoordinate) => a.coordinate.x === b.coordinate.x ? (b.coordinate.y - a.coordinate.y) : b.coordinate.x - a.coordinate.x;
+        const comparer = (a: StepCoordinate, b: StepCoordinate) =>
+            a.coordinate.x === b.coordinate.x ?
+                (b.coordinate.y - a.coordinate.y)
+                : b.coordinate.x - a.coordinate.x;
         const firstCoordinates = getCoordinates({ x: 0, y: 0 }, firstWire);
         const sortedFirst = firstCoordinates.map((c, i) => ({ coordinate: c, step: i + 1 })).sort(comparer);
         await outputCallback("Got first");
@@ -94,14 +98,19 @@ export const crossedWires = entryForFile(
         const sortedSecond = secondCoordinates.map((c, i) => ({ coordinate: c, step: i + 1 })).sort(comparer);
         await outputCallback("Got second");
 
-        const intersection = getIntersection(sortedFirst, sortedSecond, comparer, (a, b) => ({ coordinate: a.coordinate, first: a.step, second: b.step }));
-        const result = intersection.map(e => e.first + e.second).reduce((acc, next) => Math.min(acc, next));
+        const intersection = getIntersection(
+            sortedFirst,
+            sortedSecond,
+            comparer,
+            (a, b) => ({ coordinate: a.coordinate, first: a.step, second: b.step })
+        );
+        const result = intersection.map((e) => e.first + e.second).reduce((acc, next) => Math.min(acc, next));
         await outputCallback(`Result: ${result}`);
     }
 );
 
 function getCoordinates(currentPosition: Coordinate, movements: Movement[]) {
-    const coordinates = movements.flatMap(m => {
+    const coordinates = movements.flatMap((m) => {
         const positions = updatePosition(currentPosition, m);
         currentPosition = positions[positions.length - 1];
         return positions;

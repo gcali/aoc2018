@@ -97,7 +97,12 @@ export function ascendingCompare(a: Coordinate, b: Coordinate) {
 }
 
 export function isInBounds(c: Coordinate, bounds: Bounds) {
-    return c.x >= bounds.topLeft.x && c.y >= bounds.topLeft.y && c.x < bounds.topLeft.x + bounds.size.x && c.y < bounds.topLeft.y + bounds.size.y;
+    return (
+        c.x >= bounds.topLeft.x &&
+        c.y >= bounds.topLeft.y &&
+        c.x < bounds.topLeft.x + bounds.size.x &&
+        c.y < bounds.topLeft.y + bounds.size.y
+    );
 }
 export const getBoundaries = (points: Coordinate[]): Bounds => {
     const { maxX, minX, maxY, minY } = getRanges(points);
@@ -135,7 +140,7 @@ export const getSurrounding = (c: Coordinate): Coordinate[] => [
     directions.left,
     directions.down,
     directions.right
-].map(d => d.sum(c));
+].map((d) => d.sum(c));
 
 export function getRanges(points: Coordinate[]) {
     const minComparator = (a: number, b: number) => b - a;
@@ -168,4 +173,4 @@ export const serialization = {
             y: parseInt(split[1], 10)
         };
     }
-}
+};

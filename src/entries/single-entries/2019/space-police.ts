@@ -1,11 +1,11 @@
 import { entryForFile } from "../../entry";
-import { FixedSizeMatrix } from '../../../support/matrix';
+import { FixedSizeMatrix } from "../../../support/matrix";
 
 import * as geometry from "../../../support/geometry";
-import { Coordinate, CCoordinate, rotate, Rotation } from '../../../support/geometry';
-import { execute, parseMemory } from '../../..//support/intcode';
-import { ascending } from '../../../support/best';
-import wu from 'wu';
+import { Coordinate, CCoordinate, rotate, Rotation } from "../../../support/geometry";
+import { execute, parseMemory } from "../../..//support/intcode";
+import { ascending } from "../../../support/best";
+import wu from "wu";
 
 type Color = "Black" | "White";
 
@@ -43,12 +43,12 @@ export const spacePolice = entryForFile(
         const steps: Step[] = [];
 
         const input = async () => {
-            const filtered = steps.filter(e => e.coordinate.x === currentPos.x && e.coordinate.y === currentPos.y);
+            const filtered = steps.filter((e) => e.coordinate.x === currentPos.x && e.coordinate.y === currentPos.y);
             if (filtered.length === 0) {
                 return serializeColor("Black");
             }
             return serializeColor(filtered[filtered.length - 1].color);
-        }
+        };
 
         let isPaint = true;
 
@@ -62,16 +62,18 @@ export const spacePolice = entryForFile(
                 currentPos = currentDirection.sum(currentPos);
                 isPaint = true;
             }
-        }
+        };
 
         const memory = parseMemory(lines[0]);
 
         await execute({ memory, input, output, close: async () => await outputCallback("Closing down") });
 
-        const sorted = steps.map((e, i) => ({ e, i })).sort((a, b) => (geometry.ascendingCompare(a.e.coordinate, b.e.coordinate) === 0 ? ascending(a.i, b.i) : geometry.ascendingCompare(a.e.coordinate, b.e.coordinate)) * -1).map(e => e.e);
+        const sorted = steps
+            .map((e, i) => ({ e, i }))
+            .sort((a, b) => (stepComparer(a, b)) * -1).map((e) => e.e);
         let last: Step | null = null;
         const distinct: Step[] = [];
-        sorted.forEach(s => {
+        sorted.forEach((s) => {
             if (last === null || geometry.ascendingCompare(last.coordinate, s.coordinate) !== 0) {
                 distinct.push(s);
                 last = s;
@@ -87,12 +89,12 @@ export const spacePolice = entryForFile(
         const steps: Step[] = [{ color: "White", coordinate: currentPos }];
 
         const input = async () => {
-            const filtered = steps.filter(e => e.coordinate.x === currentPos.x && e.coordinate.y === currentPos.y);
+            const filtered = steps.filter((e) => e.coordinate.x === currentPos.x && e.coordinate.y === currentPos.y);
             if (filtered.length === 0) {
                 return serializeColor("Black");
             }
             return serializeColor(filtered[filtered.length - 1].color);
-        }
+        };
 
         let isPaint = true;
 
@@ -106,37 +108,37 @@ export const spacePolice = entryForFile(
                 currentPos = currentDirection.sum(currentPos);
                 isPaint = true;
             }
-        }
+        };
 
         const memory = parseMemory(lines[0]);
 
         await execute({ memory, input, output, close: async () => await outputCallback("Closing down") });
 
-        const sorted = steps.map((e, i) => ({ e, i })).sort((a, b) => (geometry.ascendingCompare(a.e.coordinate, b.e.coordinate) === 0 ? ascending(a.i, b.i) : geometry.ascendingCompare(a.e.coordinate, b.e.coordinate)) * -1).map(e => e.e);
+        const sorted = steps.map((e, i) => ({ e, i })).sort((a, b) => stepComparer(a, b) * -1).map((e) => e.e);
         let last: Step | null = null;
         const distinct: Step[] = [];
-        sorted.forEach(s => {
+        sorted.forEach((s) => {
             if (last === null || geometry.ascendingCompare(last.coordinate, s.coordinate) !== 0) {
                 distinct.push(s);
                 last = s;
             }
         });
 
-        const boundaries = geometry.getBoundaries(sorted.map(s => s.coordinate));
+        const boundaries = geometry.getBoundaries(sorted.map((s) => s.coordinate));
         const grid = new FixedSizeMatrix<Cell>(boundaries.size);
         for (let x = 0; x < grid.size.x; x++) {
             for (let y = 0; y < grid.size.y; y++) {
-                grid.set({ x: x, y: grid.size.y - y }, ".");
+                grid.set({ x, y: grid.size.y - y }, ".");
             }
         }
-        steps.forEach(s => {
+        steps.forEach((s) => {
             const c = geometry.diffCoordinate(s.coordinate, boundaries.topLeft);
             grid.set(
                 { x: c.x, y: c.y },
                 s.color === "Black" ? "." : "#"
             );
         });
-        const outRows = wu(grid.overRows()).map(row => row.reverse().join("")).toArray();
+        const outRows = wu(grid.overRows()).map((row) => row.reverse().join("")).toArray();
 
         for (const row of outRows) {
             await outputCallback(row);
@@ -144,3 +146,11 @@ export const spacePolice = entryForFile(
 
     }
 );
+function stepComparer(a: { e: Step; i: number; }, b: { e: Step; i: number; }) {
+    if (geometry.ascendingCompare(a.e.coordinate, b.e.coordinate) === 0) {
+        return ascending(a.i, b.i);
+    } else {
+        return geometry.ascendingCompare(a.e.coordinate, b.e.coordinate);
+    }
+}
+

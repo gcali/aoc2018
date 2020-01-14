@@ -5,7 +5,6 @@ export const baseState = {
 };
 
 export function updateYear(year: number | string) {
-    console.log("Updating to " + year);
     if (typeof (year) === "string") {
         year = parseInt(year, 10);
     }

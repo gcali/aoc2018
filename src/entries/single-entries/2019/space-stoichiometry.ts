@@ -51,23 +51,23 @@ interface OrePrice {
 interface CalculatedPrices { [key: string]: OrePrice; }
 
 class Remaining {
-    private readonly _remainingMap: { [key: string]: number } = {};
+    private readonly remainingMap: { [key: string]: number } = {};
 
     public add(e: Element) {
         this.ensure(e.name);
-        this._remainingMap[e.name] += e.amount;
+        this.remainingMap[e.name] += e.amount;
     }
 
     public askFor(e: Element): number {
         this.ensure(e.name);
-        const howManyCanTake = Math.min(this._remainingMap[e.name], e.amount);
-        this._remainingMap[e.name] -= howManyCanTake;
+        const howManyCanTake = Math.min(this.remainingMap[e.name], e.amount);
+        this.remainingMap[e.name] -= howManyCanTake;
         return howManyCanTake;
     }
 
     private ensure(k: string) {
-        if (!this._remainingMap[k]) {
-            this._remainingMap[k] = 0;
+        if (!this.remainingMap[k]) {
+            this.remainingMap[k] = 0;
         }
     }
 }
@@ -108,7 +108,9 @@ async function oreRequirement(target: Element, c: Chain[], r: Remaining, d?: Deb
     await log((r as any)._remainingMap);
     const chain = c.filter((e) => e.target.name === target.name)[0];
     const howManyNeedToBuild = Math.ceil(howManyRequired / chain.target.amount);
-    await log(`Recipe says how to build ${chain.target.amount}, need ${howManyRequired}, building ${howManyNeedToBuild}`);
+    await log(
+        `Recipe says how to build ${chain.target.amount}, need ${howManyRequired}, building ${howManyNeedToBuild}`
+    );
     const needs = chain.needs.map((n) => ({ name: n.name, amount: n.amount * howManyNeedToBuild }));
     await log(`New needs:`);
     await log(JSON.stringify(needs));
@@ -142,8 +144,11 @@ export const spaceStoichiometry = entryForFile(
         await outputCallback(serializeChains(chains));
         // const amount = await getPrice(targetName, chains, { log: outputCallback, pause: pause });
         const remain = new Remaining();
-        // const amount = await oreRequirement(chains.filter((e) => e.target.name === targetName)[0].target, chains, remain, { log: outputCallback, pause });
-        const amount = await oreRequirement(chains.filter((e) => e.target.name === targetName)[0].target, chains, remain);
+        const amount = await oreRequirement(
+            chains.filter((e) => e.target.name === targetName)[0].target,
+            chains,
+            remain
+        );
         await outputCallback(amount);
         await outputCallback("Remaining:");
         await outputCallback((remain as any)._remainingMap);

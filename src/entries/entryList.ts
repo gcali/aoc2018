@@ -19,23 +19,23 @@ import { entry as reservoirResearch } from "./single-entries/2018/reservoir-rese
 import { entry as settlers } from "./single-entries/2018/settlers-of-the-north-pole";
 import { entry as flow } from "./single-entries/2018/go-with-the-flow";
 import { entry as rocketTyranny } from "./single-entries/2019/rocket-tyranny";
-import { programAlarm } from './single-entries/2019/program-alarm';
-import { crossedWires } from './single-entries/2019/crossed-wires';
-import { secureContainer } from './single-entries/2019/secure-container';
-import { sunnyAsteroids } from './single-entries/2019/sunny-asteroids';
-import { universalObritMap } from './single-entries/2019/universal-orbit-map';
-import { amplificationCircuit } from './single-entries/2019/amplification-circuit';
-import { spaceImageFormat } from './single-entries/2019/space-image-format';
-import { sensorBoost } from './single-entries/2019/sensor-boost';
-import { monitoringStation } from './single-entries/2019/monitoring-station';
-import { spacePolice } from './single-entries/2019/space-police';
-import { nBodyProblem } from './single-entries/2019/n-body-problem';
-import { carePackage } from './single-entries/2019/care-package';
-import { spaceStoichiometry } from './single-entries/2019/space-stoichiometry';
-import { oxygenSystem } from './single-entries/2019/oxygen-system';
-import { flawedFrequencyTransmission } from './single-entries/2019/flawed-frequency-transmission';
-import { setAndForget } from './single-entries/2019/set-and-forget';
-import { manyWorldInterpretation } from './single-entries/2019/many-worlds-interpretation';
+import { programAlarm } from "./single-entries/2019/program-alarm";
+import { crossedWires } from "./single-entries/2019/crossed-wires";
+import { secureContainer } from "./single-entries/2019/secure-container";
+import { sunnyAsteroids } from "./single-entries/2019/sunny-asteroids";
+import { universalObritMap } from "./single-entries/2019/universal-orbit-map";
+import { amplificationCircuit } from "./single-entries/2019/amplification-circuit";
+import { spaceImageFormat } from "./single-entries/2019/space-image-format";
+import { sensorBoost } from "./single-entries/2019/sensor-boost";
+import { monitoringStation } from "./single-entries/2019/monitoring-station";
+import { spacePolice } from "./single-entries/2019/space-police";
+import { nBodyProblem } from "./single-entries/2019/n-body-problem";
+import { carePackage } from "./single-entries/2019/care-package";
+import { spaceStoichiometry } from "./single-entries/2019/space-stoichiometry";
+import { oxygenSystem } from "./single-entries/2019/oxygen-system";
+import { flawedFrequencyTransmission } from "./single-entries/2019/flawed-frequency-transmission";
+import { setAndForget } from "./single-entries/2019/set-and-forget";
+import { manyWorldInterpretation } from "./single-entries/2019/many-worlds-interpretation";
 
 export interface EntryRoute extends EntryRouteBase {
     date: number;
@@ -54,7 +54,7 @@ function enrichList(entries: EntryRouteBase[]): EntryRoute[] {
 
 
 export const entryList: { [key: string]: EntryRoute[] } = {
-    "2018": enrichList([
+    2018: enrichList([
         {
             name: "frequency",
             title: "Chronal Calibration",
@@ -154,7 +154,7 @@ export const entryList: { [key: string]: EntryRoute[] } = {
             hasCustomComponent: true
         }
     ]),
-    "2019": enrichList([
+    2019: enrichList([
         {
             name: "rocket-tyranny",
             title: "The Tyranny of the Rocket Equation",
@@ -226,7 +226,7 @@ export const entryList: { [key: string]: EntryRoute[] } = {
             entry: spaceStoichiometry
         },
         {
-            name: 'oxygen-system',
+            name: "oxygen-system",
             title: "Oxygen System",
             entry: oxygenSystem
         },

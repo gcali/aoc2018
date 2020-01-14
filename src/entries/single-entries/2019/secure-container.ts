@@ -48,7 +48,11 @@ export const secureContainer = entryForFile(
     }
 );
 
-async function calculate(lines: string[], maxRepeating: number, outputCallback: (outputLine: any, shouldClear?: boolean | undefined) => Promise<void>) {
+async function calculate(
+    lines: string[],
+    maxRepeating: number,
+    outputCallback: (outputLine: any, shouldClear?: boolean | undefined) => Promise<void>
+) {
     const min = parseInt(lines[0], 10);
     const max = parseInt(lines[1], 10);
     let current = min;

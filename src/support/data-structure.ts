@@ -123,16 +123,16 @@ export class DoubleLinkedNode<T> {
 }
 
 export class Tree<T> {
-  private _subNodes: Tree<T>[] = [];
+  private subNodes: Array<Tree<T>> = [];
   constructor(private element: T) { }
 
-  public get children(): Tree<T>[] {
-    return [...this._subNodes];
+  public get children(): Array<Tree<T>> {
+    return [...this.subNodes];
   }
 
   public append(e: T, to: T) {
     if (this.element === to) {
-      this._subNodes.push(new Tree<T>(e));
+      this.subNodes.push(new Tree<T>(e));
     }
   }
 }

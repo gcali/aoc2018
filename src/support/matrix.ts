@@ -1,9 +1,9 @@
 import { Coordinate } from "./geometry";
-import wu from 'wu';
-import { voidIsPromise, isPromise } from './async';
+import wu from "wu";
+import { voidIsPromise, isPromise } from "./async";
 
 export class FixedSizeMatrix<T> {
-    public data: (T | undefined)[];
+    public data: Array<T | undefined>;
     constructor(public size: Coordinate) {
         this.data = new Array<(T | undefined)>(size.x * size.y);
     }
@@ -38,7 +38,10 @@ export class FixedSizeMatrix<T> {
         return null;
     }
 
-    public async onEveryCell<U>(callback: (c: Coordinate, e: T | undefined) => Promise<U | undefined> | void): Promise<U | undefined> {
+    public async onEveryCell<U>(
+        callback: (c: Coordinate, e: T | undefined) =>
+            Promise<U | undefined> | void
+    ): Promise<U | undefined> {
         for (let x = 0; x < this.size.x; x++) {
             for (let y = 0; y < this.size.y; y++) {
                 const res = callback({ x, y }, this.get({ x, y }));
@@ -78,15 +81,15 @@ export class FixedSizeMatrix<T> {
         }
     }
 
+    public toString(stringifier: (cell: T | undefined) => string): string {
+        const serialized = wu(this.overRows()).map((row) => row.map(stringifier).join("")).toArray().join("\n");
+        return serialized;
+    }
+
     private indexCalculator(c: Coordinate): number | null {
         if (c.y < 0 || c.x < 0 || c.x >= this.size.x || c.y >= this.size.y) {
             return null;
         }
         return c.y * this.size.x + c.x;
-    }
-
-    public toString(stringifier: (cell: T | undefined) => string): string {
-        const serialized = wu(this.overRows()).map(row => row.map(stringifier).join("")).toArray().join("\n");
-        return serialized;
     }
 }

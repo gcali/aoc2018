@@ -1,7 +1,7 @@
 import "mocha";
 import { expect } from "chai";
-import { Field } from '../set-and-forget';
-import { expectSameArrays } from '../../../../support/assertions';
+import { Field } from "../set-and-forget";
+import { expectSameArrays } from "../../../../support/assertions";
 
 describe("Set and forget", () => {
     it("finds the correct number of intersections on basic example", async () => {

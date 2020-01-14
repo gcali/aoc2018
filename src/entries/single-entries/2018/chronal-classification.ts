@@ -197,8 +197,8 @@ const isTokenValid = (token: Calibration, i: Instruction): boolean => {
 export const entry = entryForFile(
     async ({ lines, outputCallback }) => {
         const testMachineFactory = () => new Machine([0, 1, 2, 3]);
-        const testCreator = (i: OpCode, a: number, b: number, e: number) =>
-            ({ i: new Instruction(i, a, b, 3), e });
+        const testCreator = (opCode: OpCode, a: number, b: number, e: number) =>
+            ({ i: new Instruction(opCode, a, b, 3), e });
 
         const tests = [
             testCreator("addr", 0, 1, 1), // 0
@@ -250,8 +250,8 @@ export const entry = entryForFile(
         }
         const calibrationTokens: Calibration[] = parseCalibrationTokens(lines);
         const result = calibrationTokens.map<number>((token) => {
-            const validCodes = token.instruction.allCodes().map<number>((i) => {
-                return isTokenValid(token, i) ? 1 : 0;
+            const validCodes = token.instruction.allCodes().map<number>((instruction) => {
+                return isTokenValid(token, instruction) ? 1 : 0;
             }).reduce((acc, v) => acc + v, 0);
             if (validCodes >= 3) {
                 return 1;

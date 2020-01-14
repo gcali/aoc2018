@@ -28,7 +28,7 @@ export default class EntryFileInput extends Vue {
             if (this.readFile) {
                 const component = this;
                 readFileFromInput(this.input!.files![0], (content: string) => {
-                    component.$emit("file-content", content);
+                    const emitResult = component.$emit("file-content", content);
                 });
             }
         }

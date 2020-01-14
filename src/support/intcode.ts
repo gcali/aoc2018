@@ -1,12 +1,12 @@
-import { voidIsPromise } from './async';
+import { voidIsPromise } from "./async";
 
 type Memory = number[];
 
-type ParameterMode = 'Position' | 'Immediate' | 'Relative';
+type ParameterMode = "Position" | "Immediate" | "Relative";
 interface Operation {
-    code: number,
-    parameterModes: ParameterMode[],
-    parameters: number
+    code: number;
+    parameterModes: ParameterMode[];
+    parameters: number;
 }
 
 const parameterMap: { [key: number]: number } = {
@@ -28,29 +28,33 @@ function parseOperation(op: number): Operation {
     const parameterModes: ParameterMode[] = [];
     while (modes > 0) {
         if (modes % 10 === 0) {
-            parameterModes.push('Position');
-        }
-        else if (modes % 10 === 1) {
-            parameterModes.push('Immediate');
-        }
-        else if (modes % 10 === 2) {
-            parameterModes.push('Relative');
+            parameterModes.push("Position");
+        } else if (modes % 10 === 1) {
+            parameterModes.push("Immediate");
+        } else if (modes % 10 === 2) {
+            parameterModes.push("Relative");
         }
         modes = Math.floor(modes / 10);
     }
     let missing = parameters - parameterModes.length;
     while (missing > 0) {
-        parameterModes.push('Position');
+        parameterModes.push("Position");
         missing--;
     }
     return {
         code,
-        parameterModes: parameterModes,
+        parameterModes,
         parameters
     };
 }
 
-async function executeInstruction(pointer: number, memory: Memory, input: () => Promise<number>, output: (x: number) => void, data: Data): Promise<[number, Memory]> {
+async function executeInstruction(
+    pointer: number,
+    memory: Memory,
+    input: () => Promise<number>,
+    output: (x: number) => void,
+    data: Data
+): Promise<[number, Memory]> {
     const copy = [...memory];
     const op = getMemoryAddress(memory, pointer);
     const operation = parseOperation(op);
@@ -60,11 +64,10 @@ async function executeInstruction(pointer: number, memory: Memory, input: () => 
             newPointer = pointer + operation.parameters + 1;
         }
         return [newPointer, copy];
-    }
-    else {
+    } else {
         throw Error("Operation not valid: " + operation.code);
     }
-};
+}
 
 export function inputGenerator(inputList: number[]) {
     let i = 0;
@@ -84,20 +87,19 @@ function memoryDump(memory: Memory, address: number): string {
     return memory.map((cell, index) => {
         if (index === address) {
             return `->${cell}`;
-        }
-        else {
-            return cell ? cell.toString() : '0';
+        } else {
+            return cell ? cell.toString() : "0";
         }
     }).map((cell, index) => (index % 10 === 0) ? `${index}: ${cell}` : cell).join(" | ");
 }
 
 interface ExecutionArgs {
-    memory: Memory
-    input: () => Promise<number>
-    output: (x: number) => void,
-    close?: () => void | Promise<void>,
-    data?: Data,
-    debug?: (e: any) => Promise<void>
+    memory: Memory;
+    input: () => Promise<number>;
+    output: (x: number) => void;
+    close?: () => void | Promise<void>;
+    data?: Data;
+    debug?: (e: any) => Promise<void>;
 }
 
 export async function execute({ memory, input, output, close, data, debug }: ExecutionArgs): Promise<Memory> {
@@ -133,7 +135,7 @@ export async function execute({ memory, input, output, close, data, debug }: Exe
 }
 
 class StopExecution extends Error {
-    readonly flag = "IS_STOP_EXECUTION";
+    public readonly flag = "IS_STOP_EXECUTION";
 }
 
 function isStopExecution(e: Error): e is StopExecution {
@@ -145,7 +147,7 @@ export function stopExecution() {
 }
 
 export function parseMemory(line: string): Memory {
-    const memory = line.split(",").map(e => parseInt(e, 10));
+    const memory = line.split(",").map((e) => parseInt(e, 10));
     return memory;
 }
 
@@ -163,12 +165,12 @@ function getMemoryAddress(memory: Memory, address: number): number {
 
 function getParameter(address: number, memory: Memory, parameterMode: ParameterMode, data: Data): number {
     switch (parameterMode) {
-        case 'Position':
+        case "Position":
             return getMemoryAddress(memory, getMemoryAddress(memory, address));
         case "Immediate":
             return getMemoryAddress(memory, address);
         case "Relative":
-            return getMemoryAddress(memory, getMemoryAddress(memory, address) + data.relativeBase)
+            return getMemoryAddress(memory, getMemoryAddress(memory, address) + data.relativeBase);
 
     }
 }
@@ -192,7 +194,14 @@ export function isInterpretedError(e: Error): e is InterpreterError {
     return false;
 }
 
-type OperationExecutor = (operation: Operation, instructionPointer: number, memory: Memory, input: () => Promise<number>, output: (x: number) => void | Promise<void>, data: Data) => Promise<number | void>;
+type OperationExecutor = (
+    operation: Operation,
+    instructionPointer: number,
+    memory: Memory,
+    input: () => Promise<number>,
+    output: (x: number) => void | Promise<void>,
+    data: Data
+) => Promise<number | void>;
 
 function getOperationParameter(n: number, address: number, memory: Memory, operation: Operation, data: Data) {
     return getParameter(address + n, memory, operation.parameterModes[n - 1], data);
@@ -206,7 +215,14 @@ function getParameters(address: number, memory: Memory, operation: Operation, da
     return params;
 }
 
-function writeMemory(memory: Memory, parameterNumber: number, address: number, operation: Operation, data: Data, result: number) {
+function writeMemory(
+    memory: Memory,
+    parameterNumber: number,
+    address: number,
+    operation: Operation,
+    data: Data,
+    result: number
+) {
     switch (operation.parameterModes[parameterNumber - 1]) {
         case "Immediate":
             throw new InterpreterError("Cannot write in immediate mode", "WriteError");
@@ -272,4 +288,4 @@ const operationExecutorMap: { [key: number]: OperationExecutor } = {
         const [firstParameter] = getParameters(instructionPointer, memory, operation, data);
         data.relativeBase += firstParameter;
     }
-}
+};

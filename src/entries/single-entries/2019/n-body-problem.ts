@@ -2,10 +2,10 @@ import { entryForFile } from "../../entry";
 import * as mathjs from "mathjs";
 
 interface Coordinate3D {
-    x: number,
-    y: number,
-    z: number
-};
+    x: number;
+    y: number;
+    z: number;
+}
 
 interface Planet {
     position: Coordinate3D;
@@ -25,7 +25,7 @@ function opposite(a: Coordinate3D): Coordinate3D {
         x: -a.x,
         y: -a.y,
         z: -a.z
-    }
+    };
 }
 
 const emptyCoordinate = {
@@ -42,19 +42,22 @@ const baseCoordinates = {
 
 
 function parsePlanets(lines: string[]): Planet[] {
-    const res = lines.map(line => {
-        const coordinates = line.trim().slice(1, line.length - 1).split(",").map(c => c.trim().split("=")).map(c => {
-            return {
+    const res = lines.map((line) => {
+        const coordinates = line
+            .trim()
+            .slice(1, line.length - 1)
+            .split(",")
+            .map((c) => c.trim().split("="))
+            .map((c) => ({
                 name: c[0],
                 value: parseInt(c[1], 10)
-            };
-        });
-        const get = (s: string): number => coordinates.filter(e => e.name === s)[0].value;
+            }));
+        const get = (s: string): number => coordinates.filter((e) => e.name === s)[0].value;
         return {
             position: {
-                x: get('x'),
-                y: get('y'),
-                z: get('z')
+                x: get("x"),
+                y: get("y"),
+                z: get("z")
             },
             velocity: {
                 x: 0,
@@ -84,36 +87,36 @@ interface UpdaterArgs {
 
 const baseUpdaters: UpdaterArgs[] = [
     {
-        positionExtractor: p => p.position.x,
-        velocityExtractor: p => p.velocity.x,
+        positionExtractor: (p) => p.position.x,
+        velocityExtractor: (p) => p.velocity.x,
         toUpdate: baseCoordinates.x
     },
     {
-        positionExtractor: p => p.position.y,
-        velocityExtractor: p => p.velocity.y,
+        positionExtractor: (p) => p.position.y,
+        velocityExtractor: (p) => p.velocity.y,
         toUpdate: baseCoordinates.y
     },
     {
-        positionExtractor: p => p.position.z,
-        velocityExtractor: p => p.velocity.z,
+        positionExtractor: (p) => p.position.z,
+        velocityExtractor: (p) => p.velocity.z,
         toUpdate: baseCoordinates.z
     },
 ];
 
 
 function gravityStep(planets: Planet[], updaters: UpdaterArgs[] = baseUpdaters): Planet[] {
-    const outputPlanets = planets.map(p => ({ ...p }));
+    const outputPlanets = planets.map((p) => ({ ...p }));
     outputPlanets.forEach((p, i) => {
         planets.forEach((o, j) => {
             if (i !== j) {
-                updaters.forEach(args => updater(p, o, args.positionExtractor, args.toUpdate));
+                updaters.forEach((args) => updater(p, o, args.positionExtractor, args.toUpdate));
                 // updater(p, o, e => e.position.x, baseCoordinates.x);
                 // updater(p, o, e => e.position.y, baseCoordinates.y);
                 // updater(p, o, e => e.position.z, baseCoordinates.z);
             }
-        })
-    })
-    outputPlanets.forEach(p => p.position = addCoordinate(p.position, p.velocity));
+        });
+    });
+    outputPlanets.forEach((p) => p.position = addCoordinate(p.position, p.velocity));
     return outputPlanets;
 }
 
@@ -159,18 +162,19 @@ export const nBodyProblem = entryForFile(
 
     },
     async ({ lines, outputCallback, pause, isCancelled }) => {
-        let updaters = baseUpdaters;
+        const updaters = baseUpdaters;
         const planets = parsePlanets(lines);
-        const repetitions = updaters.map(u => {
+        const repetitions = updaters.map((u) => {
             let step = 0;
-            let values = new Set<string>();
+            const values = new Set<string>();
             let currentPlanets = planets;
             while (true) {
-                const key = serializeTuple(currentPlanets.map(u.positionExtractor).concat(currentPlanets.map(u.velocityExtractor)));
-                // console.log(key);
+                const key = serializeTuple(
+                    currentPlanets
+                        .map(u.positionExtractor)
+                        .concat(currentPlanets.map(u.velocityExtractor))
+                );
                 if (values.has(key)) {
-                    console.log("Key: " + key);
-                    console.log("Steps: " + step);
                     break;
                 }
                 values.add(key);
@@ -179,7 +183,6 @@ export const nBodyProblem = entryForFile(
             }
             return step;
         });
-        console.log(repetitions);
         const lcmRepetition = repetitions.reduce((a, b) => getLcm(a, b));
 
         await outputCallback("Starting positions: ");

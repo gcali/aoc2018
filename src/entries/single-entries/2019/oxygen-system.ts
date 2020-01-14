@@ -1,9 +1,15 @@
 import { entryForFile } from "../../entry";
-import { Coordinate, getBoundaries, diffCoordinate, manhattanDistance, getSurrounding } from '../../../support/geometry';
-import { parseMemory, execute, stopExecution } from '../../../support/intcode';
-import { FixedSizeMatrix } from '../../../support/matrix';
-import { Queue } from '../../../support/data-structure';
-import { List, Enumerable } from 'linq-typescript';
+import {
+    Coordinate,
+    getBoundaries,
+    diffCoordinate,
+    manhattanDistance,
+    getSurrounding
+} from "../../../support/geometry";
+import { parseMemory, execute, stopExecution } from "../../../support/intcode";
+import { FixedSizeMatrix } from "../../../support/matrix";
+import { Queue } from "../../../support/data-structure";
+import { List } from "linq-typescript";
 type Tile = "#" | ".";
 
 interface Cell {
@@ -23,15 +29,18 @@ export const commands = {
 };
 
 
-type Dictionary<T> = { [key: string]: T }
+interface Dictionary<T> { [key: string]: T; }
 
 type CellMap = Dictionary<Cell>;
 
-export function getCandidates(distances: Dictionary<CellWithDistance>, cellGetter: (c: Coordinate) => Cell | undefined): CellWithDistance[] {
+export function getCandidates(
+    distances: Dictionary<CellWithDistance>,
+    cellGetter: (c: Coordinate) => Cell | undefined
+): CellWithDistance[] {
     const candidates = Object.values(distances)
-        .filter(e => e.tile === '.')
-        .filter(e => e.distance !== null)
-        .filter(candidate => {
+        .filter((e) => e.tile === ".")
+        .filter((e) => e.distance !== null)
+        .filter((candidate) => {
             const target = getEmptySurrounded(candidate, cellGetter);
             return target !== null && target !== undefined;
         })
@@ -40,10 +49,30 @@ export function getCandidates(distances: Dictionary<CellWithDistance>, cellGette
 }
 
 export class Field {
+
+    public static fromSerialization(serialization: string): Field {
+        const lines = serialization.trim().split("\n");
+        const matrix = lines.map((l) => l.trim().split(""));
+        const cells: Cell[] = matrix.flatMap((line, lineIndex) => line.map((cell, cellIndex) => {
+            if (cell === "." || cell === "#") {
+                return {
+                    coordinate: {
+                        x: cellIndex,
+                        y: lineIndex
+                    },
+                    tile: cell
+                } as Cell;
+            } else {
+                return null;
+            }
+        })).filter((c) => c).map((c) => c!);
+        return new Field(cells);
+
+    }
     private cells: CellMap = {};
 
     constructor(startingCells: Cell[]) {
-        startingCells.forEach(c => this.setCell(c));
+        startingCells.forEach((c) => this.setCell(c));
     }
 
     public setCell(c: Cell) {
@@ -54,16 +83,19 @@ export class Field {
         return this.cells[coordinateToKey(c)];
     }
 
-    public findCommandsToNearestUnkown(c: Coordinate): [number, Coordinate][] {
+    public findCommandsToNearestUnkown(c: Coordinate): Array<[number, Coordinate]> {
         const distances = this.getDistances(c);
         const nearest = this.findNearestToDiscover(c, distances);
         if (nearest === null) {
             return [];
         }
-        return this.findCommandsForUnkown({ ...nearest, from: c, distances })
+        return this.findCommandsForUnkown({ ...nearest, from: c, distances });
     }
 
-    public findNearestToDiscover(c: Coordinate, distances: Dictionary<CellWithDistance>): { lastKnown: CellWithDistance, unknown: Coordinate } | null {
+    public findNearestToDiscover(
+        c: Coordinate,
+        distances: Dictionary<CellWithDistance>
+    ): { lastKnown: CellWithDistance, unknown: Coordinate } | null {
         const candidates = getCandidates(distances, this.getCell.bind(this));
         if (candidates.length === 0) {
             return null;
@@ -83,33 +115,36 @@ export class Field {
             unknown: Coordinate,
             distances: Dictionary<CellWithDistance>
         }
-    ): [number, Coordinate][] {
+    ): Array<[number, Coordinate]> {
         let currentCell = lastKnown;
-        const commands: [number, Coordinate][] = [[this.getCommand(currentCell.coordinate, unknown), unknown]];
+        const localCommands: Array<[number, Coordinate]> =
+            [[this.getCommand(currentCell.coordinate, unknown), unknown]];
         while (manhattanDistance(currentCell.coordinate, from) !== 0) {
             const canGo = new List(
                 getSurrounding(currentCell.coordinate)
-                    .map(l => distances[coordinateToKey(l)])
+                    .map((l) => distances[coordinateToKey(l)])
             )
-                .where(c => c !== undefined && c.distance !== null)
-                .where(c => c.distance === currentCell.distance! - 1)
+                .where((c) => c !== undefined && c.distance !== null)
+                .where((c) => c.distance === currentCell.distance! - 1)
                 .firstOrDefault();
             if (canGo === undefined) {
                 return [];
             }
-            commands.push([this.getCommand(canGo.coordinate, currentCell.coordinate), currentCell.coordinate]);
+            localCommands.push([this.getCommand(canGo.coordinate, currentCell.coordinate), currentCell.coordinate]);
             currentCell = canGo;
         }
-        return commands.reverse();
+        return localCommands.reverse();
     }
 
-    public getDistances(c: Coordinate): Dictionary<CellWithDistance> {
+    public getDistances(coordinate: Coordinate): Dictionary<CellWithDistance> {
         const cellMap: { [key: string]: CellWithDistance } = {};
-        Object.values(this.cells).filter(c => c.tile === ".").forEach(c => cellMap[coordinateToKey(c.coordinate)] = {
-            ...c,
-            distance: null
-        });
-        const startingCell = cellMap[coordinateToKey(c)];
+        Object.values(this.cells)
+            .filter((c) => c.tile === ".")
+            .forEach((c) => cellMap[coordinateToKey(c.coordinate)] = {
+                ...c,
+                distance: null
+            });
+        const startingCell = cellMap[coordinateToKey(coordinate)];
         if (!startingCell) {
             return cellMap;
         }
@@ -121,31 +156,15 @@ export class Field {
             if (toVisit === null) {
                 break;
             }
-            const next = getSurrounding(toVisit.coordinate).map(c => cellMap[coordinateToKey(c)]);
-            next.forEach(cell => {
-                if (cell && cell.distance === null && cell.tile === '.') {
+            const next = getSurrounding(toVisit.coordinate).map((c) => cellMap[coordinateToKey(c)]);
+            next.forEach((cell) => {
+                if (cell && cell.distance === null && cell.tile === ".") {
                     cell.distance = toVisit.distance! + 1;
                     visitingQueue.add(cell);
                 }
             });
         }
         return cellMap;
-    }
-
-    private canMove(from: Coordinate, to: Coordinate): boolean {
-        const fromCell = this.getCell(from);
-        const toCell = this.getCell(to);
-        if (!fromCell || !toCell) {
-            return false;
-        }
-        if (fromCell.tile !== '.' || toCell.tile !== '.') {
-            return false;
-        }
-        const distance = manhattanDistance(fromCell.coordinate, toCell.coordinate);
-        if (distance !== 1) {
-            return false;
-        }
-        return true;
     }
 
     public getCommand(from: Coordinate, to: Coordinate): number {
@@ -166,31 +185,11 @@ export class Field {
     }
 
     public toString() {
-        const boundaries = getBoundaries(Object.values(this.cells).map(c => c.coordinate));
+        const boundaries = getBoundaries(Object.values(this.cells).map((c) => c.coordinate));
         const matrix = new FixedSizeMatrix<string>(boundaries.size);
         matrix.fill(undefined);
-        Object.values(this.cells).forEach(c => matrix.set(diffCoordinate(c.coordinate, boundaries.topLeft), c.tile));
-        return matrix.toString(e => e ? e : " ");
-    }
-
-    public static fromSerialization(serialization: string): Field {
-        const lines = serialization.trim().split("\n");
-        const matrix = lines.map(l => l.trim().split(""));
-        const cells: Cell[] = matrix.flatMap((line, lineIndex) => line.map((cell, cellIndex) => {
-            if (cell === "." || cell === "#") {
-                return {
-                    coordinate: {
-                        x: cellIndex,
-                        y: lineIndex
-                    },
-                    tile: cell
-                } as Cell;
-            } else {
-                return null;
-            }
-        })).filter(c => c).map(c => c!);
-        return new Field(cells);
-
+        Object.values(this.cells).forEach((c) => matrix.set(diffCoordinate(c.coordinate, boundaries.topLeft), c.tile));
+        return matrix.toString((e) => e ? e : " ");
     }
 
     public getDistance(from: Coordinate, to: Coordinate): number | null {
@@ -203,11 +202,30 @@ export class Field {
         }
     }
 
+    private canMove(from: Coordinate, to: Coordinate): boolean {
+        const fromCell = this.getCell(from);
+        const toCell = this.getCell(to);
+        if (!fromCell || !toCell) {
+            return false;
+        }
+        if (fromCell.tile !== "." || toCell.tile !== ".") {
+            return false;
+        }
+        const distance = manhattanDistance(fromCell.coordinate, toCell.coordinate);
+        if (distance !== 1) {
+            return false;
+        }
+        return true;
+    }
+
 }
 
 function getEmptySurrounded(candidate: CellWithDistance, cellGetter: (c: Coordinate) => Cell | undefined) {
-    const surrounding = new List(getSurrounding(candidate.coordinate).map(c => ({ coordinate: c, cell: cellGetter(c) })));
-    const target = surrounding.where(s => !s.cell).firstOrDefault();
+    const surrounding = new List(
+        getSurrounding(candidate.coordinate)
+            .map((c) => ({ coordinate: c, cell: cellGetter(c) }))
+    );
+    const target = surrounding.where((s) => !s.cell).firstOrDefault();
     return target;
 }
 
@@ -216,7 +234,7 @@ export function coordinateToKey(c: Coordinate): string {
 }
 
 export function keyToCoordinate(s: string): Coordinate {
-    const [x, y] = s.split('|');
+    const [x, y] = s.split("|");
     return {
         x: parseInt(x, 10),
         y: parseInt(y, 10)
@@ -233,7 +251,7 @@ export const oxygenSystem = entryForFile(
         const field = new Field(cells);
         let currentPosition: Coordinate = { x: 0, y: 0 };
         let movingTo: Coordinate | null = currentPosition;
-        let suggestedCommands: [number, Coordinate][] = [];
+        let suggestedCommands: Array<[number, Coordinate]> = [];
         const program = parseMemory(lines[0]);
         let oxygenPosition: Coordinate | null = null;
         let currentIteration = 0;
@@ -242,7 +260,7 @@ export const oxygenSystem = entryForFile(
                 await pause();
                 let answer: number = -1;
                 if (suggestedCommands.length > 0) {
-                    let [command, position] = suggestedCommands.pop()!;
+                    const [command, position] = suggestedCommands.pop()!;
                     movingTo = position;
                     answer = command;
                 } else {
@@ -252,7 +270,7 @@ export const oxygenSystem = entryForFile(
                     } else {
                         suggestedCommands = suggestion.reverse();
                     }
-                    let [command, position] = suggestedCommands.pop()!;
+                    const [command, position] = suggestedCommands.pop()!;
                     movingTo = position;
                     answer = command;
                 }
@@ -296,7 +314,7 @@ export const oxygenSystem = entryForFile(
         const field = new Field(cells);
         let currentPosition: Coordinate = { x: 0, y: 0 };
         let movingTo: Coordinate | null = currentPosition;
-        let suggestedCommands: [number, Coordinate][] = [];
+        let suggestedCommands: Array<[number, Coordinate]> = [];
         const program = parseMemory(lines[0]);
         let oxygenPosition: Coordinate | null = null;
         await execute({
@@ -304,7 +322,7 @@ export const oxygenSystem = entryForFile(
                 await pause();
                 let answer: number = -1;
                 if (suggestedCommands.length > 0) {
-                    let [command, position] = suggestedCommands.pop()!;
+                    const [command, position] = suggestedCommands.pop()!;
                     movingTo = position;
                     answer = command;
                 } else {
@@ -314,7 +332,7 @@ export const oxygenSystem = entryForFile(
                     } else {
                         suggestedCommands = suggestion.reverse();
                     }
-                    let [command, position] = suggestedCommands.pop()!;
+                    const [command, position] = suggestedCommands.pop()!;
                     movingTo = position;
                     answer = command;
                 }
@@ -345,6 +363,11 @@ export const oxygenSystem = entryForFile(
 
         const distance = field.getDistance({ x: 0, y: 0 }, oxygenPosition!);
         const distances = Object.values(field.getDistances(oxygenPosition!));
-        await outputCallback(distances.filter(d => d !== null).map(d => d.distance!).reduce((a, b) => Math.max(a, b)));
+        await outputCallback(
+            distances
+                .filter((d) => d !== null)
+                .map((d) => d.distance!)
+                .reduce((a, b) => Math.max(a, b))
+        );
     }
 );

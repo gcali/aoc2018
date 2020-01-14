@@ -19,7 +19,7 @@ export default class EntryChoice extends Vue {
     @Prop({ default: false }) public disabled!: boolean;
     private choice: string = "first";
     public show() {
-        this.$emit("execute", this.choice);
+        const emitResult = this.$emit("execute", this.choice);
     }
 }
 </script>

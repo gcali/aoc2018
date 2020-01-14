@@ -1,15 +1,15 @@
 import { entryForFile } from "../../entry";
-import { parseMemory, execute } from '../../../support/intcode';
-import { FixedSizeMatrix } from '../../../support/matrix';
-import { getSurrounding, Coordinate, CCoordinate, directions, rotate } from '../../../support/geometry';
-import { groupBy, subsequenceGenerator } from '../../../support/sequences';
+import { parseMemory, execute } from "../../../support/intcode";
+import { FixedSizeMatrix } from "../../../support/matrix";
+import { getSurrounding, Coordinate, CCoordinate, directions, rotate } from "../../../support/geometry";
+import { groupBy, subsequenceGenerator } from "../../../support/sequences";
 
 export type Movement = "R" | "L" | number | "A" | "B" | "C";
 
 interface RobotContext {
-    position: Coordinate,
-    direction: CCoordinate
-};
+    position: Coordinate;
+    direction: CCoordinate;
+}
 
 function getRobotDirection(s: string): CCoordinate | null {
     switch (s) {
@@ -27,19 +27,6 @@ function getRobotDirection(s: string): CCoordinate | null {
 }
 
 export class Field {
-    private readonly matrix: FixedSizeMatrix<string>;
-    constructor(rows: string[]) {
-        const width = rows[0].length;
-        const height = rows.length;
-        this.matrix = new FixedSizeMatrix<string>({ x: width, y: height });
-        const flatData = rows.join("").split("");
-        this.matrix.setFlatData(flatData);
-    }
-
-    public static fromBuffer(buffer: string[]): Field {
-        const fieldLines = buffer.join("").split("\n").filter(e => e.length > 0);
-        return new Field(fieldLines);
-    }
 
     public get width() {
         return this.matrix.size.x;
@@ -47,6 +34,19 @@ export class Field {
 
     public get height() {
         return this.matrix.size.y;
+    }
+
+    public static fromBuffer(buffer: string[]): Field {
+        const fieldLines = buffer.join("").split("\n").filter((e) => e.length > 0);
+        return new Field(fieldLines);
+    }
+    private readonly matrix: FixedSizeMatrix<string>;
+    constructor(rows: string[]) {
+        const width = rows[0].length;
+        const height = rows.length;
+        this.matrix = new FixedSizeMatrix<string>({ x: width, y: height });
+        const flatData = rows.join("").split("");
+        this.matrix.setFlatData(flatData);
     }
 
     public onEveryCell<T>(callback: (c: Coordinate, e: string) => Promise<T | undefined>): Promise<T | undefined> {
@@ -68,10 +68,6 @@ export class Field {
             }
         });
         return intersections;
-    }
-
-    private isIntersection({ x, y }: Coordinate): boolean {
-        return getSurrounding({ x, y }).map(c => this.get({ x: c.x, y: c.y })).every(e => e === "#");
     }
 
     public async getAlignment(): Promise<number> {
@@ -100,10 +96,6 @@ export class Field {
             const forward = this.moveForward(currentPosition);
             if (forward !== null) {
                 currentSteps++;
-                if (shouldDebug) {
-                    console.log(this.toString());
-                    console.log("-----")
-                }
                 const isNextIntersection = this.isIntersection(forward.position);
                 if (shouldClear) {
                     this.matrix.set(currentPosition.position, ".");
@@ -133,6 +125,14 @@ export class Field {
         return movements;
     }
 
+    public toString() {
+        return this.matrix.toString((e) => e!);
+    }
+
+    private isIntersection({ x, y }: Coordinate): boolean {
+        return getSurrounding({ x, y }).map((c) => this.get({ x: c.x, y: c.y })).every((e) => e === "#");
+    }
+
     private tryLeft(context: RobotContext): RobotContext | null {
         return this.moveForward({ ...context, direction: rotate(context.direction, "Clockwise") });
     }
@@ -148,10 +148,6 @@ export class Field {
             return null;
         }
         return { ...context, position: newCellPosition };
-    }
-
-    public toString() {
-        return this.matrix.toString(e => e!);
     }
 }
 
@@ -189,13 +185,16 @@ export const setAndForget = entryForFile(
         // } else {
         //     await outputCallback("Nothing found :(");
         // }
-        const serializedMovements = groupBy(movements, 2).map(g => `${g[0]}${g[1]}`).join(",");
+        const serializedMovements = groupBy(movements, 2).map((g) => `${g[0]}${g[1]}`).join(",");
         await outputCallback(serializedMovements);
         await outputCallback(serializedMovements.length);
     }
 );
 
-async function findCompressed(movements: Movement[], outputCallback: (outputLine: any, shouldClear?: boolean | undefined) => Promise<void>) {
+async function findCompressed(
+    movements: Movement[],
+    outputCallback: (outputLine: any, shouldClear?: boolean | undefined) => Promise<void>
+) {
     let currentIteration = 0;
     const totalIterations = movements.length * (movements.length + 1) / 2;
     for (const aCandidate of subsequenceGenerator(movements)) {
@@ -214,7 +213,7 @@ async function findCompressed(movements: Movement[], outputCallback: (outputLine
                     continue;
                 }
                 const cReplaced = replaceCandidate(bReplaced, cCandidate, "C");
-                if (cReplaced.filter(e => ["A", "B", "C"].indexOf(e.toString()) >= 0).length === cReplaced.length) {
+                if (cReplaced.filter((e) => ["A", "B", "C"].indexOf(e.toString()) >= 0).length === cReplaced.length) {
                     await outputCallback("Found!");
                     return {
                         replaced: cReplaced.join(","),

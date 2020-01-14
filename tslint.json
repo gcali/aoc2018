@@ -1,11 +1,14 @@
 {
   "defaultSeverity": "warning",
   "extends": [
-    "tslint:recommended"
+    "tslint:recommended",
+    "tslint-no-unused-expression-chai"
   ],
   "linterOptions": {
     "exclude": [
-      "node_modules/**"
+      "node_modules/**",
+      "src/console.ts",
+      "src/support/stdin-reader.ts"
     ]
   },
   "rules": {
@@ -25,8 +28,14 @@
     "max-classes-per-file": false,
     "trailing-comma": false,
     "arrow-parens": true,
-    "no-floating-promises": true,
+    "no-floating-promises": false,
     "no-shadowed-variable": true,
-    "no-bitwise": false
+    "no-bitwise": false,
+    "no-empty": {
+      "options": [
+        "allow-empty-catch",
+        "allow-empty-functions"
+      ]
+    }
   }
 }

@@ -1,7 +1,7 @@
 import { entryForFile } from "../../entry";
-import { parseMemory, execute, inputGenerator } from '../../../support/intcode';
-import { forEachAsync } from '../../../support/async';
-import { programAlarm } from './program-alarm';
+import { parseMemory, execute, inputGenerator } from "../../../support/intcode";
+import { forEachAsync } from "../../../support/async";
+import { programAlarm } from "./program-alarm";
 
 interface Connector {
     input: () => Promise<number>;
@@ -10,7 +10,7 @@ interface Connector {
 }
 
 function generateConnector(startingInput: number[], additionalOutput?: (e: number) => void): Connector {
-    let outputBuffer: number[] = [...startingInput];
+    const outputBuffer: number[] = [...startingInput];
     let nextReadIndex = 0;
     let resolver: ((e: number) => void) | null = null;
     let rejector: (() => void) | null = null;
@@ -66,14 +66,14 @@ function generatePermutations<T>(l: T[]): T[][] {
 export const amplificationCircuit = entryForFile(
     async ({ lines, outputCallback, pause, isCancelled }) => {
         const baseMemory = parseMemory(lines[0]);
-        let permutations = generatePermutations([0, 1, 2, 3, 4]);
+        const permutations = generatePermutations([0, 1, 2, 3, 4]);
         let currentMax = Number.NEGATIVE_INFINITY;
         // permutations = [[0, 1, 2, 3, 4]];
-        permutations.forEach(permutation => {
+        permutations.forEach((permutation) => {
             let signal = 0;
-            for (var id of permutation) {
+            for (const id of permutation) {
                 const input = inputGenerator([id, signal]);
-                execute({ memory: baseMemory, input, output: e => signal = e });
+                const promiseResult = execute({ memory: baseMemory, input, output: (e) => signal = e });
             }
             currentMax = Math.max(currentMax, signal);
         });
@@ -81,11 +81,11 @@ export const amplificationCircuit = entryForFile(
     },
     async ({ lines, outputCallback, pause, isCancelled }) => {
         const baseMemory = parseMemory(lines[0]);
-        let permutations = generatePermutations([9, 8, 7, 6, 5]);
+        const permutations = generatePermutations([9, 8, 7, 6, 5]);
         let currentMax = Number.NEGATIVE_INFINITY;
         // permutations = [[0, 1, 2, 3, 4]];
-        await forEachAsync(permutations, async permutation => {
-            const programs = permutation.map(i => ({
+        await forEachAsync(permutations, async (permutation) => {
+            const programs = permutation.map((i) => ({
                 memory: baseMemory,
                 phase: i,
                 isLast: false,
@@ -102,11 +102,11 @@ export const amplificationCircuit = entryForFile(
             }
 
             let output: number | null = null;
-            const loopConnector = generateConnector([programs[0].phase, 0], e => output = e);
+            const loopConnector = generateConnector([programs[0].phase, 0], (e) => output = e);
             programs[0].inConnector = loopConnector;
             programs[programs.length - 1].outConnector = loopConnector;
 
-            const promises = programs.map(program => {
+            const promises = programs.map((program) => {
                 return execute({
                     memory: baseMemory,
                     input: program.inConnector!.input,

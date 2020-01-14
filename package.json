@@ -46,6 +46,7 @@
     "sass-loader": "^7.3.1",
     "ts-mocha": "^6.0.0",
     "ts-node": "^8.6.2",
+    "tslint-no-unused-expression-chai": "^0.1.4",
     "typescript": "^3.7.4",
     "vue-template-compiler": "^2.6.11"
   }

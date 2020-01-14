@@ -1,5 +1,5 @@
 import { entryForFile } from "../../entry";
-import { Tree } from '../../../support/data-structure';
+import { Tree } from "../../../support/data-structure";
 
 interface Planet {
     code: string;
@@ -22,7 +22,7 @@ function parseLine(line: string): Orbit {
     };
 }
 
-type NodeMap = { [key: string]: Planet };
+interface NodeMap { [key: string]: Planet; }
 
 function fillDistance(nodeMap: NodeMap, code: string | null) {
     if (code == null) {
@@ -70,7 +70,7 @@ export const universalObritMap = entryForFile(
     async ({ lines, outputCallback, pause, isCancelled }) => {
         const nodes: NodeMap = {};
 
-        const center = 'COM';
+        const center = "COM";
         nodes[center] = {
             code: center,
             distance: 0,
@@ -79,7 +79,7 @@ export const universalObritMap = entryForFile(
 
         // const chain = new Tree<Planet>(nodes[center]);
 
-        lines.forEach(line => {
+        lines.forEach((line) => {
             const orbit = parseLine(line);
             nodes[orbit.orbiting] = {
                 code: orbit.orbiting,
@@ -87,22 +87,22 @@ export const universalObritMap = entryForFile(
                 orbiting: orbit.center
             };
         });
-        Object.keys(nodes).forEach(n => fillDistance(nodes, n));
+        Object.keys(nodes).forEach((n) => fillDistance(nodes, n));
 
-        const sum = Object.values(nodes).map(n => n.distance!).reduce((acc, next) => acc + next);
+        const sum = Object.values(nodes).map((n) => n.distance!).reduce((acc, next) => acc + next);
         await outputCallback(sum);
     },
     async ({ lines, outputCallback, pause, isCancelled }) => {
         const nodes: NodeMap = {};
 
-        const center = 'COM';
+        const center = "COM";
         nodes[center] = {
             code: center,
             distance: 0,
             orbiting: null
         };
 
-        lines.forEach(line => {
+        lines.forEach((line) => {
             const orbit = parseLine(line);
             nodes[orbit.orbiting] = {
                 code: orbit.orbiting,
@@ -112,16 +112,14 @@ export const universalObritMap = entryForFile(
         });
 
 
-        const mine = 'YOU';
-        const santa = 'SAN';
+        const mine = "YOU";
+        const santa = "SAN";
 
         const mineChain = getChain(mine, nodes);
         const santaChain = getChain(santa, nodes);
 
         const firstIntersection = getFirstIntersection(mineChain, santaChain);
 
-        console.log(mineChain);
-        console.log(santaChain);
         const result = mineChain.indexOf(firstIntersection) + santaChain.indexOf(firstIntersection);
         await outputCallback(result);
     }
