@@ -1,5 +1,5 @@
 <template lang="pug">
-    EntryTemplate(:title="title", :id="id", @file-loaded="readFile", :disabled="executing")
+    EntryTemplate(:title="title", :id="id", @file-loaded="readFile", :disabled="executing", :year="year")
         .input
             button(@click="nextState", :class="{hidden: !executing}") Next
             button(@click="stop", :class="{hidden: !executing}") Stop
@@ -22,6 +22,7 @@ export default class MineCartEntryView extends Vue {
     @Prop() public title!: string;
     @Prop() public id!: number;
     @Prop() public entry!: Entry;
+    @Prop() public year!: number;
 
     private executing: boolean = false;
     private resolver?: () => void;
@@ -53,7 +54,7 @@ export default class MineCartEntryView extends Vue {
                         this.output.push(JSON.stringify(line));
                     }
                     return new Promise<void>(
-                        resolve => (that.resolver = resolve)
+                        (resolve) => (that.resolver = resolve)
                     );
                 },
                 () => that.shouldStop

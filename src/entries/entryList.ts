@@ -37,15 +37,24 @@ import { flawedFrequencyTransmission } from './single-entries/2019/flawed-freque
 import { setAndForget } from './single-entries/2019/set-and-forget';
 import { manyWorldInterpretation } from './single-entries/2019/many-worlds-interpretation';
 
-export interface EntryRoute {
+export interface EntryRoute extends EntryRouteBase {
+    date: number;
+}
+
+interface EntryRouteBase {
     name: string;
     title: string;
     entry: Entry;
     hasCustomComponent?: boolean;
 }
 
+function enrichList(entries: EntryRouteBase[]): EntryRoute[] {
+    return entries.map((e, index) => ({ ...e, date: index + 1 }));
+}
+
+
 export const entryList: { [key: string]: EntryRoute[] } = {
-    "2018": [
+    "2018": enrichList([
         {
             name: "frequency",
             title: "Chronal Calibration",
@@ -144,8 +153,8 @@ export const entryList: { [key: string]: EntryRoute[] } = {
             entry: flow,
             hasCustomComponent: true
         }
-    ],
-    "2019": [
+    ]),
+    "2019": enrichList([
         {
             name: "rocket-tyranny",
             title: "The Tyranny of the Rocket Equation",
@@ -236,6 +245,6 @@ export const entryList: { [key: string]: EntryRoute[] } = {
             title: "Many World Interpretation",
             entry: manyWorldInterpretation
         }
-    ]
+    ])
 };
 

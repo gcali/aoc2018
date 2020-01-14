@@ -2,54 +2,66 @@
 #app
   #nav
     .header
-      .years
-        a(v-for="year in years", @click="selectYear(year.year)") {{year.year}}
       .title Advent of Code
       .author gicali
       hr
     .links
+      .years
+        Year(v-for="year in years", @click="selectYear(year)", :year="year", :selected="year === selectedYear")
       router-link(to="/") Home
-      //-router-link(to="/about") About 
       router-link(:to="{name: 'entries'}") Entries
       .nav-entry
-        //- label Entries
+        router-link(:to="{name: 'entries'}", v-if="shouldTruncateList") (...)
         router-link(:to="{name: entry.name}", v-for=("entry in entryList"), :key="entry.name") {{entry.title}}
+      router-link(:to="{name: lastEntryName}") Last Entry
   #content
     router-view
 </template>
 
 <script lang="ts">
+import Year from "./components/Year.vue";
 import { Component, Vue } from "vue-property-decorator";
 import { entryList, EntryRoute } from "./entries/entryList";
-@Component({})
+import { baseState, updateYear } from "./state/state";
+@Component({
+    components: {
+        Year
+    }
+})
 export default class App extends Vue {
-    private years = [
-        {
-            year: 2018,
-            selected: true
-        },
-        {
-            year: 2019,
-            selected: false
-        }
-    ];
+
+    private get entryList(): EntryRoute[] {
+        const list = this.fullEntryList;
+        const reducedList = list.slice(Math.max(0, list.length - 10), list.length);
+        return reducedList;
+    }
+
+    private get shouldTruncateList(): boolean {
+        return this.entryList.length !== this.fullEntryList.length;
+    }
+
+    private get fullEntryList(): EntryRoute[] {
+        const list = this.entryByYears[this.selectedYear];
+        return list;
+    }
+
+
+    private get lastEntryName(): string {
+        return this.entryList[this.entryList.length - 1].name;
+    }
+
+    private dates = baseState.dates;
+
+    // private selectedYear: number = 2019;
+    private get selectedYear(): number {
+        return this.dates.year;
+    }
+    private years = [2018, 2019];
+
+    private entryByYears = entryList;
 
     private selectYear(year: number) {
-        this.years.forEach(y => {
-            y.selected = y.year === year;
-        });
-    }
-
-    private get selectedYear() {
-        return this.years.filter(y => y.selected === true).map(y => y.year)[0];
-    }
-    private entryByYears = entryList;
-    // { [key: string]: EntryRoute[] } = {
-    //     "2018": entryList,
-    //     "2019": []
-    // };
-    private get entryList() {
-        return this.entryByYears[this.selectedYear];
+        updateYear(year);
     }
 }
 </script>
@@ -67,7 +79,7 @@ $text-color: navajowhite;
     }
 }
 
-.header {
+.links {
     .years {
         display: flex;
         flex-direction: row;
@@ -76,6 +88,7 @@ $text-color: navajowhite;
         a {
             cursor: pointer;
             border-bottom: 1px solid navajowhite;
+            margin-top: 0em !important;
         }
     }
 }
@@ -115,7 +128,7 @@ body {
         flex-direction: column;
     }
     #nav {
-        padding: 30px 20px;
+        padding: 20px 20px;
         flex: 0 0 auto;
         background-color: #2c3e50;
         display: flex;
@@ -127,7 +140,7 @@ body {
             margin-left: 2em;
         }
         .header {
-            margin-top: 1em;
+            margin-top: 2em;
             .title {
                 font-weight: bold;
                 font-size: 30px;
@@ -136,7 +149,7 @@ body {
                 text-align: end;
                 line-height: 1.7;
             }
-            margin-bottom: 3em;
+            margin-bottom: 2em;
             hr {
                 border-color: $text-color;
             }
