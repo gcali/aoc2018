@@ -65,9 +65,7 @@ export const programAlarm = entryForFile(
                         return;
                     }
 
-                } catch {
-
-                }
+                } catch { }
             }
         }
     }

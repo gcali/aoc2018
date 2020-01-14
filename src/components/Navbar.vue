@@ -7,7 +7,7 @@
     hr
     .links(:style="navbarStyle")
       .years
-        Year(v-for="year in years", @click="selectYear(year)", :year="year", :selected="year === selectedYear")
+        Year(v-for="year in years", :key="year" @click="selectYear(year)", :year="year", :selected="year === selectedYear")
       router-link(to="/") Home
       router-link(:to="{name: 'entries'}") Entries
       .nav-entry

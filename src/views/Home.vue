@@ -2,7 +2,7 @@
   .home
     | Solutions for the Advent of Code
     .year-list
-        router-link(:to="{name: 'entries'}", v-for="year in years")
+        router-link(:to="{name: 'entries'}", v-for="year in years" :key="year")
             div(@click="selectYear(year)").year-entry {{year}}
 </template>
 
@@ -26,7 +26,7 @@ export default Vue.extend({
     margin-top: 1em;
     display: flex;
     flex-direction: row;
-    justify-content: start;
+    justify-content: flex-start;
     @include small-screen {
         justify-content: space-evenly;
     }
