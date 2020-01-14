@@ -14,6 +14,9 @@ const routes: RouteConfig[] = [
     path: "/",
     name: "home",
     component: Home,
+    props: {
+      years: Object.keys(entryList)
+    }
   },
   {
     path: "/entry",
@@ -23,7 +26,9 @@ const routes: RouteConfig[] = [
 ];
 
 // name: "mine-cart-madness",
-const flat = ["2018", "2019"].map((year) => entryList[year].map((e, index) => ({ entry: e, year }))).filter((e) => e);
+const flat = Object.keys(entryList)
+  .map((year) => entryList[year].map((e, index) => ({ entry: e, year })))
+  .filter((e) => e);
 flat.flatMap((e) => e).forEach((e) => {
   routes.push({
     name: e.entry.name,
@@ -44,36 +49,4 @@ export default new Router({
   mode: "hash",
   base: process.env.BASE_URL,
   routes
-  // routes: [
-  //   {
-  //     path: "/",
-  //     name: "home",
-  //     component: Home,
-  //   },
-  //   {
-  //     path: "/entry",
-  //     name: "entries",
-  //     component: Entries
-  //   },
-  //   {
-  //     path: "/entry/frequency",
-  //     name: "frequency",
-  //     component: SimpleEntryTemplate,
-  //     props: {
-  //       id: 1,
-  //       title: "Frequency",
-  //       entry: frequencyEntry
-  //     }
-  //   },
-  //   {
-  //     path: "/entry/inventory",
-  //     name: "inventory",
-  //     component: SimpleEntryTemplate,
-  //     props: {
-  //       id: 2,
-  //       title: "Inventory Management System",
-  //       entry: inventoryEntry
-  //     }
-  //   }
-  // ],
 });

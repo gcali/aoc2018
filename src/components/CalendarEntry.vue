@@ -20,7 +20,7 @@ export default Vue.extend({
         };
     },
     computed: {
-        ordinalDate() {
+        ordinalDate(): string {
             return ordinalOf(this.date);
         }
     }

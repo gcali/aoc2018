@@ -10,3 +10,17 @@ else {
         }
     }
 }
+
+module.exports = {
+    ...module.exports,
+    css: {
+        loaderOptions: {
+            sass: {
+                data: `
+                @import "@/style/variables.scss";
+                @import "@/style/media.scss";
+                `
+            }
+        }
+    }
+}

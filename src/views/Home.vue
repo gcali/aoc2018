@@ -1,18 +1,44 @@
 <template lang="pug">
   .home
     | Solutions for the Advent of Code
-    //- img(alt="Vue logo" src="../assets/logo.png")
-    //- HelloWorld(msg="Welcome to Your Vue.js + TypeScript App")
+    .year-list
+        router-link(:to="{name: 'entries'}", v-for="year in years")
+            div(@click="selectYear(year)").year-entry {{year}}
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import HelloWorld from "@/components/HelloWorld.vue"; // @ is an alias to /src
-
-@Component({
-    components: {
-        HelloWorld
+import Vue from "vue";
+import { updateYear } from "../state/state";
+export default Vue.extend({
+    props: {
+        years: Array as () => string[]
+    },
+    methods: {
+        selectYear(year: string) {
+            updateYear(year);
+        }
     }
-})
-export default class Home extends Vue {}
+});
 </script>
+
+<style lang="scss" scoped>
+.year-list {
+    margin-top: 1em;
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    @include small-screen {
+        justify-content: space-evenly;
+    }
+    align-items: center;
+    .year-entry {
+        margin: 0em 1em;
+        &:first-child {
+            margin-left: 0em;
+        }
+        border: 1px solid black;
+        padding: 1em 2em;
+        border-radius: 1px;
+    }
+}
+</style>
