@@ -134,11 +134,11 @@ export class Field {
     }
 
     private tryLeft(context: RobotContext): RobotContext | null {
-        return this.moveForward({ ...context, direction: rotate(context.direction, "Clockwise") });
+        return this.moveForward({ ...context, direction: rotate(context.direction, "Counterclockwise") });
     }
 
     private tryRight(context: RobotContext): RobotContext | null {
-        return this.moveForward({ ...context, direction: rotate(context.direction, "Counterclockwise") });
+        return this.moveForward({ ...context, direction: rotate(context.direction, "Clockwise") });
     }
 
     private moveForward(context: RobotContext): RobotContext | null {

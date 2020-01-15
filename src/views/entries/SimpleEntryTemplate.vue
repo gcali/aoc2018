@@ -35,12 +35,12 @@ export default class SimpleEntryTemplate extends Vue {
     public async readFile(fileHandling: EntryFileHandling) {
         this.output = [];
         this.disabled = true;
-        await executeEntry(
-            this.entry,
-            fileHandling.choice,
-            fileHandling.content,
-            simpleOutputCallbackFactory(this.output)
-        );
+        await executeEntry({
+            entry: this.entry,
+            choice: fileHandling.choice,
+            lines: fileHandling.content,
+            outputCallback: simpleOutputCallbackFactory(this.output)
+        });
         this.disabled = false;
     }
 }

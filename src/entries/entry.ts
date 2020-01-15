@@ -1,17 +1,18 @@
 import { Choice } from "../constants/choice";
+import { Message } from "./entryStatusMessages";
 
 export interface EntryCallbackArg {
     lines: string[];
     outputCallback: ((outputLine: any, shouldClear?: boolean) => Promise<void>);
     pause: (() => Promise<void>);
-    statusCallback?: ((outputStatus: any) => Promise<void>);
+    statusCallback?: ((outputStatus: Message) => Promise<void>);
     isCancelled?: (() => boolean);
 }
 
 type OldEntryCallback = (
     lines: string[],
     outputCallback: ((outputLine: any) => Promise<void>),
-    statusCallback?: ((outputStatus: any) => Promise<void>)
+    statusCallback?: ((outputStatus: Message) => Promise<void>)
 ) => Promise<void>;
 
 export type OutputCallback = ((outputLine: any, shouldClear?: boolean) => Promise<void>);
@@ -60,12 +61,25 @@ export function simpleOutputCallbackFactory(output: string[]) {
     };
 }
 
-export async function executeEntry(
-    entry: Entry,
-    choice: Choice,
-    lines: string[],
-    outputCallback: EntryCallbackArg["outputCallback"],
-    isCancelled?: (() => boolean)
+interface ExecutionArgs {
+    entry: Entry;
+    choice: Choice;
+    lines: string[];
+    outputCallback: EntryCallbackArg["outputCallback"];
+    isCancelled?: (() => boolean);
+    pause?: () => Promise<void>;
+    statusCallback?: ((outputStatus: Message) => Promise<void>);
+}
+
+export async function executeEntry({
+    entry,
+    choice,
+    lines,
+    outputCallback,
+    isCancelled,
+    pause,
+    statusCallback
+}: ExecutionArgs
 ) {
     let callback: EntryCallback;
     if (choice === Choice.first) {
@@ -76,8 +90,8 @@ export async function executeEntry(
     await callback({
         lines,
         outputCallback,
-        pause: () => new Promise<void>((resolve) => setTimeout(resolve, 0)),
-        isCancelled
-
+        pause: pause || (() => new Promise<void>((resolve) => setTimeout(resolve, 0))),
+        isCancelled,
+        statusCallback
     });
 }

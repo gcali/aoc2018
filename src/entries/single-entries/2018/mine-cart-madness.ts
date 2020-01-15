@@ -1,301 +1,290 @@
-import { oldEntryForFile, entryForFile } from "../../entry";
-import { Coordinate, sumCoordinate } from "../../../support/geometry";
-import { maxNumber } from "../../../support/best";
+import { entryForFile } from "../../entry";
+import { FixedSizeMatrix } from "../../../support/matrix";
+import { CCoordinate, Coordinate, Rotation, rotate, directions, manhattanDistance, getSurrounding } from "../../../support/geometry";
 
-enum Direction {
-    right, down, left, up
-}
+type InputCell = " " | CartDirections | "|" | "-" | "/" | "\\" | "+";
+type CartDirections = "^" | ">" | "v" | "<";
 
-enum RelativeDirection {
-    left, straight, right
-}
-
-function relativeDirectionToString(d: RelativeDirection) {
-    switch (d) {
-        case RelativeDirection.left:
-            return "<";
-        case RelativeDirection.right:
-            return ">";
-        case RelativeDirection.straight:
-            return "=";
-    }
-}
-
-function checkCollisions(carts: Cart[]) {
-    return carts.reduce(
-        (acc: { prev: Cart, collides: boolean } | null, next: Cart): { prev: Cart, collides: boolean } => {
-            if (acc && acc.collides) {
-                return {
-                    prev: acc.prev, collides: acc.collides
-                };
-            } else if (acc === null) {
-                return {
-                    prev: next,
-                    collides: false
-                };
-            } else {
-                if (acc.prev.compareTo(next) === 0) {
-                    return {
-                        prev: next,
-                        collides: true
-                    };
-                } else {
-                    return {
-                        prev: next,
-                        collides: false
-                    };
-                }
-            }
-        },
-        null
+function parseLines(lines: string[]): Field {
+    const inputMatrix = new FixedSizeMatrix<InputCell>({ x: lines[0].length, y: lines.length });
+    inputMatrix.setFlatData(lines
+        .filter((l) => l.trim().length > 0)
+        .map((l) => l.split("").map((c) => c as InputCell)).flat()
     );
+    return new Field(inputMatrix);
+
 }
 
-function directionToString(d: Direction) {
-    switch (d) {
-        case Direction.right:
-            return ">";
-        case Direction.left:
-            return "<";
-        case Direction.down:
-            return "v";
-        case Direction.up:
-            return "^";
-    }
+function isInputCart(input: InputCell): input is CartDirections {
+    return ["^", ">", "v", "<"].indexOf(input) >= 0;
 }
 
-function stringToDirection(s: string): Direction {
-    switch (s) {
-        case ">":
-            return Direction.right;
+function inputToDirection(input: CartDirections): CCoordinate {
+    switch (input) {
         case "<":
-            return Direction.left;
-        case "v":
-            return Direction.down;
+            return directions.left;
+        case ">":
+            return directions.right;
         case "^":
-            return Direction.up;
-        default:
-            throw Error("Invalid direction");
+            return directions.up;
+        case "v":
+            return directions.down;
     }
 }
-
-function nextDirection(orig: Direction, last: RelativeDirection) {
-    const newRelativeDirection: RelativeDirection = (last + 1) % 3;
-    let directionDelta = 0;
-    switch (last) {
-        case RelativeDirection.straight:
-            directionDelta = 0;
-            break;
-        case RelativeDirection.left:
-            directionDelta = -1;
-            break;
-        case RelativeDirection.right:
-            directionDelta = +1;
-            break;
-    }
-    return {
-        newRelativeDirection,
-        direction: (orig + directionDelta + 4) % 4
-    };
-}
-
-type Cell = "/" | "\\" | "|" | "-" | "+" | " ";
 
 class Cart {
-    constructor(
-        public coordinate: Coordinate,
-        public direction: Direction,
-        private nextRelative: RelativeDirection = RelativeDirection.left
-    ) {
+    private intersectionsPassed: number = 0;
+
+    private crashed = false;
+
+    private readonly intersectionRotations: Rotation[] = [
+        "Counterclockwise", "None", "Clockwise"
+    ];
+
+    constructor(public position: Coordinate, public direction: CCoordinate) {
+
     }
 
-    public compareTo(other: Cart) {
-        if (this.coordinate.y === other.coordinate.y) {
-            return maxNumber(this.coordinate.x, other.coordinate.x);
+    public toString() {
+        if (this.direction.y > 0) {
+            return "v";
+        } else if (this.direction.y < 0) {
+            return "^";
+        } else if (this.direction.x > 0) {
+            return ">";
         } else {
-            return maxNumber(this.coordinate.y, other.coordinate.y);
+            return "<";
         }
     }
 
-    public move(cell: Cell) {
-        let direction: Direction = Direction.up;
-        let relativeDirection = this.nextRelative;
-        switch (cell) {
-            case "/":
-                switch (this.direction) {
-                    case Direction.left:
-                        direction = Direction.down;
-                        break;
-                    case Direction.down:
-                        direction = Direction.left;
-                        break;
-                    case Direction.up:
-                        direction = Direction.right;
-                        break;
-                    case Direction.right:
-                        direction = Direction.up;
-                        break;
-                }
+    public handleInput(inputGetter: (c: Coordinate) => InputCell): void {
+        if (this.crashed) {
+            return;
+        }
+        this.position = this.direction.sum(this.position);
+        const input = inputGetter(this.position);
+        switch (input) {
+            case "-":
+            case "|":
                 break;
+            case "/":
             case "\\":
-                switch (this.direction) {
-                    case Direction.left:
-                        direction = Direction.up;
-                        break;
-                    case Direction.down:
-                        direction = Direction.right;
-                        break;
-                    case Direction.up:
-                        direction = Direction.left;
-                        break;
-                    case Direction.right:
-                        direction = Direction.down;
-                        break;
-                    default:
-                        throw Error("No direction");
-                }
+                this.handleTurn(input);
                 break;
             case "+":
-                const next = nextDirection(this.direction, this.nextRelative);
-                direction = next.direction;
-                relativeDirection = next.newRelativeDirection;
+                this.handleIntersection();
                 break;
-            default:
-                direction = this.direction;
-                break;
-        }
-        let newPosition = this.coordinate;
-        switch (direction) {
-            case Direction.down:
-                newPosition = sumCoordinate(newPosition, { y: 1, x: 0 });
-                break;
-            case Direction.up:
-                newPosition = sumCoordinate(newPosition, { x: 0, y: -1 });
-                break;
-            case Direction.left:
-                newPosition = sumCoordinate(newPosition, { x: -1, y: 0 });
-                break;
-            case Direction.right:
-                newPosition = sumCoordinate(newPosition, { x: 1, y: 0 });
-                break;
-            default:
-                throw Error("No direction");
-        }
 
-        return new Cart(newPosition, direction, relativeDirection);
+        }
+    }
 
+    public crash() {
+        this.crashed = true;
+    }
+
+    public isCrashed() {
+        return this.crashed;
+    }
+
+    private handleIntersection() {
+        const rotation = this.intersectionRotations[(this.intersectionsPassed++) % this.intersectionRotations.length];
+        this.rotate(rotation);
+    }
+    private rotate(rotation: Rotation) {
+        this.direction = rotate(this.direction, rotation);
+    }
+
+    private handleTurn(turn: "\\" | "/") {
+        const rotation = this.getRotation(turn);
+        this.rotate(rotation);
+    }
+
+    private getRotation(turn: string) {
+        if (turn === "/") {
+            if (this.direction.x === 0) {
+                return "Clockwise";
+            } else {
+                return "Counterclockwise";
+            }
+        } else {
+            if (this.direction.y === 0) {
+                return "Clockwise";
+            } else {
+                return "Counterclockwise";
+            }
+        }
     }
 }
 
-function stringToCell(s: string) {
-    switch (s) {
-        case "/":
-        case "-":
-        case "|":
-        case "+":
-        case "\\":
-        case " ":
-            return s;
-        case "<":
-        case ">":
-            return "-";
-        case "^":
-        case "v":
-            return "|";
-        default:
-            throw Error("Invalid cell " + s);
-    }
-}
-
-type Output = Cell | "<" | ">" | "^" | "v" | "x";
-
-export interface Status {
+interface Crash {
     carts: Cart[];
-    grid: Output[][];
+    position: Coordinate;
 }
 
-export const entry = entryForFile(
-    async ({ lines, outputCallback, statusCallback, isCancelled }) => {
-        const cartDirections = ["<", ">", "^", "v"];
-        const fullGrid = lines.map((l) => l.split("").map((c) => cartDirections.indexOf(c) >= 0 ? c : stringToCell(c)));
-        let carts: Cart[] = [];
-        fullGrid.forEach((line, y) => {
-            line.forEach((cell, x) => {
-                if (cartDirections.indexOf(cell) >= 0) {
-                    carts.push(new Cart({ x, y }, stringToDirection(cell)));
-                }
-            });
+class Field {
+
+    public get crashes() {
+        return [...this.crashList];
+    }
+    public get ticks() {
+        return this.internalTicks;
+    }
+    private readonly carts: Cart[] = [];
+    private internalTicks = 0;
+
+    private readonly crashList: Crash[] = [];
+    constructor(private matrix: FixedSizeMatrix<InputCell>) {
+        matrix.onEveryCell((coordinate, cell) => {
+            if (cell && isInputCart(cell)) {
+                const cartDirection = inputToDirection(cell);
+                this.carts.push(new Cart(coordinate, cartDirection));
+                this.hideCart(coordinate);
+            }
         });
-        const grid: Cell[][] = fullGrid.map((l) => l.map((c) => stringToCell(c)));
-        carts = carts.sort((a, b) => a.compareTo(b));
-        let collisions: ReturnType<typeof checkCollisions> = checkCollisions(carts);
-        let iteration = 0;
-        while (collisions === null || !collisions.collides) {
-            if (isCancelled && isCancelled()) {
+    }
+
+    public get remainingCarts() {
+        return this.carts.filter((c) => !c.isCrashed());
+    }
+
+    public hasCrashes() {
+        return this.crashList.length > 0;
+    }
+
+    public tick() {
+        this.moveCarts();
+        this.incrementTicks();
+    }
+
+    public toString(skipCarts: boolean = false) {
+        return this.matrix.toString((e, coordinate) => {
+            if (!e) {
+                return " ";
+            }
+            if (!coordinate || skipCarts) {
+                return e;
+            }
+            const matchingCarts = this.carts.filter((cart) => manhattanDistance(cart.position, coordinate) === 0);
+            if (matchingCarts.length === 0) {
+                return e;
+            } else if (matchingCarts.length === 1) {
+                return matchingCarts[0].toString();
+            } else {
+                return "X";
+            }
+        });
+    }
+    private isVertical(cell: InputCell | undefined) {
+        if (!cell) {
+            return false;
+        } else {
+            return cell === "|" || cell === "\\" || cell === "/" || cell === "+" || isInputCart(cell);
+        }
+    }
+
+    private isHorizontal(cell: InputCell | undefined) {
+        if (!cell) {
+            return false;
+        } else {
+            return cell === "-" || cell === "\\" || cell === "/" || cell === "+" || isInputCart(cell);
+        }
+    }
+    private hideCart(coordinate: Coordinate) {
+        const up = this.matrix.get(directions.up.sum(coordinate));
+        const down = this.matrix.get(directions.down.sum(coordinate));
+        const left = this.matrix.get(directions.left.sum(coordinate));
+        const right = this.matrix.get(directions.right.sum(coordinate));
+        if (this.isVertical(up) && this.isVertical(down)) {
+            if (this.isHorizontal(left) && this.isHorizontal(right)) {
+                this.matrix.set(coordinate, "+");
+            } else {
+                this.matrix.set(coordinate, "|");
+            }
+        } else if (this.isHorizontal(left) && this.isHorizontal(right)) {
+            this.matrix.set(coordinate, "-");
+        } else {
+            throw new Error("Don't know what to put here :( " + JSON.stringify(coordinate));
+        }
+    }
+    private incrementTicks() {
+        this.internalTicks++;
+    }
+
+    private getOrderedCarts(): Cart[] {
+        return this.carts.filter((e) => !e.isCrashed()).sort((a, b) => {
+            if (a.position.y === b.position.y) {
+                return a.position.x - b.position.x;
+            } else {
+                return a.position.y - b.position.y;
+            }
+        });
+    }
+    private moveCarts() {
+        const cartList = this.getOrderedCarts();
+        for (const cart of cartList) {
+            cart.handleInput((coordinate) => this.matrix.get(coordinate)!);
+            this.checkCollision(cart.position, cartList);
+        }
+    }
+    private checkCollision(position: Coordinate, candidates: Cart[]) {
+        const colliding = candidates.filter((c) => manhattanDistance(c.position, position) === 0);
+        if (colliding.length === 0) {
+            throw new Error("There should at least be one cart here");
+        } else if (colliding.length > 1) {
+            colliding.forEach((cart) => cart.crash());
+            this.crashList.push({
+                carts: colliding,
+                position
+            });
+        }
+    }
+}
+
+export const mineCartMadness = entryForFile(
+    async ({ lines, outputCallback, statusCallback, isCancelled, pause }) => {
+        const field = parseLines(lines);
+        await outputCallback(field.toString(true), true);
+        await pause();
+        while (!isCancelled || !isCancelled()) {
+            await outputCallback([
+                " ",
+                field.toString(false)
+            ], true);
+            field.tick();
+            if (field.hasCrashes()) {
                 break;
             }
-            carts = carts.map((c) => c.move(grid[c.coordinate.y][c.coordinate.x]));
-            carts = carts.sort((a, b) => b.compareTo(a));
-            const output = grid.map((line) => line.map((c) => c as Output));
-            carts.forEach((c) => output[c.coordinate.y][c.coordinate.x] = directionToString(c.direction));
-            collisions = checkCollisions(carts);
+            await pause();
+        }
+        await outputCallback([
+            "Crash: " + JSON.stringify(field.crashes[0].position),
+            field.toString(false)
+        ], true);
+    },
+    async ({ lines, outputCallback, statusCallback, isCancelled, pause }) => {
+        const field = parseLines(lines);
+        await outputCallback(field.toString(true), true);
+        await pause();
+        while (!isCancelled || !isCancelled()) {
             if (statusCallback) {
                 await statusCallback({
-                    carts,
-                    grid: output
+                    messageType: "Timeout",
+                    timeout: 0
                 });
             }
-            // if (++iteration % 100 === 0) {
-            await outputCallback("Iteration " + (iteration++) + " done");
-            //     break;
-            // }
+            await outputCallback([
+                "Remaining carts: " + field.remainingCarts.length,
+                field.toString(false)
+            ], true);
+            field.tick();
+            if (field.remainingCarts.length === 1) {
+                break;
+            }
+            await pause();
         }
-        if (isCancelled && isCancelled()) {
-            await outputCallback("Cancelled by user");
-        } else {
-            await outputCallback(collisions!.prev.coordinate);
-        }
-    },
-    async ({ lines, outputCallback }) => {
-        throw Error("Not implemented");
+        await outputCallback([
+            "Last cart: " + JSON.stringify(field.remainingCarts[0].position),
+            field.toString(false)
+        ], true);
     }
-    // async ({lines, outputCallback, statusCallback?: ((status: Status) => void)}) => {
-    //     const cartDirections = ["<", ">", "^", "v"];
-    //     const fullGrid = lines.map((l) => l.split("").map(
-    //     (c) => cartDirections.indexOf(c) >= 0 ? c : stringToCell(c))
-    // );
-    //     let carts: Cart[] = [];
-    //     fullGrid.forEach((line, y) => {
-    //         line.forEach((cell, x) => {
-    //             if (cartDirections.indexOf(cell) >= 0) {
-    //                 carts.push(new Cart({ x, y }, stringToDirection(cell)));
-    //             }
-    //         });
-    //     });
-    //     const grid: Cell[][] = fullGrid.map((l) => l.map((c) => stringToCell(c)));
-    //     carts = carts.sort((a, b) => a.compareTo(b));
-    //     let collisions: ReturnType<typeof checkCollisions> = checkCollisions(carts);
-    //     let iteration = 0;
-    //     while (collisions === null || !collisions.collides) {
-    //         carts = carts.map((c) => c.move(grid[c.coordinate.y][c.coordinate.x]));
-    //         carts = carts.sort((a, b) => b.compareTo(a));
-    //         const output = grid.map((line) => line.map((c) => c as Output));
-    //         carts.forEach((c) => output[c.coordinate.y][c.coordinate.x] = directionToString(c.direction));
-    //         collisions = checkCollisions(carts);
-    //         if (statusCallback) {
-    //             statusCallback({
-    //                 carts,
-    //                 grid: output
-    //             });
-    //         }
-    //         // if (++iteration % 100 === 0) {
-    //         await outputCallback("Iteration " + (iteration++) + " done");
-    //         //     break;
-    //         // }
-    //     }
-    //     await outputCallback(collisions!.prev.coordinate);
-    // },
-    // async ({lines, outputCallback}) => {
-    //     throw Error("Not implemented");
-    // }
 );

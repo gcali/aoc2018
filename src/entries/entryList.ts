@@ -11,7 +11,7 @@ import { entry as marbleMania } from "./single-entries/2018/marble-mania";
 import { entry as starsAlign } from "./single-entries/2018/the-stars-align";
 import { entry as chronalCharge } from "./single-entries/2018/chronal-charge";
 import { entry as subterranean } from "./single-entries/2018/subterranean";
-import { entry as mineCart } from "./single-entries/2018/mine-cart-madness";
+import { mineCartMadness } from "./single-entries/2018/mine-cart-madness";
 import { entry as chocolateCharts } from "./single-entries/2018/chocolate-charts";
 import { entry as beverageBandits } from "./single-entries/2018/beverage-bandits";
 import { entry as chronalClassification } from "./single-entries/2018/chronal-classification";
@@ -36,6 +36,7 @@ import { oxygenSystem } from "./single-entries/2019/oxygen-system";
 import { flawedFrequencyTransmission } from "./single-entries/2019/flawed-frequency-transmission";
 import { setAndForget } from "./single-entries/2019/set-and-forget";
 import { manyWorldInterpretation } from "./single-entries/2019/many-worlds-interpretation";
+import { inverseCaptcha } from "./single-entries/2017/inverse-captcha";
 
 export interface EntryRoute extends EntryRouteBase {
     date: number;
@@ -54,6 +55,13 @@ function enrichList(entries: EntryRouteBase[]): EntryRoute[] {
 
 
 export const entryList: { [key: string]: EntryRoute[] } = {
+    2017: enrichList([
+        {
+            name: "inverse-captcha",
+            title: "Inverse Captcha",
+            entry: inverseCaptcha
+        }
+    ]),
     2018: enrichList([
         {
             name: "frequency",
@@ -118,7 +126,7 @@ export const entryList: { [key: string]: EntryRoute[] } = {
         {
             name: "mine-cart-madness",
             title: "Mine Cart Madness",
-            entry: mineCart,
+            entry: mineCartMadness,
             hasCustomComponent: true
         },
         {

@@ -1,4 +1,5 @@
 import { SimpleBest, ascending } from "./best";
+import { coordinateToKey } from "../entries/single-entries/2019/oxygen-system";
 
 export interface Coordinate {
     x: number;
@@ -65,13 +66,15 @@ export const directionList = [
     directions.downRight
 ];
 
-export type Rotation = "Clockwise" | "Counterclockwise";
+export type Rotation = "Clockwise" | "Counterclockwise" | "None";
 export function rotate(coordinate: CCoordinate, direction: Rotation): CCoordinate {
     switch (direction) {
-        case "Clockwise":
-            return new CCoordinate(coordinate.y, -coordinate.x);
         case "Counterclockwise":
+            return new CCoordinate(coordinate.y, -coordinate.x);
+        case "Clockwise":
             return new CCoordinate(-coordinate.y, coordinate.x);
+        case "None":
+            return coordinate;
     }
 }
 

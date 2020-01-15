@@ -3,15 +3,19 @@
         .input
             button(@click="nextState", :class="{hidden: !executing}") Next
             button(@click="stop", :class="{hidden: !executing}") Stop
+            button(@click="run", :class="{hidden: !executing}") Toggle Run
         .output
             EntrySimpleOutput(:key="$route.path", :lines="output")
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop } from "vue-property-decorator";
-import { Entry, EntryFileHandling, executeEntry } from "../../entries/entry";
+import { Entry, EntryFileHandling, executeEntry, simpleOutputCallbackFactory } from "../../entries/entry";
 import EntryTemplate from "@/components/EntryTemplate.vue";
 import EntrySimpleOutput from "@/components/EntrySimpleOutput.vue";
+import { setTimeoutAsync } from "../../support/async";
+import { isTimeoutMessage } from "../../entries/entryStatusMessages";
+
 @Component({
     components: {
         EntryTemplate,
@@ -27,43 +31,49 @@ export default class MineCartEntryView extends Vue {
     private executing: boolean = false;
     private resolver?: () => void;
     private shouldStop: boolean = false;
+    private shouldRun: boolean = false;
+
+    private timeout = 100;
 
     private output: string[] = [];
 
     public async readFile(fileHandling: EntryFileHandling) {
+        this.shouldRun = false;
         this.shouldStop = false;
         this.executing = true;
         this.output = [];
+        this.timeout = 100;
         const that = this;
         try {
             await executeEntry(
-                this.entry,
-                fileHandling.choice,
-                fileHandling.content,
-                (line, shouldClear) => {
-                    if (shouldClear) {
-                        this.output = [];
+                {
+                    entry: this.entry,
+                    choice: fileHandling.choice,
+                    lines: fileHandling.content,
+                    outputCallback: simpleOutputCallbackFactory(this.output),
+                    isCancelled: () => that.shouldStop,
+                    pause: () => {
+                        const promise = new Promise<void>((resolve, reject) => {
+                            if (this.shouldRun) {
+                                setTimeout(resolve, this.timeout);
+                            } else {
+                                this.resolver = resolve;
+                            }
+                        });
+                        return promise;
+                    },
+                    statusCallback: async (message) => {
+                        if (isTimeoutMessage(message)) {
+                            this.timeout = message.timeout;
+                        }
                     }
-                    if (line === null) {
-                        this.output = [];
-                    } else if (typeof line === "string") {
-                        this.output.push(line);
-                    } else if (Array.isArray(line)) {
-                        this.output.push(line.join("\n"));
-                    } else {
-                        this.output.push(JSON.stringify(line));
-                    }
-                    return new Promise<void>(
-                        (resolve) => (that.resolver = resolve)
-                    );
-                },
-                () => that.shouldStop
+                }
             );
         } catch (e) {
-            this.output.push("Error:");
-            this.output.push(JSON.stringify(e));
+            throw e;
+        } finally {
+            this.executing = false;
         }
-        this.executing = false;
     }
 
     public stop() {
@@ -71,6 +81,9 @@ export default class MineCartEntryView extends Vue {
         this.nextState();
     }
 
+    public run() {
+        this.shouldRun = !this.shouldRun;
+    }
     public nextState() {
         if (this.resolver) {
             const resolver = this.resolver;

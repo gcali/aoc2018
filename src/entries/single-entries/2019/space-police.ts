@@ -19,9 +19,9 @@ interface Step {
 
 function deserializeRotation(n: number): Rotation {
     if (n === 1) {
-        return "Clockwise";
-    } else {
         return "Counterclockwise";
+    } else {
+        return "Clockwise";
     }
 }
 

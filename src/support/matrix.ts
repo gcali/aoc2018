@@ -81,8 +81,12 @@ export class FixedSizeMatrix<T> {
         }
     }
 
-    public toString(stringifier: (cell: T | undefined) => string): string {
-        const serialized = wu(this.overRows()).map((row) => row.map(stringifier).join("")).toArray().join("\n");
+    public toString(stringifier: (cell: T | undefined, coordinate?: Coordinate) => string): string {
+        let rowIndex = -1;
+        const serialized = wu(this.overRows()).map((row) => {
+            rowIndex++;
+            return row.map((cell, cellIndex) => stringifier(cell, { x: cellIndex, y: rowIndex })).join("");
+        }).toArray().join("\n");
         return serialized;
     }
 
