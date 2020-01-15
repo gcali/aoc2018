@@ -35,6 +35,7 @@ export function calculateDistances<T>(
         distance: 0
     };
 
+    distanceMap[serialization.serialize(startNode.coordinate)] = startNode;
     visitQueue.add(startNode);
 
     while (!visitQueue.isEmpty) {

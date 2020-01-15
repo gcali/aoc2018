@@ -128,6 +128,23 @@ export const sumCoordinate = (a: Coordinate, b: Coordinate): Coordinate => {
     };
 };
 
+export function getDirection(from: Coordinate, to: Coordinate): CCoordinate {
+    if (manhattanDistance(from, to) !== 1) {
+        throw new RangeError("Cannot move to distant cell");
+    }
+    if (from.x > to.x) {
+        return directions.left;
+    } else if (from.x < to.x) {
+        return directions.right;
+    } else if (from.y > to.y) {
+        return directions.up;
+    } else if (from.y < to.y) {
+        return directions.down;
+    } else {
+        throw new Error("Something went wrong :(");
+    }
+}
+
 export const scalarCoordinates = (a: Coordinate, l: number) => ({ x: a.x * l, y: a.y * l });
 
 export const oppositeCoordinate = (a: Coordinate): Coordinate => ({ x: -a.x, y: -a.y });

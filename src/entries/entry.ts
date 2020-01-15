@@ -76,9 +76,7 @@ export async function executeEntry(
     await callback({
         lines,
         outputCallback,
-        pause: () => new Promise<void>((resolve) => setTimeout(() => {
-            resolve();
-        }, 0)),
+        pause: () => new Promise<void>((resolve) => setTimeout(resolve, 0)),
         isCancelled
 
     });
