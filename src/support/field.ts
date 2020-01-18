@@ -3,7 +3,7 @@ import { Coordinate, getBoundaries, CCoordinate } from "./geometry";
 
 export class UnknownSizeField<T> {
 
-    private readonly cells: { [key: string]: T } = {};
+    private readonly cells: { [key: string]: T | undefined } = {};
 
     public set(coordinate: Coordinate, element: T): void {
         this.cells[this.serializeCoordinate(coordinate)] = element;
@@ -22,7 +22,10 @@ export class UnknownSizeField<T> {
         matrix.setDelta(CCoordinate.fromCoordinate(bounds.topLeft));
         Object.keys(this.cells).forEach((serialized) => {
             const coordinate = this.deserializeCoordinate(serialized);
-            matrix.set(coordinate, this.cells[serialized]);
+            const cell = this.cells[serialized];
+            if (cell !== undefined) {
+                matrix.set(coordinate, cell);
+            }
         });
         return matrix;
     }
