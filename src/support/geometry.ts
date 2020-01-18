@@ -11,6 +11,14 @@ function isBounds(c: Coordinate | Bounds): c is Bounds {
 }
 
 export class CCoordinate implements Coordinate {
+
+    public get opposite() {
+        return new CCoordinate(-this.x, -this.y);
+    }
+
+    public static fromCoordinate(c: Coordinate) {
+        return new CCoordinate(c.x, c.y);
+    }
     public constructor(public x: number, public y: number) {
 
     }
@@ -108,6 +116,12 @@ export function isInBounds(c: Coordinate, bounds: Bounds) {
     );
 }
 export const getBoundaries = (points: Coordinate[]): Bounds => {
+    if (points.length === 0) {
+        return {
+            topLeft: { x: 0, y: 0 },
+            size: { x: 0, y: 0 }
+        };
+    }
     const { maxX, minX, maxY, minY } = getRanges(points);
     const size = {
         x: (maxX.currentBest! - minX.currentBest! + 1),

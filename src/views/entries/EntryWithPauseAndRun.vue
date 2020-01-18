@@ -22,7 +22,7 @@ import { isTimeoutMessage } from "../../entries/entryStatusMessages";
         EntrySimpleOutput
     }
 })
-export default class MineCartEntryView extends Vue {
+export default class EntryWithPauseAndRun extends Vue {
     @Prop() public title!: string;
     @Prop() public id!: number;
     @Prop() public entry!: Entry;

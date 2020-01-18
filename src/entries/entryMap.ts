@@ -1,10 +1,10 @@
 import { VueConstructor } from "vue";
 import { Vue } from "vue-property-decorator";
 
-import MineCartEntryView from "@/views/entries/MineCartEntryView.vue";
+import EntryWithPauseAndRun from "@/views/entries/EntryWithPauseAndRun.vue";
 
 export const map: { [key: string]: VueConstructor<Vue> } = {
-    "mine-cart-madness": MineCartEntryView,
-    "settlers-of-the-north-pole": MineCartEntryView,
-    "go-with-the-flow": MineCartEntryView
+    "mine-cart-madness": EntryWithPauseAndRun,
+    "settlers-of-the-north-pole": EntryWithPauseAndRun,
+    "go-with-the-flow": EntryWithPauseAndRun
 };

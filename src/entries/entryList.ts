@@ -37,6 +37,7 @@ import { flawedFrequencyTransmission } from "./single-entries/2019/flawed-freque
 import { setAndForget } from "./single-entries/2019/set-and-forget";
 import { manyWorldInterpretation } from "./single-entries/2019/many-worlds-interpretation";
 import { inverseCaptcha } from "./single-entries/2017/inverse-captcha";
+import { aRegularMap } from "./single-entries/2018/a-regular-map";
 
 export interface EntryRoute extends EntryRouteBase {
     date: number;
@@ -160,6 +161,11 @@ export const entryList: { [key: string]: EntryRoute[] } = {
             title: "Go with the flow",
             entry: flow,
             hasCustomComponent: true
+        },
+        {
+            name: "a-regular-map",
+            title: "A Regular Map",
+            entry: aRegularMap
         }
     ]),
     2019: enrichList([

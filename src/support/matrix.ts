@@ -1,11 +1,17 @@
-import { Coordinate } from "./geometry";
+import { Coordinate, CCoordinate } from "./geometry";
 import wu from "wu";
 import { voidIsPromise, isPromise } from "./async";
 
 export class FixedSizeMatrix<T> {
     public data: Array<T | undefined>;
+
+    private delta: CCoordinate = new CCoordinate(0, 0);
     constructor(public size: Coordinate) {
         this.data = new Array<(T | undefined)>(size.x * size.y);
+    }
+
+    public setDelta(delta: CCoordinate) {
+        this.delta = delta;
     }
 
     public fill(fillValue: T | undefined) {
@@ -21,6 +27,7 @@ export class FixedSizeMatrix<T> {
         this.data = [...a];
     }
     public get(c: Coordinate): T | undefined {
+        c = this.delta.opposite.sum(c);
         const index = this.indexCalculator(c);
         if (index !== null) {
             return this.data[index];
@@ -31,7 +38,7 @@ export class FixedSizeMatrix<T> {
         for (let x = 0; x < this.size.x; x++) {
             for (let y = 0; y < this.size.y; y++) {
                 if (predicate(this.get({ x, y })!)) {
-                    return { x, y };
+                    return this.delta.sum({ x, y });
                 }
             }
         }
@@ -44,7 +51,7 @@ export class FixedSizeMatrix<T> {
     ): Promise<U | undefined> {
         for (let x = 0; x < this.size.x; x++) {
             for (let y = 0; y < this.size.y; y++) {
-                const res = callback({ x, y }, this.get({ x, y }));
+                const res = callback(this.delta.sum({ x, y }), this.get({ x, y }));
                 if (isPromise(res)) {
                     const awaited = await res;
                     if (awaited !== undefined) {
@@ -56,6 +63,7 @@ export class FixedSizeMatrix<T> {
     }
 
     public set(c: Coordinate, value: T) {
+        c = this.delta.opposite.sum(c);
         const index = this.indexCalculator(c);
         if (index !== null) {
             this.data[index] = value;
@@ -85,7 +93,7 @@ export class FixedSizeMatrix<T> {
         let rowIndex = -1;
         const serialized = wu(this.overRows()).map((row) => {
             rowIndex++;
-            return row.map((cell, cellIndex) => stringifier(cell, { x: cellIndex, y: rowIndex })).join("");
+            return row.map((cell, cellIndex) => stringifier(cell, this.delta.sum({ x: cellIndex, y: rowIndex }))).join("");
         }).toArray().join("\n");
         return serialized;
     }

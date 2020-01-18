@@ -1,6 +1,6 @@
 import "mocha";
 import { expect } from "chai";
-import { getBoundaries, getRanges } from "../geometry";
+import { getBoundaries, getRanges, manhattanDistance } from "../geometry";
 
 describe("Boundaries", () => {
 
@@ -26,5 +26,9 @@ describe("Boundaries", () => {
         expect(ranges.minX.currentBest).to.equal(1);
         expect(ranges.minY.currentBest).to.equal(0);
     });
+
+    it("should have 0 size for empty list", () => {
+        expect(manhattanDistance(getBoundaries([]).size, { x: 0, y: 0 })).to.equal(0);
+    })
 
 });
