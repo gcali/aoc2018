@@ -1,4 +1,5 @@
 import { entryForFile } from "../../entry";
+import { UnknownSizeField } from "../../../support/field";
 
 type Regex = Array<Token | Regex[]>;
 type Token = string;
@@ -11,7 +12,9 @@ export function parseLines(lines: string[]): Regex {
     const tokenList = lines
         .map((l) => l.trim())
         .filter((l) => l.length > 0)
-        .flatMap((l) => l.slice(1, l.length - 1));
+        .map((l) => l.slice(1, l.length - 1))
+        .join("")
+        .split("");
     return parseRegex(tokenList);
 }
 
@@ -56,6 +59,12 @@ function parseRegex(token: string[]): Regex {
         throw new RangeError("Regex had to have one root!");
     }
     return regex[0];
+}
+
+type FieldCell = "." | "|" | "-" | "#";
+
+function buildField(regex: Regex, field: UnknownSizeField<FieldCell> = new UnknownSizeField<FieldCell>()) {
+    // const field = new UnknownSizeField<FieldCell>();
 }
 
 export const aRegularMap = entryForFile(
