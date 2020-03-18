@@ -38,6 +38,10 @@ import { setAndForget } from "./single-entries/2019/set-and-forget";
 import { manyWorldInterpretation } from "./single-entries/2019/many-worlds-interpretation";
 import { inverseCaptcha } from "./single-entries/2017/inverse-captcha";
 import { aRegularMap } from "./single-entries/2018/a-regular-map";
+import { corruptionChecksum } from './single-entries/2017/corruption-checksum';
+import { spiralMemory } from './single-entries/2017/spiral-memory';
+import { highEntropyPasshprases } from './single-entries/2017/high-entropy-passhprases';
+import { aMazeOfTwistyTrampolinesAllAlike } from './single-entries/2017/a-maze-of-twisty-trampolines-all-alike';
 
 export interface EntryRoute extends EntryRouteBase {
     date: number;
@@ -61,6 +65,26 @@ export const entryList: { [key: string]: EntryRoute[] } = {
             name: "inverse-captcha",
             title: "Inverse Captcha",
             entry: inverseCaptcha
+        },
+        {
+            name: "corruption-checksum",
+            title: "Corruption Checksum",
+            entry: corruptionChecksum
+        },
+        {
+            name: "spiral-memory",
+            title: "Spiral Memory",
+            entry: spiralMemory
+        },
+        {
+            name: "high-entropy-passphrases",
+            title: "High-Entropy Passphrases",
+            entry: highEntropyPasshprases
+        },
+        {
+            name: "a-maze-of-twisty-trampolines-all-alike",
+            title: "A Maze of Twisty Trampolines, All Alike",
+            entry: aMazeOfTwistyTrampolinesAllAlike
         }
     ]),
     2018: enrichList([

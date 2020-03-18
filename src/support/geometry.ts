@@ -176,6 +176,17 @@ export const getSurrounding = (c: Coordinate): Coordinate[] => [
     directions.right
 ].map((d) => d.sum(c));
 
+export const getFullSurrounding = (c: Coordinate): Coordinate[] => [
+    directions.up,
+    directions.left,
+    directions.down,
+    directions.right,
+    directions.upLeft,
+    directions.upRight,
+    directions.downLeft,
+    directions.downRight,
+].map((d) => d.sum(c));
+
 export function getRanges(points: Coordinate[]) {
     const minComparator = (a: number, b: number) => b - a;
     const maxComparator = (a: number, b: number) => a - b;

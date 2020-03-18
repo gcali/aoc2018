@@ -42,5 +42,8 @@ export default class Entries extends Vue {
     flex-wrap: wrap;
     list-style: none;
     padding: 0;
+    li {
+        display: flex;
+    }
 }
 </style>
