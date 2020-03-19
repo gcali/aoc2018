@@ -42,6 +42,11 @@ import { corruptionChecksum } from './single-entries/2017/corruption-checksum';
 import { spiralMemory } from './single-entries/2017/spiral-memory';
 import { highEntropyPasshprases } from './single-entries/2017/high-entropy-passhprases';
 import { aMazeOfTwistyTrampolinesAllAlike } from './single-entries/2017/a-maze-of-twisty-trampolines-all-alike';
+import { memoryReallocation } from './single-entries/2017/memory-reallocation';
+import { recursiveCircus } from './single-entries/2017/recursive-circus';
+import { heardYouLikeRegisters } from './single-entries/2017/heard-you-like-registers';
+import { streamProcessing } from './single-entries/2017/stream-processing';
+import { knotHash } from './single-entries/2017/knot-hash';
 
 export interface EntryRoute extends EntryRouteBase {
     date: number;
@@ -85,6 +90,31 @@ export const entryList: { [key: string]: EntryRoute[] } = {
             name: "a-maze-of-twisty-trampolines-all-alike",
             title: "A Maze of Twisty Trampolines, All Alike",
             entry: aMazeOfTwistyTrampolinesAllAlike
+        },
+        {
+            name: "memory-reallocation",
+            title: "Memory Reallocation",
+            entry: memoryReallocation
+        },
+        {
+            name: "recursive-circus",
+            title: "Recursive Circus",
+            entry: recursiveCircus
+        },
+        {
+            name: "heard-you-like-registers",
+            title: "I Heard You Like Registers",
+            entry: heardYouLikeRegisters
+        },
+        {
+            name: "stream-processing",
+            title: "Stream Processing",
+            entry: streamProcessing
+        },
+        {
+            name: "knoth-hash",
+            title: "Knot Hash",
+            entry: knotHash
         }
     ]),
     2018: enrichList([

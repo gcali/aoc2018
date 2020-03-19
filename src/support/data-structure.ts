@@ -130,10 +130,18 @@ export class Tree<T> {
     return [...this.subNodes];
   }
 
+  public get head() {
+    return this.element;
+  }
+
   public append(e: T, to: T) {
     if (this.element === to) {
       this.subNodes.push(new Tree<T>(e));
     }
+  }
+
+  public appendTree(e: Tree<T>) {
+    this.subNodes.push(e);
   }
 }
 
