@@ -7,7 +7,6 @@ const testLengths = (lengths: number[], result: number[]) => {
         lengths.forEach(length => {
             [circle, state] = reverse(circle, state, length);
         });
-        console.log(circle);
         expectSameArrays(result, circle);
 }
         //const lengths = [3, 4, 1, 5];

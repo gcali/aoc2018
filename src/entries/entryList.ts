@@ -47,6 +47,8 @@ import { recursiveCircus } from './single-entries/2017/recursive-circus';
 import { heardYouLikeRegisters } from './single-entries/2017/heard-you-like-registers';
 import { streamProcessing } from './single-entries/2017/stream-processing';
 import { knotHash } from './single-entries/2017/knot-hash';
+import { hexEd } from './single-entries/2017/hex-ed';
+import { digitalPlumber } from './single-entries/2017/digital-plumber';
 
 export interface EntryRoute extends EntryRouteBase {
     date: number;
@@ -115,6 +117,16 @@ export const entryList: { [key: string]: EntryRoute[] } = {
             name: "knoth-hash",
             title: "Knot Hash",
             entry: knotHash
+        },
+        {
+            name: "hex-ed",
+            title: "Hex Ed",
+            entry: hexEd
+        },
+        {
+            name: "digital-plumber",
+            title: "Digital Plumber",
+            entry: digitalPlumber
         }
     ]),
     2018: enrichList([
