@@ -49,6 +49,7 @@ import { streamProcessing } from './single-entries/2017/stream-processing';
 import { knotHash } from './single-entries/2017/knot-hash';
 import { hexEd } from './single-entries/2017/hex-ed';
 import { digitalPlumber } from './single-entries/2017/digital-plumber';
+import { packetScanners } from './single-entries/2017/packet-scanners';
 
 export interface EntryRoute extends EntryRouteBase {
     date: number;
@@ -127,6 +128,11 @@ export const entryList: { [key: string]: EntryRoute[] } = {
             name: "digital-plumber",
             title: "Digital Plumber",
             entry: digitalPlumber
+        },
+        {
+            name: "packet-scanners",
+            title: "Packet Scanners",
+            entry: packetScanners
         }
     ]),
     2018: enrichList([
