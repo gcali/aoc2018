@@ -50,6 +50,10 @@ import { knotHash } from './single-entries/2017/knot-hash';
 import { hexEd } from './single-entries/2017/hex-ed';
 import { digitalPlumber } from './single-entries/2017/digital-plumber';
 import { packetScanners } from './single-entries/2017/packet-scanners';
+import { diskDefragmentation } from './single-entries/2017/disk-defragmentation';
+import { duelingGenerators } from './single-entries/2017/dueling-generators';
+import { permutationPromenade } from './single-entries/2017/permutation-promenade';
+import { spinlock } from './single-entries/2017/spinlock';
 
 export interface EntryRoute extends EntryRouteBase {
     date: number;
@@ -133,6 +137,26 @@ export const entryList: { [key: string]: EntryRoute[] } = {
             name: "packet-scanners",
             title: "Packet Scanners",
             entry: packetScanners
+        },
+        {
+            name: "disk-defragmentation",
+            title: "Disk Defragmentation",
+            entry: diskDefragmentation
+        },
+        {
+            name: "dueling-generators",
+            title: "Dueling Generators",
+            entry: duelingGenerators
+        },
+        {
+            name: "permutation-promenade",
+            title: "Permutation Promenade",
+            entry: permutationPromenade
+        },
+        {
+            name: "spinlock",
+            title: "Spinlock",
+            entry: spinlock
         }
     ]),
     2018: enrichList([

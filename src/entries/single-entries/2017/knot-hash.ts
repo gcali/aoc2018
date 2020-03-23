@@ -59,19 +59,27 @@ export const knotHash = entryForFile(
         await outputCallback(circle[0] * circle[1]);
     },
     async ({ lines, outputCallback }) => {
-        const baseSequence = [17, 31, 73, 47, 23];
-        const lengths = [...lines[0]].map(e => e.charCodeAt(0)).concat(baseSequence);
-        let [circle, state] = circleGenerator();
-        for (let i = 0; i < 64; i++) {
-            lengths.forEach(length => {
-                [circle, state] = reverse(circle, state, length);
-            });
-        }
-        const result = groupBy(circle, 16)
-            .map(group => group.reduce((acc, next) => acc ^ next))
-            .map(result => result.toString(16).padStart(2, "0"))
-            .join("");
-
-            await outputCallback(result);
+        const input = lines[0];
+        const result = calculateKnotHash(input);
+        await outputCallback(result);
     }
 )
+
+export function calculateKnotHash(input: string, baseSequence: (number[] | null) = null) {
+    if (baseSequence === null) {
+        baseSequence = [17, 31, 73, 47, 23];
+    }
+    const decodedInput = [...input].map(e => e.charCodeAt(0));
+    const lengths = decodedInput.concat(baseSequence);
+    let [circle, state] = circleGenerator();
+    for (let i = 0; i < 64; i++) {
+        lengths.forEach(length => {
+            [circle, state] = reverse(circle, state, length);
+        });
+    }
+    const result = groupBy(circle, 16)
+        .map(group => group.reduce((acc, next) => acc ^ next))
+        .map(result => result.toString(16).padStart(2, "0"))
+        .join("");
+    return result;
+}
