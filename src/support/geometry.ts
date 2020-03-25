@@ -6,6 +6,18 @@ export interface Coordinate {
     y: number;
 }
 
+export interface Coordinate3d {
+    x: number;
+    y: number;
+    z: number;
+}
+
+export type FullCoordinate = Coordinate | Coordinate3d;
+
+function is3d(c: FullCoordinate): c is Coordinate3d {
+    return (<Coordinate3d>c).z !== undefined;
+}
+
 function isBounds(c: Coordinate | Bounds): c is Bounds {
     return (c as Bounds).size !== undefined;
 }
@@ -167,7 +179,10 @@ export const scalarCoordinates = (a: Coordinate, l: number) => ({ x: a.x * l, y:
 export const oppositeCoordinate = (a: Coordinate): Coordinate => ({ x: -a.x, y: -a.y });
 
 export const diffCoordinate = (a: Coordinate, b: Coordinate): Coordinate => sumCoordinate(a, oppositeCoordinate(b));
-export const manhattanDistance = (a: Coordinate, b: Coordinate) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+export const manhattanDistance = (a: FullCoordinate, b: FullCoordinate) => {
+    const z = (is3d(a) && is3d(b)) ? Math.abs(a.z - b.z) : 0;
+    return Math.abs(a.x - b.x) + Math.abs(a.y - b.y) + z;
+}
 
 export const getSurrounding = (c: Coordinate): Coordinate[] => [
     directions.up,

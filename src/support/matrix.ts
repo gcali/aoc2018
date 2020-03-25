@@ -1,5 +1,5 @@
-import { Coordinate, CCoordinate } from "./geometry";
-import wu from "wu";
+import { Coordinate, CCoordinate, manhattanDistance } from "./geometry";
+import wu, { zip } from "wu";
 import { voidIsPromise, isPromise } from "./async";
 
 export class FixedSizeMatrix<T> {
@@ -35,9 +35,21 @@ export class FixedSizeMatrix<T> {
     }
 
     public findOne(predicate: (cell: T) => boolean): Coordinate | null {
+        // for (let x = 0; x < this.size.x; x++) {
+        //     for (let y = 0; y < this.size.y; y++) {
+        //         if (predicate(this.get({ x, y })!)) {
+        //             return this.delta.sum({ x, y });
+        //         }
+        //     }
+        // }
+        // return null;
+        return this.findOneWithCoordinate((cell, coordinate) => predicate(cell));
+    }
+
+    public findOneWithCoordinate(predicate: (cell: T, coordinate: Coordinate)=> boolean): Coordinate | null {
         for (let x = 0; x < this.size.x; x++) {
             for (let y = 0; y < this.size.y; y++) {
-                if (predicate(this.get({ x, y })!)) {
+                if (predicate(this.get({ x, y })!, {x, y})) {
                     return this.delta.sum({ x, y });
                 }
             }
@@ -103,5 +115,22 @@ export class FixedSizeMatrix<T> {
             return null;
         }
         return c.y * this.size.x + c.x;
+    }
+
+    public isSameAs(other: FixedSizeMatrix<T>, customComparer?: (a: (T | undefined), b: (T | undefined)) => boolean): boolean {
+        if (manhattanDistance(this.size, other.size) !== 0) {
+            return false;
+        }
+        const thisFlatData = this.data;
+        const otherFlatData = other.data;
+        for (const tuple of zip(thisFlatData, otherFlatData)) {
+            if (customComparer) {
+                return customComparer(tuple[0], tuple[1]);
+            }
+            if (tuple[0] !== tuple[1]) {
+                return false;
+            }
+        }
+        return true;
     }
 }

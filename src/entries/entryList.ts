@@ -54,6 +54,10 @@ import { diskDefragmentation } from './single-entries/2017/disk-defragmentation'
 import { duelingGenerators } from './single-entries/2017/dueling-generators';
 import { permutationPromenade } from './single-entries/2017/permutation-promenade';
 import { spinlock } from './single-entries/2017/spinlock';
+import { duet } from './single-entries/2017/duet';
+import { aSeriesOfTubes } from './single-entries/2017/a-series-of-tubes';
+import { particleSwarm } from './single-entries/2017/particle-swarm';
+import { fractalArt } from './single-entries/2017/fractal-art';
 
 export interface EntryRoute extends EntryRouteBase {
     date: number;
@@ -157,6 +161,26 @@ export const entryList: { [key: string]: EntryRoute[] } = {
             name: "spinlock",
             title: "Spinlock",
             entry: spinlock
+        },
+        {
+            name: "duet",
+            title: "Duet",
+            entry: duet
+        },
+        {
+            name: "a-series-of-tubes",
+            title: "A Series of Tubes",
+            entry: aSeriesOfTubes
+        },
+        {
+            name: "particle-swarm",
+            title: "Particle Swarm",
+            entry: particleSwarm
+        },
+        {
+            name: "fractal-art",
+            title: "Fractal Art",
+            entry: fractalArt
         }
     ]),
     2018: enrichList([
