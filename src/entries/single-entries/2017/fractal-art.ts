@@ -9,11 +9,6 @@ const flipHorizontal = (matrix: Grid): Grid => {
     matrix.onEveryCell((coordinate, cell) => {
         newGrid.set({y: coordinate.y, x: matrix.size.x - coordinate.x - 1}, cell!);
     });
-    // for (let x = 0; x < newGrid.size.x; x++) {
-    //     for (let y = 0; y < newGrid.size.y; y++) {
-    //         newGrid.set({x,y}, matrix.get({y, x: newGrid.size.x - 1 - x})!);
-    //     }
-    // }
     return newGrid;
 }
 
@@ -27,12 +22,6 @@ const generateAllSymmetries = (matrix: Grid): Grid[] => {
         result.push(matrix);
     }
     return result;
-    const [base,flipped] = [matrix.copy(), flipHorizontal(matrix)];
-    // const rotations = matrix.size.x === 3 ? 7 : 3;
-    const rotations = 3;
-    return [base,flipped]
-        .concat([...Array(rotations)].reduce((acc: Grid[], next) => [rotate(acc[0])].concat([...acc]), [base]))
-        .concat([...Array(rotations)].reduce((acc: Grid[], next) => [rotate(acc[0])].concat([...acc]), [flipped]));
 };
 
 const matches = (matrix: Grid, symmetries: Grid[]): boolean => {
@@ -41,13 +30,6 @@ const matches = (matrix: Grid, symmetries: Grid[]): boolean => {
     }
     for (const symmetry of symmetries) {
         if (matrix.isSameAs(symmetry)) {
-            console.log("--------");
-            console.log(matrix.toString(e => e || " "));
-            console.log("->");
-            console.log(symmetries[0].toString(e => e || " "));
-            console.log("=");
-            console.log(symmetry.toString(e => e || " "));
-            console.log("--------");
             return true;
         }
     }
@@ -71,7 +53,7 @@ const extractGrid = (grid: Grid, offset: Coordinate, size: Coordinate): Grid => 
 };
 
 const splitWithDelta = (fullGrid: Grid): GridWithDelta[] => {
-    const size = fullGrid.size.x % 3 === 0 ? 3 : 2;
+    const size = fullGrid.size.x % 2 === 0 ? 2 : 3;
     const result: GridWithDelta[] = [];
     for (let x = 0; x < fullGrid.size.x; x += size) {
         for (let y = 0; y < fullGrid.size.y; y += size) {
@@ -111,27 +93,6 @@ const transpose = (matrix: Grid): Grid => {
         result.set({x: coordinate.y, y: coordinate.x}, cell!);
     });
     return result;
-}
-
-const rotate = (matrix: Grid): Grid => {
-    const newGrid: Grid = new FixedSizeMatrix<string>(matrix.size);
-    if (matrix.size.x === 2) {
-        newGrid.set({x:0,y:0}, matrix.get({x:1,y:0})!);
-        newGrid.set({x:1,y:0}, matrix.get({x:1,y:1})!);
-        newGrid.set({x:1,y:1}, matrix.get({x:0,y:1})!);
-        newGrid.set({x:0,y:1}, matrix.get({x:0,y:0})!);
-    } else if (matrix.size.x === 3) {
-        newGrid.set({x:0,y:0}, matrix.get({x:2, y:0})!);
-        newGrid.set({x:1,y:0}, matrix.get({x:2, y:1})!);
-        newGrid.set({x:2,y:0}, matrix.get({x:2, y:2})!);
-        newGrid.set({x:2,y:1}, matrix.get({x:1, y:2})!);
-        newGrid.set({x:2,y:2}, matrix.get({x:0, y:2})!);
-        newGrid.set({x:1,y:2}, matrix.get({x:0, y:1})!);
-        newGrid.set({x:0,y:2}, matrix.get({x:0, y:0})!);
-        newGrid.set({x:0,y:1}, matrix.get({x:1, y:0})!);
-        newGrid.set({x:1,y:1}, matrix.get({x:1, y:1})!);
-    }
-    return newGrid;
 }
 
 interface Rule {
@@ -175,16 +136,9 @@ const iterate = (grid: Grid, rules: Rule[]): Grid => {
 
 export const fractalArt = entryForFile(
     async ({ lines, outputCallback }) => {
-
-        // const rule = "###..##..".split("");
-        // const ruleMatrix = new FixedSizeMatrix<string>({x: 3, y:3});
-        // ruleMatrix.setFlatData(rule);
-        // const symmetries = generateAllSymmetries(ruleMatrix);
-        // forEachAsync(symmetries, async symmetry => await outputCallback(symmetry.toString(e => e || " ") + "\n"));
         const startGrid = new FixedSizeMatrix<string>({x: 3, y: 3});
         startGrid.setFlatData(".#...####".split(""));
         const rules = parseRules(lines);
-        //await outputCallback(rules.filter(rule => rule.result.size.x === 3).flatMap(rule => rule.matching).map(g => g.toString(e => e || " ")).join("\n\n"));
         const sizes = [];
         const total = 5;
         let grid = startGrid;
@@ -192,14 +146,23 @@ export const fractalArt = entryForFile(
         for (let i = 0; i < total; i++) {
             grid = iterate(grid, rules);
             sizes.push(grid.size.x);
-            await outputCallback(grid.toString(e => e || " "));
-            await outputCallback("====================================");
         };
-        // await outputCallback(grid.toString(e => e || " "));
-        await outputCallback(sizes);
+        await outputCallback(grid.toString(e => e || " "));
         await outputCallback(grid.data.filter(e => e === "#").length);
     },
     async ({ lines, outputCallback }) => {
-        throw Error("Not implemented");
+        const startGrid = new FixedSizeMatrix<string>({x: 3, y: 3});
+        startGrid.setFlatData(".#...####".split(""));
+        const rules = parseRules(lines);
+        const sizes = [];
+        const total = 18;
+        let grid = startGrid;
+        sizes.push(grid.size.x);
+        for (let i = 0; i < total; i++) {
+            await outputCallback("Iteration: " + i);
+            grid = iterate(grid, rules);
+            sizes.push(grid.size.x);
+        };
+        await outputCallback(grid.data.filter(e => e === "#").length);
     }
 );
