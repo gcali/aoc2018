@@ -60,6 +60,8 @@ import { particleSwarm } from "./single-entries/2017/particle-swarm";
 import { fractalArt } from "./single-entries/2017/fractal-art";
 import { sporificaVirus } from "./single-entries/2017/sporifica-virus";
 import { coprocessorConflagration } from "./single-entries/2017/coprocessor-conflagration";
+import { electromagneticMoat } from "./single-entries/2017/electromagnetic-moat";
+import { haltingProblem } from "./single-entries/2017/the-halting-problem";
 
 export interface EntryRoute extends EntryRouteBase {
     date: number;
@@ -193,6 +195,16 @@ export const entryList: { [key: string]: EntryRoute[] } = {
             name: "coprocessor-conflagration",
             title: "Coprocessor Conflagration",
             entry: coprocessorConflagration
+        },
+        {
+            name: "electromagnetic-moat",
+            title: "Electromagnetic Moat",
+            entry: electromagneticMoat
+        },
+        {
+            name: "the-halting-problem",
+            title: "The Halting Problem",
+            entry: haltingProblem
         }
     ]),
     2018: enrichList([

@@ -1,5 +1,7 @@
 import { entryForFile } from "../../entry";
 import { UnknownSizeField } from "../../../support/field";
+import { Coordinate } from "../../../support/geometry";
+import { NotImplementedError } from "../../../support/error";
 
 type Regex = Array<Token | Regex[]>;
 type Token = string;
@@ -63,8 +65,21 @@ function parseRegex(token: string[]): Regex {
 
 type FieldCell = "." | "|" | "-" | "#";
 
-function buildField(regex: Regex, field: UnknownSizeField<FieldCell> = new UnknownSizeField<FieldCell>()) {
-    // const field = new UnknownSizeField<FieldCell>();
+type Field = UnknownSizeField<FieldCell>;
+
+function buildField(regex: Regex): Field {
+    const field = new UnknownSizeField<FieldCell>();
+    return recursiveBuild(regex, {x: 0, y: 0}, field);
+}
+
+function recursiveBuild(regex: Regex, currentPosition: Coordinate, field: Field): Field {
+    throw new NotImplementedError();
+    regex.forEach((reg) => {
+        if (isToken(reg)) {
+
+        } else {
+        }
+    });
 }
 
 export const aRegularMap = entryForFile(
