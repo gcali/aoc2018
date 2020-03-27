@@ -1,7 +1,4 @@
 import { entryForFile } from "../../entry";
-const {
-  performance
-} = require('perf_hooks');
 
 export const permutationPromenade = entryForFile(
     async ({ lines, outputCallback }) => {
@@ -14,17 +11,11 @@ export const permutationPromenade = entryForFile(
         let programs = programListGenerator(16);
         const instructions = lines[0].split(",").map(i => i.trim());
         const total = 1000000000;
-        const tsStart = performance.now();
         const dances: string[] = [];
         for (let i = 0; i < total; i++) {
             if (i % 100 === 0) {
                 const currentRatio = i/total;
                 await outputCallback(`Done ${currentRatio * 100}%`);
-                const currentTs = performance.now();
-                const deltaTs = currentTs - tsStart;
-                const speed = i / deltaTs;
-                const finishIn = (total - i) * speed;
-                await outputCallback(`Finishing in ${msToTime(finishIn)} ms`);
             }
             programs = dance(instructions, programs);
             const serialized = programs.join("");
