@@ -38,26 +38,28 @@ import { setAndForget } from "./single-entries/2019/set-and-forget";
 import { manyWorldInterpretation } from "./single-entries/2019/many-worlds-interpretation";
 import { inverseCaptcha } from "./single-entries/2017/inverse-captcha";
 import { aRegularMap } from "./single-entries/2018/a-regular-map";
-import { corruptionChecksum } from './single-entries/2017/corruption-checksum';
-import { spiralMemory } from './single-entries/2017/spiral-memory';
-import { highEntropyPasshprases } from './single-entries/2017/high-entropy-passhprases';
-import { aMazeOfTwistyTrampolinesAllAlike } from './single-entries/2017/a-maze-of-twisty-trampolines-all-alike';
-import { memoryReallocation } from './single-entries/2017/memory-reallocation';
-import { recursiveCircus } from './single-entries/2017/recursive-circus';
-import { heardYouLikeRegisters } from './single-entries/2017/heard-you-like-registers';
-import { streamProcessing } from './single-entries/2017/stream-processing';
-import { knotHash } from './single-entries/2017/knot-hash';
-import { hexEd } from './single-entries/2017/hex-ed';
-import { digitalPlumber } from './single-entries/2017/digital-plumber';
-import { packetScanners } from './single-entries/2017/packet-scanners';
-import { diskDefragmentation } from './single-entries/2017/disk-defragmentation';
-import { duelingGenerators } from './single-entries/2017/dueling-generators';
-import { permutationPromenade } from './single-entries/2017/permutation-promenade';
-import { spinlock } from './single-entries/2017/spinlock';
-import { duet } from './single-entries/2017/duet';
-import { aSeriesOfTubes } from './single-entries/2017/a-series-of-tubes';
-import { particleSwarm } from './single-entries/2017/particle-swarm';
-import { fractalArt } from './single-entries/2017/fractal-art';
+import { corruptionChecksum } from "./single-entries/2017/corruption-checksum";
+import { spiralMemory } from "./single-entries/2017/spiral-memory";
+import { highEntropyPasshprases } from "./single-entries/2017/high-entropy-passhprases";
+import { aMazeOfTwistyTrampolinesAllAlike } from "./single-entries/2017/a-maze-of-twisty-trampolines-all-alike";
+import { memoryReallocation } from "./single-entries/2017/memory-reallocation";
+import { recursiveCircus } from "./single-entries/2017/recursive-circus";
+import { heardYouLikeRegisters } from "./single-entries/2017/heard-you-like-registers";
+import { streamProcessing } from "./single-entries/2017/stream-processing";
+import { knotHash } from "./single-entries/2017/knot-hash";
+import { hexEd } from "./single-entries/2017/hex-ed";
+import { digitalPlumber } from "./single-entries/2017/digital-plumber";
+import { packetScanners } from "./single-entries/2017/packet-scanners";
+import { diskDefragmentation } from "./single-entries/2017/disk-defragmentation";
+import { duelingGenerators } from "./single-entries/2017/dueling-generators";
+import { permutationPromenade } from "./single-entries/2017/permutation-promenade";
+import { spinlock } from "./single-entries/2017/spinlock";
+import { duet } from "./single-entries/2017/duet";
+import { aSeriesOfTubes } from "./single-entries/2017/a-series-of-tubes";
+import { particleSwarm } from "./single-entries/2017/particle-swarm";
+import { fractalArt } from "./single-entries/2017/fractal-art";
+import { sporificaVirus } from "./single-entries/2017/sporifica-virus";
+import { coprocessorConflagration } from "./single-entries/2017/coprocessor-conflagration";
 
 export interface EntryRoute extends EntryRouteBase {
     date: number;
@@ -181,6 +183,16 @@ export const entryList: { [key: string]: EntryRoute[] } = {
             name: "fractal-art",
             title: "Fractal Art",
             entry: fractalArt
+        },
+        {
+            name: "sporifica-virus",
+            title: "Sporifica Virus",
+            entry: sporificaVirus,
+        },
+        {
+            name: "coprocessor-conflagration",
+            title: "Coprocessor Conflagration",
+            entry: coprocessorConflagration
         }
     ]),
     2018: enrichList([
