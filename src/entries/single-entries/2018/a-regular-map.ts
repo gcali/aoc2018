@@ -74,8 +74,8 @@ const parse = (line: string): Directions => {
 export const aRegularMap = entryForFile(
     async ({ lines, outputCallback }) => {
         const parsed = parse(lines[0]);
-        // await outputCallback(JSON.stringify(parsed));
-        await outputCallback(visit(parsed));
+        await outputCallback(JSON.stringify(parsed));
+        // await outputCallback(visit(parsed));
     },
     async ({ lines, outputCallback }) => {
     }
