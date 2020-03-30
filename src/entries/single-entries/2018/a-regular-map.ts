@@ -1,92 +1,81 @@
 import { entryForFile } from "../../entry";
-import { UnknownSizeField } from "../../../support/field";
-import { Coordinate } from "../../../support/geometry";
-import { NotImplementedError } from "../../../support/error";
+import { NotImplementedError } from '../../../support/error';
 
-type Regex = Array<Token | Regex[]>;
-type Token = string;
+type DirectionGroup = Directions[]; 
+type Directions = (string | DirectionGroup)[];
 
-function isToken(t: Token | Regex[]): t is Token {
-    return typeof (t) === "string";
-}
-
-export function parseLines(lines: string[]): Regex {
-    const tokenList = lines
-        .map((l) => l.trim())
-        .filter((l) => l.length > 0)
-        .map((l) => l.slice(1, l.length - 1))
-        .join("")
-        .split("");
-    return parseRegex(tokenList);
-}
-
-export function serializeRegex(regex: Regex): string {
-    return regex.map((t) => {
-        if (isToken(t)) {
-            return t;
+const parseGroup = (line: string, index: number): [DirectionGroup, number] => {
+    const groups: string[] = [];
+    let currentGroup: string[] = [];
+    index++;
+    let openCount = 0;
+    while (index < line.length) {
+        const currentChar = line[index];
+        if (openCount > 0) {
+            currentGroup.push(line[index]);
+            if (currentChar === "(") {
+                openCount++;
+            } else if (currentChar === ")") {
+                openCount--;
+            }
         } else {
-            return `(${t.map(serializeRegex).join("|")})`;
+            if (currentChar === "(") {
+                openCount++;
+                currentGroup.push(currentChar);
+            } else if (currentChar === ")") {
+                break;
+            } else if (currentChar === "|") {
+                groups.push(currentGroup.join(""));
+                currentGroup = [];
+            } else {
+                currentGroup.push(currentChar);
+            }
         }
-    }).join("");
+        index++;
+    }
+    if (line[index] !== ")") {
+        throw new Error("Error while parsing, group not ended");
+    }
+    groups.push(currentGroup.join(""));
+    return [groups.map(group => parse(group)), index];
+};
+
+const isGroup = (d: (string | DirectionGroup)): d is DirectionGroup => {
+    return Array.isArray(d);
 }
 
-function parseTokens(tokens: string[], startIndex: number): [Regex[], number] {
-    let currentIndex = startIndex;
-    const result: Regex[] = [];
-    let current: Regex = [];
-    while (currentIndex < tokens.length) {
-        const currentToken = tokens[currentIndex++];
-        if (currentToken === "(") {
-            const [group, newIndex] = parseTokens(tokens, currentIndex);
-            current.push(group);
-            currentIndex = newIndex;
-        } else if (currentToken === "|") {
-            result.push(current);
-            current = [];
-        } else if (currentToken === ")") {
-            break;
+const visit = (directions: Directions): string[] => {
+    if (directions.length === 0) {
+        return [""];
+    }
+    const firstElement = directions[0];
+    const head = isGroup(firstElement) ? firstElement.flatMap(visit) : [firstElement];
+    const rest = visit(directions.slice(1)); 
+    return head.flatMap(element => rest.map(tail => element.concat(tail)));
+};
+
+const parse = (line: string): Directions => {
+    let i = 0;
+    const directions: Directions = [];
+    while ( i < line.length) {
+        if (line[i] !== "(") {
+            directions.push(line[i]);
         } else {
-            current.push(currentToken);
+            const [group, endIndex] = parseGroup(line, i);
+            i = endIndex;
+            directions.push(group);
         }
+        i++;
     }
-    if (current.length > 0) {
-        result.push(current);
-    }
-    return [result, currentIndex];
-}
+    return directions;
+};
 
-function parseRegex(token: string[]): Regex {
-    const [regex, _] = parseTokens(token, 0);
-    if (regex.length !== 1) {
-        throw new RangeError("Regex had to have one root!");
-    }
-    return regex[0];
-}
-
-type FieldCell = "." | "|" | "-" | "#";
-
-type Field = UnknownSizeField<FieldCell>;
-
-function buildField(regex: Regex): Field {
-    const field = new UnknownSizeField<FieldCell>();
-    return recursiveBuild(regex, {x: 0, y: 0}, field);
-}
-
-function recursiveBuild(regex: Regex, currentPosition: Coordinate, field: Field): Field {
-    throw new NotImplementedError();
-    regex.forEach((reg) => {
-        if (isToken(reg)) {
-
-        } else {
-        }
-    });
-}
 
 export const aRegularMap = entryForFile(
     async ({ lines, outputCallback }) => {
-        const regex = parseLines(lines);
-        const serialized = serializeRegex(regex);
-        await outputCallback(serialized);
+        const parsed = parse(lines[0]);
+        // await outputCallback(JSON.stringify(parsed));
+        await outputCallback(visit(parsed));
     },
     async ({ lines, outputCallback }) => {
     }
