@@ -44,14 +44,18 @@ const isGroup = (d: (string | DirectionGroup)): d is DirectionGroup => {
     return Array.isArray(d);
 }
 
-const visit = (directions: Directions): string[] => {
+const visit = async (directions: Directions, prefix: string[], visitCallback: (line: string[]) => Promise<void>): Promise<void> => {
     if (directions.length === 0) {
-        return [""];
+        return await visitCallback(prefix);
     }
     const firstElement = directions[0];
-    const head = isGroup(firstElement) ? firstElement.flatMap(visit) : [firstElement];
-    const rest = visit(directions.slice(1)); 
-    return head.flatMap(element => rest.map(tail => element.concat(tail)));
+    if (isGroup(firstElement)) {
+        for (const group of firstElement) {
+            await visit(group, prefix, async result => await visit(directions.slice(1), result, visitCallback));
+        }
+    } else {
+        await visit(directions.slice(1), prefix.concat([firstElement]), visitCallback);
+    }
 };
 
 const parse = (line: string): Directions => {
@@ -74,8 +78,7 @@ const parse = (line: string): Directions => {
 export const aRegularMap = entryForFile(
     async ({ lines, outputCallback }) => {
         const parsed = parse(lines[0]);
-        await outputCallback(JSON.stringify(parsed));
-        // await outputCallback(visit(parsed));
+        await visit(parsed, [], async e => await outputCallback(e.join("")));
     },
     async ({ lines, outputCallback }) => {
     }

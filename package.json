@@ -11,14 +11,15 @@
     "test": "ts-mocha -p console-tsconfig.json src/**/*.spec.ts",
     "console-build": "tsc -p console-tsconfig.json",
     "console-watch": "tsc -p console-tsconfig.json -w",
-    "console-run": "node bin/console.js"
+    "console-run": "node bin/console.js",
+    "console-r": "ts-node src/console.ts"
   },
   "dependencies": {
     "big-integer": "^1.6.48",
     "js-combinatorics": "^0.5.5",
     "linq-typescript": "^1.0.251",
     "mathjs": "^6.5.0",
-    "minimist": "^1.2.0",
+    "minimist": "^1.2.5",
     "vue": "^2.6.11",
     "vue-class-component": "^6.0.0",
     "vue-property-decorator": "^7.3.0",
@@ -34,7 +35,7 @@
     "@types/wu": "^2.1.39",
     "@vue/cli-plugin-babel": "^3.12.1",
     "@vue/cli-plugin-typescript": "^3.12.1",
-    "@vue/cli-service": "^3.12.1",
+    "@vue/cli-service": "^4.2.3",
     "chai": "^4.2.0",
     "mocha": "^6.2.2",
     "node-sass": "^4.13.0",
@@ -45,7 +46,7 @@
     "push-dir": "^0.4.1",
     "sass-loader": "^7.3.1",
     "ts-mocha": "^6.0.0",
-    "ts-node": "^8.6.2",
+    "ts-node": "^8.8.1",
     "tslint-no-unused-expression-chai": "^0.1.4",
     "typescript": "^3.7.4",
     "vue-template-compiler": "^2.6.11"
