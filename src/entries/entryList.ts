@@ -62,6 +62,7 @@ import { sporificaVirus } from "./single-entries/2017/sporifica-virus";
 import { coprocessorConflagration } from "./single-entries/2017/coprocessor-conflagration";
 import { electromagneticMoat } from "./single-entries/2017/electromagnetic-moat";
 import { haltingProblem } from "./single-entries/2017/the-halting-problem";
+import { chronalConversion } from './single-entries/2018/chronal-conversion';
 
 export interface EntryRoute extends EntryRouteBase {
     date: number;
@@ -310,6 +311,11 @@ export const entryList: { [key: string]: EntryRoute[] } = {
             name: "a-regular-map",
             title: "A Regular Map",
             entry: aRegularMap
+        },
+        {
+            name: "chronal-conversion",
+            title: "Chronal Conversion",
+            entry: chronalConversion
         }
     ]),
     2019: enrichList([

@@ -111,7 +111,7 @@ export interface Bounds {
     size: Coordinate;
 }
 
-export function ascendingCompare(a: Coordinate, b: Coordinate) {
+export function ascendingCompare(a: Coordinate, b: Coordinate): number {
     if (b.y === a.y) {
         return ascending(a.x, b.x);
     } else {
