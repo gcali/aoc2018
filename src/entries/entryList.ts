@@ -62,8 +62,9 @@ import { sporificaVirus } from "./single-entries/2017/sporifica-virus";
 import { coprocessorConflagration } from "./single-entries/2017/coprocessor-conflagration";
 import { electromagneticMoat } from "./single-entries/2017/electromagnetic-moat";
 import { haltingProblem } from "./single-entries/2017/the-halting-problem";
-import { chronalConversion } from './single-entries/2018/chronal-conversion';
-import { modeMaze } from './single-entries/2018/mode-maze';
+import { chronalConversion } from "./single-entries/2018/chronal-conversion";
+import { modeMaze } from "./single-entries/2018/mode-maze";
+import { experimentalEmergencyTransportation } from "./single-entries/2018/experimental-emergency-transportation";
 
 export interface EntryRoute extends EntryRouteBase {
     date: number;
@@ -322,6 +323,11 @@ export const entryList: { [key: string]: EntryRoute[] } = {
             name: "mode-maze",
             title: "Mode Maze",
             entry: modeMaze
+        },
+        {
+            name: "experimental-emergency-transportation",
+            title: "Experimental Emergency Transportation",
+            entry: experimentalEmergencyTransportation
         }
     ]),
     2019: enrichList([

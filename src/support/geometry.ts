@@ -15,7 +15,7 @@ export interface Coordinate3d {
 export type FullCoordinate = Coordinate | Coordinate3d;
 
 function is3d(c: FullCoordinate): c is Coordinate3d {
-    return (<Coordinate3d>c).z !== undefined;
+    return (c as Coordinate3d).z !== undefined;
 }
 
 function isBounds(c: Coordinate | Bounds): c is Bounds {
@@ -182,7 +182,7 @@ export const diffCoordinate = (a: Coordinate, b: Coordinate): Coordinate => sumC
 export const manhattanDistance = (a: FullCoordinate, b: FullCoordinate) => {
     const z = (is3d(a) && is3d(b)) ? Math.abs(a.z - b.z) : 0;
     return Math.abs(a.x - b.x) + Math.abs(a.y - b.y) + z;
-}
+};
 
 export const getSurrounding = (c: Coordinate): Coordinate[] => [
     directions.up,
@@ -233,4 +233,8 @@ export const serialization = {
             y: parseInt(split[1], 10)
         };
     }
+};
+
+export const euclidean3dDistance = (a: Coordinate3d, b: Coordinate3d): number => {
+    return Math.sqrt((b.x - a.x) ** 2 + (b.y - a.y) ** 2 + (b.z - a.z) ** 2);
 };

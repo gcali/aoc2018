@@ -18,7 +18,7 @@ const parseLines = (lines: string[]): Input => {
     };
 }
 
-const buildMatrix = (input: Input, delta?: number | Coordinate): FixedSizeMatrix<number> => {
+export const buildMatrix = (input: Input, delta?: number | Coordinate): FixedSizeMatrix<number> => {
     if (!delta) {
         delta = {x: 1, y: 1};
     } else {
@@ -30,13 +30,13 @@ const buildMatrix = (input: Input, delta?: number | Coordinate): FixedSizeMatrix
     return new FixedSizeMatrix<number>(sumCoordinate(input.target, delta as Coordinate));
 }
 
-const fillMatrix = (matrix: FixedSizeMatrix<number>, input: Input): void => {
+export const fillMatrix = (matrix: FixedSizeMatrix<number>, input: Input): void => {
     for (let x = 0; x < matrix.size.x; x++) {
         for (let y = 0; y < matrix.size.y; y++) {
             if (x === 0 && y === 0) {
-                matrix.set({x,y}, 0)
+                matrix.set({x,y}, input.depth)
             } else if (manhattanDistance({x,y}, input.target) === 0)  {
-                matrix.set(input.target, 0);
+                matrix.set(input.target, input.depth);
             } else if (x === 0) {
                 matrix.set({x,y}, erode(y * 48271, input));
             } else if (y === 0) {
@@ -244,14 +244,14 @@ export function calculatePath(erosionMatrix: FixedSizeMatrix<ErosionLevel>, targ
                 });
                 weightedGraph.addNode(serializeNode({ coordinate, tool }), neighbourNodes.reduce((acc: {
                     [key: string]: number;
-                }, next) => {
+                },                                                                                next) => {
                     acc[serializeNode(next.node)] = next.weight;
                     return acc;
                 }, {}));
             });
         }
     });
-    const resultPath = 
+    const resultPath =
         weightedGraph.path(
             serializeNode({ coordinate: { x: 0, y: 0 }, tool: "light" }),
             serializeNode({ coordinate: target, tool: "light" }),
