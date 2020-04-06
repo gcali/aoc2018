@@ -5,7 +5,7 @@ import { expectSameArrays } from "../../../../support/assertions";
 import { expect } from "chai";
 import { manhattanDistance } from "../../../../support/geometry";
 
-import {data as onlineMap} from "./mode-maze-test-data";
+//import {data as onlineMap} from "./mode-maze-test-data";
 import wu from "wu";
 
 const expectedErosions: number[][] = [
@@ -183,18 +183,18 @@ describe("Node maze", () => {
     //     }
     // });
 
-    it("is coherent with erosion map from online solution", async () => {
-        const matrix = createErosionMatrixFromInput(myInput);
-        const data = onlineMap.map((e) => ({coordinate: {x: e[0], y: e[1]}, tool: e[2] as ErosionLevel}));
-        const lookup = new Map<string, ErosionLevel>();
-        data.forEach((e) => lookup.set(`${e.coordinate.x},${e.coordinate.y}`, e.tool));
-        let rightCells = 0;
-        await matrix.onEveryCell((coordinate, cell) => {
-            const matching = lookup.get(`${coordinate.x},${coordinate.y}`);
-            if (matching !== undefined) {
-                rightCells++;
-                expect(cell).to.equal(matching, `Wrong erosion level for ${coordinate.x},${coordinate.y}, found after ${rightCells} right ones`);
-            }
-        });
-    }).timeout(5000);
+//    it("is coherent with erosion map from online solution", async () => {
+//        const matrix = createErosionMatrixFromInput(myInput);
+//        const data = onlineMap.map((e) => ({coordinate: {x: e[0], y: e[1]}, tool: e[2] as ErosionLevel}));
+//        const lookup = new Map<string, ErosionLevel>();
+//        data.forEach((e) => lookup.set(`${e.coordinate.x},${e.coordinate.y}`, e.tool));
+//        let rightCells = 0;
+//        await matrix.onEveryCell((coordinate, cell) => {
+//            const matching = lookup.get(`${coordinate.x},${coordinate.y}`);
+//            if (matching !== undefined) {
+//                rightCells++;
+//                expect(cell).to.equal(matching, `Wrong erosion level for ${coordinate.x},${coordinate.y}, found after ${rightCells} right ones`);
+//            }
+//        });
+//    }).timeout(5000);
 });
