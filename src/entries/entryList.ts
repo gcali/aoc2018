@@ -63,6 +63,7 @@ import { coprocessorConflagration } from "./single-entries/2017/coprocessor-conf
 import { electromagneticMoat } from "./single-entries/2017/electromagnetic-moat";
 import { haltingProblem } from "./single-entries/2017/the-halting-problem";
 import { chronalConversion } from './single-entries/2018/chronal-conversion';
+import { modeMaze } from './single-entries/2018/mode-maze';
 
 export interface EntryRoute extends EntryRouteBase {
     date: number;
@@ -316,6 +317,11 @@ export const entryList: { [key: string]: EntryRoute[] } = {
             name: "chronal-conversion",
             title: "Chronal Conversion",
             entry: chronalConversion
+        },
+        {
+            name: "mode-maze",
+            title: "Mode Maze",
+            entry: modeMaze
         }
     ]),
     2019: enrichList([

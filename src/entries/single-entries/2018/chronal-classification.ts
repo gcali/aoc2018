@@ -24,17 +24,17 @@ export class Instruction {
 
     public static fromLines(lines: string[], mapping: (s: string) => OpCode): Instruction[] {
         lines = lines.map((l) => l.replace(/\/\/.*/g, ""));
-        const instructions = lines.map((line) => {
+        const instructions = lines.map((line, index) => {
             let g = line.split(" ").map((l) => l.trim()).filter((l) => l.length > 0);
             if (g.length < 4) {
                 g = g.fill("0", g.length, 4);
             }
             const p = (s: string) => parseInt(s, 10);
-            return new Instruction(mapping(g[0]), p(g[1]), p(g[2]), p(g[3]));
+            return new Instruction(mapping(g[0]), p(g[1]), p(g[2]), p(g[3]), index);
         });
         return instructions;
     }
-    constructor(public code: OpCode | number, public a: number, public b: number, public output: number) {
+    constructor(public code: OpCode | number, public a: number, public b: number, public output: number, public lineNumber?: number) {
     }
 
     public setCode(code: OpCode): Instruction {
@@ -47,6 +47,89 @@ export class Instruction {
 
     public toString() {
         return `${this.code} ${this.a} ${this.b} ${this.output}`;
+    }
+}
+
+export class MutableMachine {
+    constructor(public registers = [0, 0, 0, 0], public instructionPointerRegister: number) {
+    }
+
+    public sameAs(other: Machine): boolean {
+        if (this.registers.length !== other.registers.length) {
+            return false;
+        }
+        return this.registers
+            .map((e, i) => this.registers[i] === other.registers[i])
+            .reduce((acc, v) => acc && v, true);
+    }
+
+    public get nextInstructionAddress(): number {
+        return this.registers[this.instructionPointerRegister];
+    }
+
+    public isExecutable(instructionRange: number): boolean {
+        const newI = this.nextInstructionAddress;
+        return newI >= 0 && newI < instructionRange;
+    }
+
+
+    public execute(instruction: Instruction) {
+        const calculatedValue = this.calculateValue(instruction);
+        this.set(
+            instruction.output,
+            calculatedValue
+        );
+    }
+
+    private set(registerAddress: number, value: number) {
+        const newRegisters = this.registers;
+        newRegisters[registerAddress] = value;
+        newRegisters[this.instructionPointerRegister]++;
+    }
+
+    private calculateValue(instruction: Instruction): number {
+        const i = instruction; 
+        switch (i.code) {
+            case "addr":
+                return this.registers[i.a] + this.registers[i.b];
+            case "addi":
+                return this.registers[i.a] + i.b;
+            case "mulr":
+                return this.registers[i.a] * this.registers[i.b];
+            case "muli":
+                return this.registers[i.a] * i.b;
+            case "banr":
+                return this.registers[i.a] & this.registers[i.b];
+            case "bani":
+                return this.registers[i.a] & i.b;
+            case "borr":
+                return this.registers[i.a] | this.registers[i.b];
+            case "bori":
+                return this.registers[i.a] | i.b;
+
+            case "setr":
+                return this.registers[i.a];
+            case "seti":
+                return i.a;
+
+            case "gtir":
+                return i.a > this.registers[i.b] ? 1 : 0;
+            case "gtri":
+                return this.registers[i.a] > i.b ? 1 : 0;
+            case "gtrr":
+                return this.registers[i.a] > this.registers[i.b] ? 1 : 0;
+
+            case "eqir":
+                return i.a === this.registers[i.b] ? 1 : 0;
+            case "eqri":
+                return this.registers[i.a] === i.b ? 1 : 0;
+            case "eqrr":
+                return this.registers[i.a] === this.registers[i.b] ? 1 : 0;
+            default:
+                throw RangeError("Cannot execute instruction if no op code is given");
+
+        }
+
     }
 }
 
