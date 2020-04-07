@@ -65,6 +65,7 @@ import { haltingProblem } from "./single-entries/2017/the-halting-problem";
 import { chronalConversion } from "./single-entries/2018/chronal-conversion";
 import { modeMaze } from "./single-entries/2018/mode-maze";
 import { experimentalEmergencyTransportation } from "./single-entries/2018/experimental-emergency-transportation";
+import { immuneSystemSimulator20XX } from './single-entries/2018/immune-system-simulator-20xx';
 
 export interface EntryRoute extends EntryRouteBase {
     date: number;
@@ -328,6 +329,11 @@ export const entryList: { [key: string]: EntryRoute[] } = {
             name: "experimental-emergency-transportation",
             title: "Experimental Emergency Transportation",
             entry: experimentalEmergencyTransportation
+        },
+        {
+            name: "immune-system-simulator-20xx",
+            title: "Immune System Simulator 20XX",
+            entry: immuneSystemSimulator20XX
         }
     ]),
     2019: enrichList([
@@ -420,7 +426,7 @@ export const entryList: { [key: string]: EntryRoute[] } = {
             name: "many-world-interpretation",
             title: "Many World Interpretation",
             entry: manyWorldInterpretation
-        }
+        },
     ])
 };
 

@@ -43,18 +43,33 @@ export const experimentalEmergencyTransportation = entryForFile(
     },
     async ({ lines, outputCallback }) => {
         const nanobotInfo = parseLines(lines);
-        const getBounds = (s: number[]) => {
-            let max = Number.NEGATIVE_INFINITY;
-            let min = Number.POSITIVE_INFINITY;
-            s.forEach((n) => {
-                max = Math.max(max, n);
-                min = Math.min(min, n);
-            });
-            return {max, min};
-        };
-        const boundsX = getBounds(nanobotInfo.map((e) => e.coordinate.x));
-        const boundsY = getBounds(nanobotInfo.map((e) => e.coordinate.y));
-        const boundsZ = getBounds(nanobotInfo.map((e) => e.coordinate.z));
-        await outputCallback((boundsX.max - boundsX.min) * (boundsY.max - boundsY.min) * (boundsZ.max - boundsZ.min));
+        const distanceRanges = nanobotInfo.map(e => ({
+            distance: manhattanDistance({x: 0, y: 0, z: 0}, e.coordinate),
+            radius: e.radius
+        })).map(e => ({
+            start: Math.max(0, e.distance - e.radius),
+            end: e.distance + e.radius
+        }));
+        const segments = distanceRanges.flatMap(e => [
+            {pos: e.start, value: 1},
+            {pos: e.end, value: -1}
+        ]).sort((a, b) => a.pos - b.pos);
+        let maxCount = 0;
+        let currentCount = 0;
+        let bestPos = null;
+        let bestEnd = null;
+        let updateBestEnd = false;
+        segments.forEach(e => {
+            currentCount += e.value;
+            if (currentCount > maxCount) {
+                updateBestEnd = true;
+                maxCount = currentCount;
+                bestPos = e.pos;
+            } else if (updateBestEnd) {
+                bestEnd = e.pos;
+                updateBestEnd = false;
+            }
+        });
+        await outputCallback({bestPos, bestEnd});
     }
 );
