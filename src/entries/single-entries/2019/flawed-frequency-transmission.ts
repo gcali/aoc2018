@@ -1,5 +1,6 @@
 import { entryForFile } from "../../entry";
 import { List } from "linq-typescript";
+import wu from 'wu';
 
 const basePattern = [0, 1, 0, -1];
 
@@ -42,9 +43,11 @@ export class Pattern {
 
     }
 
+    public delta: number = 1;
+
     public get(index: number, position: number): number {
         const factor = position + 1;
-        const realIndex = Math.floor((index + 1) / factor);
+        const realIndex = Math.floor((index + this.delta) / factor);
         return this.localBasePattern[realIndex % basePattern.length];
     }
 }
@@ -63,13 +66,18 @@ export const flawedFrequencyTransmission = entryForFile(
     },
     async ({ lines, outputCallback, pause, isCancelled }) => {
         const input = parseLines(lines);
-        const repeatedInput = Array.from({ length: 10000 }, () => input).flat();
+        let repeatedInput = Array.from({ length: 10000 }, () => input).flat();
+        const interestingDigits = parseInt(wu(input).take(7).toArray().join(""), 10);
+        const pattern = Pattern.default();
+        pattern.delta = 1  + interestingDigits;
+        repeatedInput = wu(repeatedInput).drop(interestingDigits).toArray();
         const result = await applyPatternIteratively(
             repeatedInput,
-            Pattern.default(),
+            pattern,
             100,
             async (n) => await outputCallback("Iteration " + n + " done")
         );
-        await outputCallback(new List(result).skip(parseInt(input.join(""), 10)).take(8).toArray().join(""));
+        // await outputCallback(new List(result).skip(parseInt(input.join(""), 10)).take(8).toArray().join(""));
+        await outputCallback(wu(result).take(8).toArray());
     }
 );

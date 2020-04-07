@@ -66,6 +66,7 @@ import { chronalConversion } from "./single-entries/2018/chronal-conversion";
 import { modeMaze } from "./single-entries/2018/mode-maze";
 import { experimentalEmergencyTransportation } from "./single-entries/2018/experimental-emergency-transportation";
 import { immuneSystemSimulator20XX } from './single-entries/2018/immune-system-simulator-20xx';
+import { fourDimensionalAdventure } from './single-entries/2018/four-dimensional-adventure';
 
 export interface EntryRoute extends EntryRouteBase {
     date: number;
@@ -334,6 +335,11 @@ export const entryList: { [key: string]: EntryRoute[] } = {
             name: "immune-system-simulator-20xx",
             title: "Immune System Simulator 20XX",
             entry: immuneSystemSimulator20XX
+        },
+        {
+            name: "four-dimensional-adventure",
+            title: "Four-Dimensional Adventure",
+            entry: fourDimensionalAdventure
         }
     ]),
     2019: enrichList([
