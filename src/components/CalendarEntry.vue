@@ -2,6 +2,9 @@
     router-link(:to="{name: name}").calendar-cell
         .header {{ordinalDate}}
         .title {{title}}
+        .stars
+            .star(v-for="star in starObjects" :key="star.key") 
+                span(:style="{visibility: star.isFull ? 'visible' : 'hidden'}") ⭐
 </template>
 
 <script lang="ts">
@@ -12,7 +15,8 @@ export default Vue.extend({
     props: {
         title: String,
         date: Number,
-        name: String
+        name: String,
+        stars: Number,
     },
     data() {
         return {
@@ -22,7 +26,14 @@ export default Vue.extend({
     computed: {
         ordinalDate(): string {
             return ordinalOf(this.date);
+        },
+        starObjects(): Array<{key: number, isFull: boolean}> {
+            return [...Array(2).keys()].map((i) => ({
+                key: i,
+                isFull: i < this.stars
+            }));
         }
+
     }
 });
 </script>
@@ -54,7 +65,14 @@ export default Vue.extend({
     width: 10em;
     text-align: center;
     padding: 1em;
+    padding-bottom: 0.5em;
     margin-left: 0.5em;
     margin-right: 0.5em;
+    flex-grow: 1;
+}
+.calendar-cell .stars {
+    display: flex;
+    align-items: center;
+    padding-bottom: 1em;
 }
 </style>

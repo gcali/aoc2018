@@ -65,8 +65,8 @@ import { haltingProblem } from "./single-entries/2017/the-halting-problem";
 import { chronalConversion } from "./single-entries/2018/chronal-conversion";
 import { modeMaze } from "./single-entries/2018/mode-maze";
 import { experimentalEmergencyTransportation } from "./single-entries/2018/experimental-emergency-transportation";
-import { immuneSystemSimulator20XX } from './single-entries/2018/immune-system-simulator-20xx';
-import { fourDimensionalAdventure } from './single-entries/2018/four-dimensional-adventure';
+import { immuneSystemSimulator20XX } from "./single-entries/2018/immune-system-simulator-20xx";
+import { fourDimensionalAdventure } from "./single-entries/2018/four-dimensional-adventure";
 
 export interface EntryRoute extends EntryRouteBase {
     date: number;
@@ -76,6 +76,7 @@ interface EntryRouteBase {
     name: string;
     title: string;
     entry: Entry;
+    stars?: 1 | 2;
     hasCustomComponent?: boolean;
 }
 
@@ -89,349 +90,416 @@ export const entryList: { [key: string]: EntryRoute[] } = {
         {
             name: "inverse-captcha",
             title: "Inverse Captcha",
-            entry: inverseCaptcha
+            entry: inverseCaptcha,
+            stars: 2,
         },
         {
             name: "corruption-checksum",
             title: "Corruption Checksum",
-            entry: corruptionChecksum
+            entry: corruptionChecksum,
+            stars: 2,
         },
         {
             name: "spiral-memory",
             title: "Spiral Memory",
-            entry: spiralMemory
+            entry: spiralMemory,
+            stars: 2,
         },
         {
             name: "high-entropy-passphrases",
             title: "High-Entropy Passphrases",
-            entry: highEntropyPasshprases
+            entry: highEntropyPasshprases,
+            stars: 2,
         },
         {
             name: "a-maze-of-twisty-trampolines-all-alike",
             title: "A Maze of Twisty Trampolines, All Alike",
-            entry: aMazeOfTwistyTrampolinesAllAlike
+            entry: aMazeOfTwistyTrampolinesAllAlike,
+            stars: 2,
         },
         {
             name: "memory-reallocation",
             title: "Memory Reallocation",
-            entry: memoryReallocation
+            entry: memoryReallocation,
+            stars: 2,
         },
         {
             name: "recursive-circus",
             title: "Recursive Circus",
-            entry: recursiveCircus
+            entry: recursiveCircus,
+            stars: 2,
         },
         {
             name: "heard-you-like-registers",
             title: "I Heard You Like Registers",
-            entry: heardYouLikeRegisters
+            entry: heardYouLikeRegisters,
+            stars: 2,
         },
         {
             name: "stream-processing",
             title: "Stream Processing",
-            entry: streamProcessing
+            entry: streamProcessing,
+            stars: 2,
         },
         {
             name: "knoth-hash",
             title: "Knot Hash",
-            entry: knotHash
+            entry: knotHash,
+            stars: 2,
         },
         {
             name: "hex-ed",
             title: "Hex Ed",
-            entry: hexEd
+            entry: hexEd,
+            stars: 2,
         },
         {
             name: "digital-plumber",
             title: "Digital Plumber",
-            entry: digitalPlumber
+            entry: digitalPlumber,
+            stars: 2,
         },
         {
             name: "packet-scanners",
             title: "Packet Scanners",
-            entry: packetScanners
+            entry: packetScanners,
+            stars: 2,
         },
         {
             name: "disk-defragmentation",
             title: "Disk Defragmentation",
-            entry: diskDefragmentation
+            entry: diskDefragmentation,
+            stars: 2,
         },
         {
             name: "dueling-generators",
             title: "Dueling Generators",
-            entry: duelingGenerators
+            entry: duelingGenerators,
+            stars: 2,
         },
         {
             name: "permutation-promenade",
             title: "Permutation Promenade",
-            entry: permutationPromenade
+            entry: permutationPromenade,
+            stars: 2,
         },
         {
             name: "spinlock",
             title: "Spinlock",
-            entry: spinlock
+            entry: spinlock,
+            stars: 2,
         },
         {
             name: "duet",
             title: "Duet",
-            entry: duet
+            entry: duet,
+            stars: 2,
         },
         {
             name: "a-series-of-tubes",
             title: "A Series of Tubes",
-            entry: aSeriesOfTubes
+            entry: aSeriesOfTubes,
+            stars: 2,
         },
         {
             name: "particle-swarm",
             title: "Particle Swarm",
-            entry: particleSwarm
+            entry: particleSwarm,
+            stars: 2,
         },
         {
             name: "fractal-art",
             title: "Fractal Art",
-            entry: fractalArt
+            entry: fractalArt,
+            stars: 2,
         },
         {
             name: "sporifica-virus",
             title: "Sporifica Virus",
             entry: sporificaVirus,
+            stars: 2,
         },
         {
             name: "coprocessor-conflagration",
             title: "Coprocessor Conflagration",
-            entry: coprocessorConflagration
+            entry: coprocessorConflagration,
+            stars: 2,
         },
         {
             name: "electromagnetic-moat",
             title: "Electromagnetic Moat",
-            entry: electromagneticMoat
+            entry: electromagneticMoat,
+            stars: 2,
         },
         {
             name: "the-halting-problem",
             title: "The Halting Problem",
-            entry: haltingProblem
+            entry: haltingProblem,
+            stars: 2,
         }
     ]),
     2018: enrichList([
         {
             name: "frequency",
             title: "Chronal Calibration",
-            entry: frequencyEntry
+            entry: frequencyEntry,
+            stars: 2,
         },
         {
             name: "inventory",
             title: "Inventory Management System",
-            entry: inventoryEntry
+            entry: inventoryEntry,
+            stars: 2,
         },
         {
             name: "no-matter-how-you-slice-it",
             title: "No Matter How You Slice It",
-            entry: matterSliceEntry
+            entry: matterSliceEntry,
+            stars: 2,
         },
         {
             name: "repose-record",
             title: "Repose Record",
-            entry: reposeRecordEntry
+            entry: reposeRecordEntry,
+            stars: 2,
         },
         {
             name: "alchemical-reduction",
             title: "Alchemical Reduction",
-            entry: alchemicalReduction
+            entry: alchemicalReduction,
+            stars: 2,
         },
         {
             name: "chronal-coordinates",
             title: "Chronal Coordinates",
-            entry: chronalCoordinates
+            entry: chronalCoordinates,
+            stars: 2,
         },
         {
             name: "the-sum-of-its-parts",
             title: "The Sum of Its Parts",
-            entry: sumParts
+            entry: sumParts,
+            stars: 2,
         },
         {
             name: "memory-maneuver",
             title: "Memory Maneuver",
-            entry: memoryManeuver
+            entry: memoryManeuver,
+            stars: 2,
         },
         {
             name: "marble-mania",
             title: "Marble Mania",
-            entry: marbleMania
+            entry: marbleMania,
+            stars: 2,
         },
         {
             name: "stars-align",
             title: "The Stars Align",
-            entry: starsAlign
+            entry: starsAlign,
+            stars: 2,
         },
         {
             name: "chronal-charge",
             title: "Chronal Charge",
-            entry: chronalCharge
+            entry: chronalCharge,
+            stars: 2,
         },
         {
             name: "subterranean",
             title: "Subterranean Substainability",
-            entry: subterranean
+            entry: subterranean,
+            stars: 2,
         },
         {
             name: "mine-cart-madness",
             title: "Mine Cart Madness",
             entry: mineCartMadness,
-            hasCustomComponent: true
+            hasCustomComponent: true,
+            stars: 2,
         },
         {
             name: "chocolate-charts",
             title: "Chocolate Charts",
-            entry: chocolateCharts
+            entry: chocolateCharts,
+            stars: 2,
         },
         {
             name: "beverage-bandits",
             title: "Beverage Bandits",
-            entry: beverageBandits
+            entry: beverageBandits,
+            stars: 2,
         },
         {
             name: "chronal-classification",
             title: "Chronal Classification",
-            entry: chronalClassification
+            entry: chronalClassification,
+            stars: 2,
         },
         {
             name: "reservoir-research",
             title: "Reservoir Research",
-            entry: reservoirResearch
+            entry: reservoirResearch,
+            stars: 2,
         },
         {
             name: "settlers-of-the-north-pole",
             title: "Settlers of the North Pole",
             entry: settlers,
-            hasCustomComponent: true
+            hasCustomComponent: true,
+            stars: 2,
         },
         {
             name: "go-with-the-flow",
             title: "Go with the flow",
             entry: flow,
-            hasCustomComponent: true
+            hasCustomComponent: true,
+            stars: 2,
         },
         {
             name: "a-regular-map",
             title: "A Regular Map",
-            entry: aRegularMap
+            entry: aRegularMap,
+            stars: 2,
         },
         {
             name: "chronal-conversion",
             title: "Chronal Conversion",
-            entry: chronalConversion
+            entry: chronalConversion,
+            stars: 2,
         },
         {
             name: "mode-maze",
             title: "Mode Maze",
-            entry: modeMaze
+            entry: modeMaze,
+            stars: 2,
         },
         {
             name: "experimental-emergency-transportation",
             title: "Experimental Emergency Transportation",
-            entry: experimentalEmergencyTransportation
+            entry: experimentalEmergencyTransportation,
+            stars: 2,
         },
         {
             name: "immune-system-simulator-20xx",
             title: "Immune System Simulator 20XX",
-            entry: immuneSystemSimulator20XX
+            entry: immuneSystemSimulator20XX,
+            stars: 2,
         },
         {
             name: "four-dimensional-adventure",
             title: "Four-Dimensional Adventure",
-            entry: fourDimensionalAdventure
+            entry: fourDimensionalAdventure,
+            stars: 2,
         }
     ]),
     2019: enrichList([
         {
             name: "rocket-tyranny",
             title: "The Tyranny of the Rocket Equation",
-            entry: rocketTyranny
+            entry: rocketTyranny,
+            stars: 2,
         },
         {
             name: "program-alarm",
             title: "1202 Program Alarm",
-            entry: programAlarm
+            entry: programAlarm,
+            stars: 2,
         },
         {
             name: "corssed-wires",
             title: "Crossed Wires",
-            entry: crossedWires
+            entry: crossedWires,
+            stars: 2,
         },
         {
             name: "secure-container",
             title: "Secure Container",
-            entry: secureContainer
+            entry: secureContainer,
+            stars: 2,
         },
         {
             name: "sunny-asteroids",
             title: "Sunny with a Change of Asteroids",
-            entry: sunnyAsteroids
+            entry: sunnyAsteroids,
+            stars: 2,
         },
         {
             name: "universal-orbit-map",
             title: "Universal Orbit Map",
-            entry: universalObritMap
+            entry: universalObritMap,
+            stars: 2,
         },
         {
             name: "amplification-circuit",
             title: "Amplification Circuit",
-            entry: amplificationCircuit
+            entry: amplificationCircuit,
+            stars: 2,
         },
         {
             name: "space-image-format",
             title: "Space Image Format",
-            entry: spaceImageFormat
+            entry: spaceImageFormat,
+            stars: 2,
         },
         {
             name: "sensor-boost",
             title: "Sensor Boost",
-            entry: sensorBoost
+            entry: sensorBoost,
+            stars: 2,
         },
         {
             name: "monitoring-station",
             title: "Monitoring Station",
-            entry: monitoringStation
+            entry: monitoringStation,
+            stars: 2,
         },
         {
             name: "space=police",
             title: "Space Police",
-            entry: spacePolice
+            entry: spacePolice,
+            stars: 2,
         },
         {
             name: "n-body-problem",
             title: "N-Body Problem",
-            entry: nBodyProblem
+            entry: nBodyProblem,
+            stars: 2,
         },
         {
             name: "care-package",
             title: "Care Package",
-            entry: carePackage
+            entry: carePackage,
+            stars: 2,
         },
         {
             name: "space-stoichiometry",
             title: "Space Stoichiometry",
-            entry: spaceStoichiometry
+            entry: spaceStoichiometry,
+            stars: 2
         },
         {
             name: "oxygen-system",
             title: "Oxygen System",
-            entry: oxygenSystem
+            entry: oxygenSystem,
+            stars: 2,
         },
         {
             name: "flawed-frequency-transmission",
             title: "Flawed Frequency Transmission",
-            entry: flawedFrequencyTransmission
+            entry: flawedFrequencyTransmission,
+            stars: 1,
         },
         {
             name: "set-and-forget",
             title: "Set and Forget",
-            entry: setAndForget
+            entry: setAndForget,
+            stars: 1,
         },
         {
             name: "many-world-interpretation",
             title: "Many World Interpretation",
-            entry: manyWorldInterpretation
+            entry: manyWorldInterpretation,
         },
     ])
 };

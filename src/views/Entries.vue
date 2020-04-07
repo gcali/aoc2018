@@ -2,7 +2,11 @@
     .wrapper
         ul.entries
                 li(v-for="entry in entries" :key="entry.name")
-                    CalendarEntry(:title="entry.title", :date="entry.date", :name="entry.name")
+                    CalendarEntry(
+                        :title="entry.title", 
+                        :date="entry.date", 
+                        :name="entry.name",
+                        :stars="entry.stars")
                     //- router-link(:to="{name: entry.name}") {{entry.title}}
 </template>
 

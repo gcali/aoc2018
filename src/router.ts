@@ -38,7 +38,8 @@ flat.flatMap((e) => e).forEach((e) => {
       id: e.entry.date,
       title: e.entry.title,
       entry: e.entry.entry,
-      year: e.year
+      year: e.year,
+      stars: e.entry.stars || 0
     }
   });
 });
