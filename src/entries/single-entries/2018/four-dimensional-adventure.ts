@@ -124,5 +124,6 @@ export const fourDimensionalAdventure = entryForFile(
     },
     async ({ lines, outputCallback }) => {
         throw Error("Not implemented");
-    }
+    },
+    { key: "four-dimensional-adventure", title: "Four-Dimensional Adventure", stars: 2, }
 );

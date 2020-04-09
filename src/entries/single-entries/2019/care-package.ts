@@ -113,7 +113,8 @@ export const carePackage = entryForFile(
             }
         });
         await outputCallback(score);
-    }
+    },
+    { key: "care-package", title: "Care Package", stars: 2, }
 );
 
 async function updateTileFeedback(

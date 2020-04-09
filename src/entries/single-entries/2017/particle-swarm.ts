@@ -106,5 +106,6 @@ export const particleSwarm = entryForFile(
         }
         await outputCallback(particles.length);
 
-    }
+    },
+    { key: "particle-swarm", title: "Particle Swarm", stars: 2, }
 );

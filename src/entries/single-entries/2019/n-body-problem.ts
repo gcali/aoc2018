@@ -189,5 +189,6 @@ export const nBodyProblem = entryForFile(
         await outputCallback(planets.map(serializePlanet));
 
         await outputCallback(lcmRepetition);
-    }
+    },
+    { key: "n-body-problem", title: "N-Body Problem", stars: 2, }
 );

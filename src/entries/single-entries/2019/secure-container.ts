@@ -45,7 +45,8 @@ export const secureContainer = entryForFile(
     },
     async ({ lines, outputCallback, pause, isCancelled }) => {
         await calculate(lines, 2, outputCallback);
-    }
+    },
+    { key: "secure-container", title: "Secure Container", stars: 2, }
 );
 
 async function calculate(

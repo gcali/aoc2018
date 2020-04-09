@@ -1,6 +1,6 @@
 import { CustomBest, maxNumber } from "../../../support/best";
 import { Coordinate } from "../../../support/geometry";
-import { oldEntryForFile } from "../../entry";
+import { oldEntryForFile, entryForFile } from "../../entry";
 import { BigInteger } from "big-integer";
 import bigInt from "big-integer";
 import { forEachAsync } from "../../../support/async";
@@ -144,15 +144,16 @@ async function main(lines: string[], outputCallback: ((s: any) => void), cellSiz
     );
 }
 
-export const entry = oldEntryForFile(
-    async (lines, outputCallback) => {
+export const entry = entryForFile(
+    async ({lines, outputCallback}) => {
         await main(lines, outputCallback, [3]);
     },
-    async (lines, outputCallback) => {
+    async ({lines, outputCallback}) => {
         const cellSizes: number[] = [];
         for (let i = 1; i < 301; i++) {
             cellSizes.push(i);
         }
         await main(lines, outputCallback, cellSizes);
-    }
+    },
+    { key: "chronal-charge", title: "Chronal Charge", stars: 2, }
 );

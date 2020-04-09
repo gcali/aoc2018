@@ -55,6 +55,7 @@ export const memoryReallocation = entryForFile(
             createdStates.set(serialization, createdStates.size + 1)
         }
         await outputCallback((createdStates.size + 1) - createdStates.get(lastSerialization)!);
-    }
+    },
+    { key: "memory-reallocation", title: "Memory Reallocation", stars: 2, }
 );
 

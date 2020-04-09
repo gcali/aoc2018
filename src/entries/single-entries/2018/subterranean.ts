@@ -1,4 +1,4 @@
-import { oldEntryForFile } from "../../entry";
+import { oldEntryForFile, entryForFile } from "../../entry";
 import { DoubleLinkedNode } from "../../../support/data-structure";
 import { howManySameAtEnd } from "../../../support/sequences";
 
@@ -136,8 +136,8 @@ class Greenhouse {
     }
 }
 
-export const entry = oldEntryForFile(
-    async (lines, outputCallback) => {
+export const entry = entryForFile(
+    async ({lines, outputCallback}) => {
         let greenhouse = parseLines(lines);
         for (let i = 0; i < 20; i++) {
             greenhouse = greenhouse.passGeneration();
@@ -145,7 +145,7 @@ export const entry = oldEntryForFile(
         const sum = greenhouse.sum;
         await outputCallback(sum);
     },
-    async (lines, outputCallback) => {
+    async ({lines, outputCallback}) => {
         let greenhouse = parseLines(lines);
         let lastSum: number | null = null;
         const diffs: number[] = [];
@@ -166,7 +166,8 @@ export const entry = oldEntryForFile(
         }
         await outputCallback("No pattern found");
         await outputCallback(JSON.stringify(diffs));
-    }
+    },
+    { key: "subterranean", title: "Subterranean Substainability", stars: 2, }
 );
 function parseLines(lines: string[]): Greenhouse {
     const initialState = lines[0]

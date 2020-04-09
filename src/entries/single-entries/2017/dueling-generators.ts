@@ -74,5 +74,6 @@ export const duelingGenerators = entryForFile(
             } 
         }
         await outputCallback(count);
-    }
+    },
+    { key: "dueling-generators", title: "Dueling Generators", stars: 2, }
 );

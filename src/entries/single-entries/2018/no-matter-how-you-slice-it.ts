@@ -1,4 +1,4 @@
-import { Entry, oldEntryForFile } from "../../entry";
+import { Entry, oldEntryForFile, entryForFile } from "../../entry";
 import { Coordinate } from "../../../support/geometry";
 
 interface Rectangle {
@@ -37,14 +37,14 @@ const parseRectangle = (line: string, output: (l: string) => void): Rectangle =>
         size,
     };
 };
-export const entry: Entry = oldEntryForFile(
-    async (lines, outputCallback) => {
+export const entry: Entry = entryForFile(
+    async ({lines, outputCallback}) => {
         const map = mapCreator(lines.map((e) => parseRectangle(e, outputCallback)), outputCallback);
 
         const total = map.reduce<number>((acc, current) => acc + current.filter((e) => e).length, 0);
         await outputCallback("" + total);
     },
-    async (lines, outputCallback) => {
+    async ({lines, outputCallback}) => {
         const rectangles = lines.map((e) => parseRectangle(e, outputCallback));
         const map = mapCreator(rectangles, outputCallback);
 
@@ -59,6 +59,7 @@ export const entry: Entry = oldEntryForFile(
         });
         await outputCallback(candidate ? "" + candidate.id : "null");
     },
+    { key: "no-matter-how-you-slice-it", title: "No Matter How You Slice It", stars: 2, }
 );
 
 function mapCreator(rectangles: Rectangle[], output: (s: string) => void) {

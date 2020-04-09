@@ -85,7 +85,8 @@ export const heardYouLikeRegisters = entryForFile(
         const instruction = parseInstructions(lines);
         executeInstructions(instruction, state);
         await outputCallback(state.currentMax);
-    }
+    },
+    { key: "heard-you-like-registers", title: "I Heard You Like Registers", stars: 2, }
 );
 
 function executeInstructions(instructions: Instruction[], state: RegisterState) {

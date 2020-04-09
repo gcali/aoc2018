@@ -57,5 +57,6 @@ export const hexEd = entryForFile(
             maxDistance = Math.max(maxDistance, hexManhattanDistance(center, currentPosition));
         });
         await outputCallback(maxDistance);
-    }
+    },
+    { key: "hex-ed", title: "Hex Ed", stars: 2, }
 );

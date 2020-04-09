@@ -36,6 +36,7 @@ export const corruptionChecksum = entryForFile(
         }).reduce((acc, next) => acc + next);
         await outputCallback(checksum);
             
-    }
+    },
+    { key: "corruption-checksum", title: "Corruption Checksum", stars: 2, }
 );
 

@@ -192,5 +192,6 @@ export const spaceStoichiometry = entryForFile(
         // await outputCallback(amount);
         // await outputCallback("Remaining:");
         // await outputCallback((remain as any)._remainingMap);
-    }
+    },
+    { key: "space-stoichiometry", title: "Space Stoichiometry", stars: 2 }
 );

@@ -73,5 +73,6 @@ export const electromagneticMoat = entryForFile(
             return acc;
         });
         await outputCallback(bestBridge.score);
-    }
+    },
+    { key: "electromagnetic-moat", title: "Electromagnetic Moat", stars: 2, }
 );

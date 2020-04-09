@@ -166,5 +166,6 @@ export const coprocessorConflagration = entryForFile(
         }
 
         await outputCallback(h);
-    }
+    },
+    { key: "coprocessor-conflagration", title: "Coprocessor Conflagration", stars: 2, }
 );

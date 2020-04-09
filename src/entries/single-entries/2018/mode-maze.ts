@@ -199,7 +199,8 @@ export const modeMaze = entryForFile(
         await outputCallback(resultPath.cost);
 
         new Map<string, number>().keys()
-    }
+    },
+    { key: "mode-maze", title: "Mode Maze", stars: 2, }
 );
 
 export function createErosionMatrixFromInput(input: Input, delta: number | Coordinate = 100) {

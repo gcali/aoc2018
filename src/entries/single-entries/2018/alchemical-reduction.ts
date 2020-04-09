@@ -1,9 +1,9 @@
-import { oldEntryForFile } from "../../entry";
+import { oldEntryForFile, entryForFile } from "../../entry";
 import Best from "../../../support/best";
 // import { log } from "../../support/log";
 
-export const entry = oldEntryForFile(
-    async (lines, outputCallback) => {
+export const entry = entryForFile(
+    async ({lines, outputCallback}) => {
         if (lines.length > 1) {
             throw Error("Only one line expected");
         }
@@ -14,7 +14,7 @@ export const entry = oldEntryForFile(
         await outputCallback(polymerText.length);
 
     },
-    async (lines, outputCallback) => {
+    async ({lines, outputCallback}) => {
         if (lines.length > 1) {
             throw Error("Only one line expected");
         }
@@ -30,6 +30,7 @@ export const entry = oldEntryForFile(
         });
         await outputCallback(max.currentBest!.value.length);
     },
+    { key: "alchemical-reduction", title: "Alchemical Reduction", stars: 2, }
 );
 
 function explodePolymer(polymerText: string) {

@@ -1,7 +1,7 @@
-import { oldEntryForFile } from "../../entry";
+import { oldEntryForFile, entryForFile } from "../../entry";
 
-export const entry = oldEntryForFile(
-    async (lines, outputCallback) => {
+export const entry = entryForFile(
+    async ({lines, outputCallback}) => {
         let currentFrequency = 0;
         lines.forEach((line) => {
             const trimmed = line.trim();
@@ -13,7 +13,7 @@ export const entry = oldEntryForFile(
         });
         await outputCallback("Result: " + currentFrequency);
     },
-    async (lines, outputCallback) => {
+    async ({lines, outputCallback}) => {
         const values: number[] = [];
         const firstRoundOfFrequencies: number[] = [];
         let currentFrequency: number = 0;
@@ -45,4 +45,5 @@ export const entry = oldEntryForFile(
             });
         }
     },
+    { key: "frequency", title: "Chronal Calibration", stars: 2, }
 );

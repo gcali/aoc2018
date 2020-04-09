@@ -54,6 +54,7 @@ export const spaceImageFormat = entryForFile(
             .toArray();
 
         await forEachAsync(output, async (row) => await outputCallback(row));
-    }
+    },
+    { key: "space-image-format", title: "Space Image Format", stars: 2, }
 );
 

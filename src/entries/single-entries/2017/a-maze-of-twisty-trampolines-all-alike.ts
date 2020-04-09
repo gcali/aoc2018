@@ -27,7 +27,8 @@ export const aMazeOfTwistyTrampolinesAllAlike = entryForFile(
             ip += delta;
         }
         await outputCallback(i);
-    }
+    },
+    { key: "a-maze-of-twisty-trampolines-all-alike", title: "A Maze of Twisty Trampolines, All Alike", stars: 2, }
 );
 
 

@@ -1,4 +1,4 @@
-import { oldEntryForFile } from "../../entry";
+import { oldEntryForFile, entryForFile } from "../../entry";
 // import { log } from "@/support/log";
 
 class Node {
@@ -56,8 +56,8 @@ function getTree(tokens: string[], startIndex: number, outputCallback: (s: any) 
     }
 }
 
-export const entry = oldEntryForFile(
-    async (lines, outputCallback) => {
+export const entry = entryForFile(
+    async ({lines, outputCallback}) => {
         const line = lines[0];
         const tokens = line.split(" ");
 
@@ -84,10 +84,11 @@ export const entry = oldEntryForFile(
         await outputCallback("" + endIndex + " " + tokens.length);
         await outputCallback(calcMetadataSum(tree));
     },
-    async (lines, outputCallback) => {
+    async ({lines, outputCallback}) => {
         const line = lines[0];
         const tokens = line.split(" ");
         const [tree, endIndex] = getTree(tokens, 0, outputCallback);
         await outputCallback(tree.value());
     },
+    { key: "memory-maneuver", title: "Memory Maneuver", stars: 2, }
 );

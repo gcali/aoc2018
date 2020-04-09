@@ -19,15 +19,23 @@ export type OutputCallback = ((outputLine: any, shouldClear?: boolean) => Promis
 
 type EntryCallback = (arg: EntryCallbackArg) => Promise<void>;
 
+type EntryMetadata = {
+    key: string;
+    stars?: 1 | 2;
+    title: string;
+};
+
 export interface Entry {
     first: EntryCallback;
     second: EntryCallback;
+    metadata?: EntryMetadata;
 }
 
-export function entryForFile(first: EntryCallback, second: EntryCallback): Entry {
+export function entryForFile(first: EntryCallback, second: EntryCallback, metadata?: EntryMetadata): Entry {
     return {
         first,
-        second
+        second,
+        metadata
     };
 }
 export function oldEntryForFile(first: OldEntryCallback, second: OldEntryCallback): Entry {

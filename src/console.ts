@@ -1,12 +1,14 @@
 import minimist from "minimist";
 
 const args = (minimist as any)(process.argv.slice(2), {
-    alias: { e: "entry", h: "help", s: "second", l: "list", y: "year" },
+    alias: { e: "entry", h: "help", s: "second", l: "list", y: "year", n: "noNumber" },
     number: ["e", "y"],
     default: {
-        "y": "2019"
+        "y": null,
+        "e": null,
+        "n": false
     },
-    boolean: ["help", "second", "list"],
+    boolean: ["help", "second", "list", "noNumber"],
 });
 
 
@@ -15,10 +17,11 @@ const usage =
 
 Options:
     -h, --help: print help
-    -e, --entry <entry>: [REQUIRED] Identify which entry to run
+    -e, --entry <entry>: Identify which entry to run; if missing, run last entry
     -s, --second: choose second part instead of first
     -l, --list: list entries,
-    -y, --year: year
+    -y, --year: year,
+    -n, --noNumber: hide number in list, optional, default to false
 `;
 
 const error = () => { console.log(usage); process.exit(1); };
@@ -30,26 +33,28 @@ if (args.h) {
 
 import { entryList } from "./entries/entryList";
 
+const getLastYear = (): string => {
+    const sorted = Object.keys(entryList).sort();
+    return sorted[sorted.length-1];
+}
+
+const year: string = args.y === null ? getLastYear() : args.y;
+
 if (args.l) {
     let i = 0;
-    for (const entry of entryList[args.y]) {
-        console.log(`${++i} - ${entry.title}`);
+    for (const entry of entryList[year]) {
+        console.log(args.n ? entry.title : `${++i} - ${entry.title}`);
     }
     process.exit(0);
 }
 
-if (!("e" in args)) {
+const index: number = (args.e === null ? entryList[year].length : args.e) - 1;
+if (index <= 0 || index >= entryList[year].length) {
     error();
 }
 
 
-const index: number = args.e - 1;
-if (index <= 0 || index >= entryList[args.y].length) {
-    error();
-}
-
-
-const entryCallback = entryList[args.y][index].entry;
+const entryCallback = entryList[year][index].entry;
 
 
 import { readStdin } from "./support/stdin-reader";

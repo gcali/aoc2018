@@ -151,5 +151,6 @@ export const haltingProblem = entryForFile(
     },
     async ({ lines, outputCallback }) => {
         throw Error("Not implemented");
-    }
+    },
+    { key: "the-halting-problem", title: "The Halting Problem", stars: 2, }
 );

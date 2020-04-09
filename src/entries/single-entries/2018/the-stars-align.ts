@@ -1,4 +1,4 @@
-import { oldEntryForFile } from "../../entry";
+import { oldEntryForFile, entryForFile } from "../../entry";
 import { Coordinate, sumCoordinate, getBoundaries, Bounds } from "../../../support/geometry";
 // import { log } from "@/support/log";
 
@@ -38,8 +38,8 @@ class MovablePoint {
     }
 }
 
-export const entry = oldEntryForFile(
-    async (lines, outputCallback) => {
+export const entry = entryForFile(
+    async ({lines, outputCallback}) => {
         let points = lines.map((line) => MovablePoint.FromLine(line));
         let lastBoundaries: Bounds | null = null;
         let lastPoints: typeof points | null = null;
@@ -84,7 +84,7 @@ export const entry = oldEntryForFile(
             await outputCallback(l.join(""));
         }
     },
-    async (lines, outputCallback) => {
+    async ({lines, outputCallback}) => {
         let points = lines.map((line) => MovablePoint.FromLine(line));
         let lastBoundaries: Bounds | null = null;
         let lastPoints: typeof points | null = null;
@@ -112,4 +112,5 @@ export const entry = oldEntryForFile(
         }
         await outputCallback(iterationCounter - 1);
     },
+    { key: "stars-align", title: "The Stars Align", stars: 2, }
 );

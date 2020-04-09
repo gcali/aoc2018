@@ -28,7 +28,8 @@ export const permutationPromenade = entryForFile(
         }
         const requiredIndex = (total - 1) % dances.length;
         await outputCallback(dances[requiredIndex]);
-    }
+    },
+    { key: "permutation-promenade", title: "Permutation Promenade", stars: 2, }
 );
 function msToTime(s: number) {
 

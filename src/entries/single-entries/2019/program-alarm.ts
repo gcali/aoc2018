@@ -68,5 +68,6 @@ export const programAlarm = entryForFile(
                 } catch { }
             }
         }
-    }
+    },
+    { key: "program-alarm", title: "1202 Program Alarm", stars: 2, }
 );

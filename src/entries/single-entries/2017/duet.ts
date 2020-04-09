@@ -187,5 +187,6 @@ export const duet = entryForFile(
             }
         }
         await outputCallback(counter);
-    }
+    },
+    { key: "duet", title: "Duet", stars: 2, }
 );

@@ -1,4 +1,4 @@
-import { entryForFile } from "../../entry";
+import { entryForFile, simpleOutputCallbackFactory } from "../../entry";
 import { parseMemory, execute } from "../../../support/intcode";
 import { FixedSizeMatrix } from "../../../support/matrix";
 import { getSurrounding, Coordinate, CCoordinate, directions, rotate } from "../../../support/geometry";
@@ -108,16 +108,16 @@ export class Field {
                 movements.push(currentSteps);
                 currentSteps = 0;
             }
-            const left = this.tryLeft(currentPosition);
-            if (left !== null) {
-                movements.push("L");
-                currentPosition = { ...currentPosition, direction: left.direction };
-                continue;
-            }
             const right = this.tryRight(currentPosition);
             if (right !== null) {
                 movements.push("R");
                 currentPosition = { ...currentPosition, direction: right.direction };
+                continue;
+            }
+            const left = this.tryLeft(currentPosition);
+            if (left !== null) {
+                movements.push("L");
+                currentPosition = { ...currentPosition, direction: left.direction };
                 continue;
             }
             break;
@@ -156,13 +156,14 @@ export const setAndForget = entryForFile(
         const memory = parseMemory(lines[0]);
         const buffer: string[] = [];
         await execute({
-            memory, input: async () => 2, output: async (n) => {
+            memory, input: async () => {throw new Error("Why did you call me?");}, output: async (n) => {
                 const c = String.fromCharCode(n);
                 buffer.push(c);
             }
         });
         const field = Field.fromBuffer(buffer);
         const alignment = await field.getAlignment();
+        // await outputCallback(buffer.join(""));
         await outputCallback(field.toString());
         await outputCallback(`Alignment: ${alignment}`);
 
@@ -171,7 +172,7 @@ export const setAndForget = entryForFile(
         const memory = parseMemory(lines[0]);
         const buffer: string[] = [];
         await execute({
-            memory, input: async () => 2, output: async (n) => {
+            memory, input: async () => {throw new Error("Why did you call me?")}, output: async (n) => {
                 const c = String.fromCharCode(n);
                 buffer.push(c);
             }
@@ -179,22 +180,98 @@ export const setAndForget = entryForFile(
         const field = Field.fromBuffer(buffer);
         const movements = await field.getMovements();
 
-        // const result = await findCompressed(movements, outputCallback);
-        // if (result !== null) {
-        //     await outputCallback(result);
-        // } else {
-        //     await outputCallback("Nothing found :(");
-        // }
-        const serializedMovements = groupBy(movements, 2).map((g) => `${g[0]}${g[1]}`).join(",");
+        const serializedMovements = /*movements.join(",");//*/groupBy(movements, 2).map((g) => `${g[0]}${g[1]}`).join("\n");
         await outputCallback(serializedMovements);
-        await outputCallback(serializedMovements.length);
-    }
+        const functions = await findCompressed(movements.map(e => e.toString()), outputCallback);
+        if (functions === null) {
+            await outputCallback("Nothing found!");
+            return;
+        }
+
+        const toSend = [
+            functions.replaced,
+            functions.aCandidate.join(","),
+            functions.bCandidate.join(","),
+            functions.cCandidate.join(","),
+            "n\n"
+        ].join("\n").split("").map(c =>  c.charCodeAt(0));
+
+        memory[0] = 2;
+        let nextSend = 0;
+
+        const answer: number[] = [];
+
+        await outputCallback("Running program");
+
+        await execute({memory, input: async () => {
+            if (nextSend >= toSend.length) {
+                throw new Error("Why are you asking me for input?");
+            }
+            return toSend[nextSend++];
+        }, output: async (n) => {
+            answer.push(n);
+        }});
+
+        await outputCallback(answer[answer.length-1]);
+    },
+    {key: "set-and-forget", title: "Set and Forget", stars: 2}
 );
 
-async function findCompressed(
-    movements: Movement[],
+const findCandidates = <T,>(e: T[], except: T[]): T[][] => {
+    let start = 0;
+    while (except.indexOf(e[start]) >= 0) {
+        start++;
+    }
+    const results: T[][] = [];
+    let end = start+1;
+
+    while (end < e.length && (end - start) <= 20) {
+        if (except.indexOf(e[end]) >= 0) {
+            break;
+        }
+        results.push(e.slice(start,end));
+        end++;
+    }
+    // if (results.length === 0) {
+    //     throw new Error("No candidates found");
+    // } 
+    return results;
+}
+
+export function smartCompression(movements: string[]): any {
+    const aCandidates = findCandidates(movements, []);
+    for (const candidate of aCandidates) {
+        const aReplaced = replaceCandidate(movements, candidate, "A");
+        console.log(movements.join(" "));
+        console.log(candidate.join(" "));
+        console.log(aReplaced.join(" "));
+        const bCandidates = findCandidates(aReplaced, ["A"]);
+        for (const bCandidate of bCandidates) {
+            const bReplaced = replaceCandidate(aReplaced, bCandidate, "B");
+            const cCandidates = findCandidates(bReplaced, ["A","B"]);
+            for (const cCandidate of cCandidates) {
+                const finalReplace = replaceCandidate(bReplaced, cCandidate, "C");
+                if (finalReplace.filter(e => e !== "A" && e !== "B" && e !== "C").length > 0) {
+                    continue;
+                }
+                if (finalReplace.length > 20) {
+                    continue;
+                }
+                return finalReplace;
+            }
+        }
+    }
+}
+
+export async function findCompressed(
+    movements: string[],
     outputCallback: (outputLine: any, shouldClear?: boolean | undefined) => Promise<void>
-) {
+): Promise<null | {
+        replaced: string,
+        aCandidate: string[],
+        bCandidate: string[],
+        cCandidate: string[],
+}> {
     let currentIteration = 0;
     const totalIterations = movements.length * (movements.length + 1) / 2;
     for (const aCandidate of subsequenceGenerator(movements)) {
@@ -207,9 +284,15 @@ async function findCompressed(
             if (isCandidateTooLong(bCandidate)) {
                 continue;
             }
+            if (bCandidate.indexOf("A") >= 0) {
+                continue;
+            }
             const bReplaced = replaceCandidate(aReplaced, bCandidate, "B");
             for (const cCandidate of subsequenceGenerator(bReplaced)) {
                 if (isCandidateTooLong(cCandidate)) {
+                    continue;
+                }
+                if (cCandidate.indexOf("A") >= 0 || cCandidate.indexOf("B") >= 0) {
                     continue;
                 }
                 const cReplaced = replaceCandidate(bReplaced, cCandidate, "C");
@@ -228,14 +311,15 @@ async function findCompressed(
     return null;
 }
 
-function isCandidateTooLong(candidate: Movement[]) {
+function isCandidateTooLong(candidate: (Movement | string)[]) {
     return candidate.join(",").length > 20;
 }
 
-function replaceCandidate(movements: Movement[], candidate: Movement[], candidateName: string): Movement[] {
+function replaceCandidate(movements: string[], candidate: (Movement | string)[], candidateName: string): string[] {
     const serializedMovements = movements.join(",");
     const serializedCandidate = candidate.join(",");
-    const replaced = serializedMovements.replace(serializedCandidate, candidateName);
+    const re = new RegExp(serializedCandidate, 'g');
+    const replaced = serializedMovements.replace(re, candidateName);
     const newMovements = replaced.split(",");
-    return newMovements as Movement[];
+    return newMovements;
 }

@@ -39,7 +39,8 @@ export const diskDefragmentation = entryForFile(
             }
         });
         await outputCallback(regionCount);
-    }
+    },
+    { key: "disk-defragmentation", title: "Disk Defragmentation", stars: 2, }
 );
 
 function emptyRegion(matrix: FixedSizeMatrix<Binary>, coordinate: Coordinate) {

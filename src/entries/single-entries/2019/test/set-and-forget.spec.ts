@@ -1,7 +1,8 @@
 import "mocha";
 import { expect } from "chai";
-import { Field } from "../set-and-forget";
+import { Field, findCompressed } from "../set-and-forget";
 import { expectSameArrays } from "../../../../support/assertions";
+import { groupBy } from '../../../../support/sequences';
 
 describe("Set and forget", () => {
     it("finds the correct number of intersections on basic example", async () => {
@@ -94,7 +95,7 @@ describe("Set and forget", () => {
             5
         ]);
     });
-    it("gets the movements with a u turn costing the nothing", async () => {
+    it("gets the movements with a u turn coasting the nothing", async () => {
         const rows = [
             "..#####",
             "..#...#",
@@ -112,7 +113,7 @@ describe("Set and forget", () => {
         ]);
     });
 
-    it("gets the movements with a spiral costing the nothing", async () => {
+    it("gets the movements with a spiral coasting the nothing", async () => {
         const rows = [
             "..#####",
             "..#...#",
@@ -131,7 +132,7 @@ describe("Set and forget", () => {
             2
         ]);
     });
-    it("gets the movements with a loop costing the nothing", async () => {
+    it("gets the movements with a loop coasting the nothing", async () => {
         const rows = [
             "..#####",
             "..#...#",
@@ -150,7 +151,7 @@ describe("Set and forget", () => {
             5
         ]);
     });
-    it("gets the movements with a loop costing the nothing and ending in nothing", async () => {
+    it("gets the movements with a loop coasting the nothing and ending in nothing", async () => {
         const rows = [
             "..#####",
             "..#...#",
@@ -265,6 +266,48 @@ describe("Set and forget", () => {
             "L",
             3
         ]);
+    });
+
+    it("gets the movements from the example", async () => {
+        const rows = [
+"#######...#####",
+"#.....#...#...#",
+"#.....#...#...#",
+"......#...#...#",
+"......#...###.#",
+"......#.....#.#",
+"^########...#.#",
+"......#.#...#.#",
+"......#########",
+"........#...#..",
+"....#########..",
+"....#...#......",
+"....#...#......",
+"....#...#......",
+"....#####......",
+        ];
+        const field = new Field(rows);
+        const movements = await field.getMovements();
+        expectSameArrays(
+            movements, 
+            [
+            "R",8,"R",8,"R",4,"R",4,"R",8,"L",6,"L",2,"R",4,"R",4,"R",8,"R",8,"R",8,"L",6,"L",2
+            ]);
+    });
+
+    it("can compress example input", async () => {
+        const compression = await findCompressed([
+            "R",8,"R",8,"R",4,"R",4,"R",8,"L",6,"L",2,"R",4,"R",4,"R",8,"R",8,"R",8,"L",6,"L",2
+        ].map(e => e.toString()), async () => {});
+        expect(compression).not.to.be.null;
+    });
+
+    it("can compress example input by pairs", async () => {
+        const compression = await findCompressed(groupBy([
+            "R",8,"R",8,"R",4,"R",4,"R",8,"L",6,"L",2,"R",4,"R",4,"R",8,"R",8,"R",8,"L",6,"L",2
+        ], 2).map(e => e.join("")), async () => {});
+        console.log(compression);
+        expect(compression).not.to.be.null;
     });
 
 });

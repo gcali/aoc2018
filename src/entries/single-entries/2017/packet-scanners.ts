@@ -94,5 +94,6 @@ export const packetScanners = entryForFile(
             hasCollided = false;
             delay++;
         }
-    }
+    },
+    { key: "packet-scanners", title: "Packet Scanners", stars: 2, }
 );

@@ -205,5 +205,6 @@ export const immuneSystemSimulator20XX = entryForFile(
             }
         }
         await outputCallback("Min boost: " + boostingBy);
-    }
+    },
+    { key: "immune-system-simulator-20xx", title: "Immune System Simulator 20XX", stars: 2, }
 );

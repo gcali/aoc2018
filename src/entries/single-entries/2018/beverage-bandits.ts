@@ -308,5 +308,6 @@ export const entry = entryForFile(
                 attackPower++;
             }
         }
-    }
+    },
+    { key: "beverage-bandits", title: "Beverage Bandits", stars: 2, }
 );

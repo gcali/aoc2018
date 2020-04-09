@@ -95,5 +95,6 @@ export const sporificaVirus = entryForFile(
         }
 
         await outputCallback(infectionCount);
-    }
+    },
+    { key: "sporifica-virus", title: "Sporifica Virus", stars: 2, }
 );

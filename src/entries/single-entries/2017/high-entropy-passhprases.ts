@@ -15,6 +15,7 @@ export const highEntropyPasshprases = entryForFile(
             return words.length === uniqueWords.size;
         }).length;
         await outputCallback(uniqueLines);
-    }
+    },
+    { key: "high-entropy-passphrases", title: "High-Entropy Passphrases", stars: 2, }
 );
 

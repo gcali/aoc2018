@@ -286,5 +286,6 @@ export const mineCartMadness = entryForFile(
             "Last cart: " + JSON.stringify(field.remainingCarts[0].position),
             field.toString(false)
         ], true);
-    }
+    },
+    { key: "mine-cart-madness", title: "Mine Cart Madness", stars: 2, }
 );

@@ -369,5 +369,6 @@ export const oxygenSystem = entryForFile(
                 .map((d) => d.distance!)
                 .reduce((a, b) => Math.max(a, b))
         );
-    }
+    },
+    { key: "oxygen-system", title: "Oxygen System", stars: 2, }
 );

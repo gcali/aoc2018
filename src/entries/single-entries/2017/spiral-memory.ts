@@ -58,6 +58,7 @@ export const spiralMemory = entryForFile(
                 }
             }
         } 
-    }
+    },
+    { key: "spiral-memory", title: "Spiral Memory", stars: 2, }
 );
 

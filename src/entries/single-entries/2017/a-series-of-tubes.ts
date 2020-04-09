@@ -79,7 +79,7 @@ export const aSeriesOfTubes = entryForFile(
 
         const startingPoint = matrix.findOneWithCoordinate((cell, coordinate) => coordinate.y === 0 && cell === "|");
         if (!startingPoint) {
-            throw new Error("Starting point not found :(");
+            throw new Error("Starting point not found!");
         }
         await outputCallback(startingPoint);
         let state: State | null = {
@@ -126,7 +126,7 @@ export const aSeriesOfTubes = entryForFile(
 
         const startingPoint = matrix.findOneWithCoordinate((cell, coordinate) => coordinate.y === 0 && cell === "|");
         if (!startingPoint) {
-            throw new Error("Starting point not found :(");
+            throw new Error("Starting point not found!");
         }
         await outputCallback(startingPoint);
         let state: State | null = {
@@ -167,5 +167,6 @@ export const aSeriesOfTubes = entryForFile(
         }
 
         await outputCallback(count);
-    }
+    },
+    { key: "a-series-of-tubes", title: "A Series of Tubes", stars: 2, }
 );

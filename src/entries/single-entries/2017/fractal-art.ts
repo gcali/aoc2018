@@ -164,5 +164,6 @@ export const fractalArt = entryForFile(
             sizes.push(grid.size.x);
         };
         await outputCallback(grid.data.filter(e => e === "#").length);
-    }
+    },
+    { key: "fractal-art", title: "Fractal Art", stars: 2, }
 );

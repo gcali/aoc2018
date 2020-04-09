@@ -191,5 +191,6 @@ export const entry = entryForFile(
         }
         await outputCallback(world.dryCells, true);
         await outputCallback(world.toString());
-    }
+    },
+    { key: "reservoir-research", title: "Reservoir Research", stars: 2, }
 );

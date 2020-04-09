@@ -91,5 +91,6 @@ export const entry = entryForFile(
             currentFirst = moveElf(currentFirst, recipes);
             currentSecond = moveElf(currentSecond, recipes);
         }
-    }
+    },
+    { key: "chocolate-charts", title: "Chocolate Charts", stars: 2, }
 );

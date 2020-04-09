@@ -115,7 +115,8 @@ export const recursiveCircus = entryForFile(
         const tree = buildTree(bottom, definitions);
         const checkResult = checkWeight(tree);
         await outputCallback(checkResult);
-    }
+    },
+    { key: "recursive-circus", title: "Recursive Circus", stars: 2, }
 );
 
 function findBottom(lines: string[]) {

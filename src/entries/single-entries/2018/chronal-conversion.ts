@@ -42,5 +42,6 @@ export const chronalConversion = entryForFile(
             machine.execute(instruction);
         }
         await outputCallback("Last four: " + lastFour);
-    }
+    },
+    { key: "chronal-conversion", title: "Chronal Conversion", stars: 2, }
 );

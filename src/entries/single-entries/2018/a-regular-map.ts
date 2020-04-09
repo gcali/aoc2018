@@ -360,5 +360,6 @@ export const aRegularMap = entryForFile(
 
         const interestingDistances = distances.list.map(e => e.distance).filter(d => (d !== null && d >= 1000)).length;
         await outputCallback(interestingDistances);
-    }
+    },
+    { key: "a-regular-map", title: "A Regular Map", stars: 2, }
 );

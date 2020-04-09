@@ -122,5 +122,6 @@ export const universalObritMap = entryForFile(
 
         const result = mineChain.indexOf(firstIntersection) + santaChain.indexOf(firstIntersection);
         await outputCallback(result);
-    }
+    },
+    { key: "universal-orbit-map", title: "Universal Orbit Map", stars: 2, }
 );

@@ -100,5 +100,6 @@ export const digitalPlumber = entryForFile(
             graph.dfs(next, e => visited.add(e));
         }
         await outputCallback(count);
-    }
+    },
+    { key: "digital-plumber", title: "Digital Plumber", stars: 2, }
 );  

@@ -32,5 +32,6 @@ export const spinlock = entryForFile(
 
         // await outputCallback(buffer[(zeroIndex + 1) % buffer.length]);
         await outputCallback(lastAdd);
-    }
+    },
+    { key: "spinlock", title: "Spinlock", stars: 2, }
 );

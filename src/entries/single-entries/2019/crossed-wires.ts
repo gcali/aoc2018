@@ -106,7 +106,8 @@ export const crossedWires = entryForFile(
         );
         const result = intersection.map((e) => e.first + e.second).reduce((acc, next) => Math.min(acc, next));
         await outputCallback(`Result: ${result}`);
-    }
+    },
+    { key: "crossed-wires", title: "Crossed Wires", stars: 2, }
 );
 
 function getCoordinates(currentPosition: Coordinate, movements: Movement[]) {

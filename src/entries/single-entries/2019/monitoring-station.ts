@@ -99,7 +99,7 @@ export const monitoringStation = entryForFile(
             }
         });
 
-        await outputCallback(`Station: (${station.coordinate.x}, ${station.coordinate.y}}`);
+        await outputCallback(`Station: (${station.coordinate.x}, ${station.coordinate.y})`);
         const topVisible =
             station.canSee!
                 .filter((e) => e.coordinate.x === station.coordinate.x)
@@ -139,7 +139,8 @@ export const monitoringStation = entryForFile(
             }
             fillVisibilities(asteroids);
         }
-    }
+    },
+    { key: "monitoring-station", title: "Monitoring Station", stars: 2, }
 );
 
 function getVisibilities(lines: string[]) {

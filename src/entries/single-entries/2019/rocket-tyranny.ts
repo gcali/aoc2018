@@ -26,5 +26,6 @@ export const entry = entryForFile(
             .reduce((acc, next) => acc + next, 0);
 
         await outputCallback(`Result: ${requirement}`);
-    }
+    },
+    { key: "rocket-tyranny", title: "The Tyranny of the Rocket Equation", stars: 2, }
 );

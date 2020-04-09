@@ -123,6 +123,7 @@ export const amplificationCircuit = entryForFile(
             currentMax = Math.max(currentMax, output);
         });
         await outputCallback(currentMax);
-    }
+    },
+    { key: "amplification-circuit", title: "Amplification Circuit", stars: 2, }
 );
 

@@ -62,7 +62,8 @@ export const knotHash = entryForFile(
         const input = lines[0];
         const result = calculateKnotHash(input);
         await outputCallback(result);
-    }
+    },
+    { key: "knoth-hash", title: "Knot Hash", stars: 2, }
 )
 
 export function calculateKnotHash(input: string, baseSequence: (number[] | null) = null) {

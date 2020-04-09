@@ -12,6 +12,9 @@ export interface Key {
     name: string;
 }
 
+let maxDepth = 0;
+let currentIteration = 0;
+
 interface PathLookup { [key: string]: CCoordinate[]; }
 
 function stateSerializer(currentCoordinate: Coordinate, keys: string[]): string {
@@ -62,7 +65,7 @@ export class Labyrinth {
         return destinations;
     }
 
-    public getDestinationsWithPaths() {
+    public getDestinationsWithPaths(): {destination: CellWithDistance<Key>, path: CCoordinate[]}[] {
         const distances = this.getDistances();
         const destinations = this.filterDestinations(distances);
         return destinations.map((destination) => ({
@@ -120,6 +123,62 @@ export class Labyrinth {
 
         return steps.reverse();
     }
+
+    public createGraph(currentNodeName: string, existingNodesArg?: Set<string>, depth: number = 1): GraphNode[] {
+        if (maxDepth < depth) {
+            console.log("Reached new depth: " + depth);
+            maxDepth = depth;
+        }
+        if (depth === 1) {
+            currentIteration = 0;
+        }
+        if (++currentIteration % 1000 === 0) {
+            console.log(`Currently at iteration ${currentIteration/1000}`);
+        }
+        const currentNode: GraphNode = {
+            name: currentNodeName,
+            edges: []
+        };
+
+        const existingNodes = existingNodesArg || new Set<string>();
+        const keys = this.listKeys();
+        if (keys.length === 0) {
+            return [];
+        }
+        const destinations = this.getDestinationsWithPaths();
+        if (destinations.length === 0) {
+            throw new Error("Cannot reach any key");
+        }
+        const toExplore: CellWithDistance<Key>[] = [];
+        destinations.forEach(destination => {
+                const name = createKeyName(destination.destination.cell.name, keys);
+                currentNode.edges.push(
+                    {
+                        name,
+                        weight: destination.path.length
+                    }
+                );
+                if (!existingNodes.has(name)) {
+                    toExplore.push(destination.destination);
+                    existingNodes.add(name);
+                }
+            }
+        );
+        const recursiveNodes = toExplore.map(e => {
+            const newLabyrinth = this.moveTo(e.coordinate);
+            const nodes = newLabyrinth.createGraph(createKeyName(e.cell.name, keys), existingNodes, depth+1);
+            return nodes;
+        }).flat();
+        return recursiveNodes.concat([currentNode]);
+    }
+
+    public async newFindBestStrategy(debug?: Debug, cache?: PathLookup): Promise<CCoordinate[]> {
+        const destination = this.getDestinationsWithPaths();
+        if (debug) {
+            await debug.output("Available keys: " + destination.length);
+        }
+        return [];
+    };
 
     public async findBestStrategy(debug?: Debug, cache?: PathLookup): Promise<CCoordinate[]> {
         if (cache) {
@@ -190,8 +249,8 @@ export class Labyrinth {
         return distanceMap.list;
     }
 
-    private filterDestinations(distances: Array<CellWithDistance<LabyrinthCell>>) {
-        return distances.filter((e) => isKey(e.cell));
+    private filterDestinations(distances: Array<CellWithDistance<LabyrinthCell>>): CellWithDistance<Key>[] {
+        return distances.filter((e) => isKey(e.cell)).map((e => e as CellWithDistance<Key>));
     }
 
 
@@ -236,12 +295,23 @@ interface Debug {
     level: number;
 }
 
+type GraphNode = {
+    name: string;
+    edges: {name: string, weight: number}[]
+};
+
+const createKeyName = (key: string, keys: string[]): string => {
+    return `${key}|${keys.join(",")}`;
+}
+
 export const manyWorldInterpretation = entryForFile(
     async ({ lines, outputCallback, pause, isCancelled }) => {
         const labyrinth = parseLines(lines);
         await outputCallback(labyrinth.toString());
-        await outputCallback(await labyrinth.findBestStrategy({ output: outputCallback, pause, level: 0 }));
+        await outputCallback(labyrinth.createGraph("start"));
+        // await outputCallback(await labyrinth.findBestStrategy({ output: outputCallback, pause, level: 0 }));
     },
     async ({ lines, outputCallback, pause, isCancelled }) => {
-    }
+    },
+    { key: "many-worlds-interpretation", title: "Many-Worlds Interpration" }
 );

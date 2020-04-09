@@ -385,7 +385,8 @@ export const entry = entryForFile(
         }
 
         await outputCallback("First register: " + m.registers[0]);
-    }
+    },
+    { key: "chronal-classification", title: "Chronal Classification", stars: 2, }
 );
 
 function parseCalibrationTokens(lines: string[]) {

@@ -1,6 +1,7 @@
 import { entryForFile } from "../../entry";
 import { List } from "linq-typescript";
 import wu from 'wu';
+import { serializeTime } from '../../../support/time';
 
 const basePattern = [0, 1, 0, -1];
 
@@ -66,18 +67,25 @@ export const flawedFrequencyTransmission = entryForFile(
     },
     async ({ lines, outputCallback, pause, isCancelled }) => {
         const input = parseLines(lines);
-        let repeatedInput = Array.from({ length: 10000 }, () => input).flat();
-        const interestingDigits = parseInt(wu(input).take(7).toArray().join(""), 10);
-        const pattern = Pattern.default();
-        pattern.delta = 1  + interestingDigits;
-        repeatedInput = wu(repeatedInput).drop(interestingDigits).toArray();
-        const result = await applyPatternIteratively(
-            repeatedInput,
-            pattern,
-            100,
-            async (n) => await outputCallback("Iteration " + n + " done")
-        );
-        // await outputCallback(new List(result).skip(parseInt(input.join(""), 10)).take(8).toArray().join(""));
-        await outputCallback(wu(result).take(8).toArray());
-    }
+        const repeatedInput = Array.from({ length: 10000 }, () => input).flat();
+        const interestingDigits = parseInt(input.slice(0,7).join(""), 10);
+        let iterationTime: number | null = null;
+        for (let iteration = 0; iteration < 100; iteration++) {
+            const startIterationTime = new Date().getTime();
+            for (let d = repeatedInput.length - 1; d >= interestingDigits; d--) {
+                let s = repeatedInput[d];
+                if (d + 1 < repeatedInput.length) {
+                    s += repeatedInput[d+1];
+                }
+                repeatedInput[d] = s;
+            }
+            for (let d = interestingDigits; d < repeatedInput.length; d++) {
+                repeatedInput[d] = Math.abs(repeatedInput[d]) % 10;
+            }
+            iterationTime = new Date().getTime() - startIterationTime;
+            await outputCallback("Done iteration " + iteration);
+        }
+        await outputCallback(repeatedInput.slice(interestingDigits, interestingDigits + 8).join(""));
+    },
+    { key: "flawed-frequency-transmission", title: "Flawed Frequency Transmission", stars: 2, }
 );

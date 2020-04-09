@@ -71,5 +71,6 @@ export const experimentalEmergencyTransportation = entryForFile(
             }
         });
         await outputCallback({bestPos, bestEnd});
-    }
+    },
+    { key: "experimental-emergency-transportation", title: "Experimental Emergency Transportation", stars: 2, }
 );

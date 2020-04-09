@@ -85,6 +85,7 @@ export const streamProcessing = entryForFile(
         const line = lines[0];
         const result = parseGroup(line)[0];
         await outputCallback(countGarbage(result));
-    }
+    },
+    { key: "stream-processing", title: "Stream Processing", stars: 2, }
 );
 

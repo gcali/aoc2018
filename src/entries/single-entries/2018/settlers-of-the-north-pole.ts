@@ -164,5 +164,6 @@ export const entry = entryForFile(
         //     ], true);
         //     iteration++;
         // }
-    }
+    },
+    { key: "settlers-of-the-north-pole", title: "Settlers of the North Pole", stars: 2, }
 );

@@ -31,6 +31,7 @@ export const inverseCaptcha = entryForFile(
         const matchingSequence: number[] = sequence
             .filter((n, index) => sequence[(index + step) % sequence.length] === n);
         await outputCallback(matchingSequence.reduce((a, b) => a + b));
-    }
+    },
+    { key: "inverse-captcha", title: "Inverse Captcha", stars: 2, }
 );
 
