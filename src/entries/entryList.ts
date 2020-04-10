@@ -69,6 +69,7 @@ import { immuneSystemSimulator20XX } from "./single-entries/2018/immune-system-s
 import { fourDimensionalAdventure } from "./single-entries/2018/four-dimensional-adventure";
 import { tractorBeam } from './single-entries/2019/tractor-beam';
 import { donutMaze } from './single-entries/2019/donut-maze';
+import { springdroidAdventure } from './single-entries/2019/springroid-adventure';
 
 export interface EntryRoute extends EntryRouteBase {
     date: number;
@@ -202,7 +203,8 @@ export const entryList: { [key: string]: EntryRoute[] } = {
         setAndForget,
         manyWorldInterpretation,
         tractorBeam,
-        donutMaze
+        donutMaze,
+        springdroidAdventure
     ])
 };
 
