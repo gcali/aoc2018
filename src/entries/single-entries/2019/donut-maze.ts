@@ -69,6 +69,62 @@ export const analyzeMatrix = (matrix: FixedSizeMatrix<string>): {
         return {portals, start, end}; 
 }
 
+const getBorder = (matrix: FixedSizeMatrix<string>): Border => {
+    const midX = Math.floor(matrix.size.x / 2);
+    const topLeft: Coordinate = {
+        x: 0,
+        y: 0
+    };
+    const bottomRight: Coordinate = {
+        x: 0,
+        y: 0
+    };
+    for (let y = 0; y < matrix.size.y; y++) {
+        const cell = matrix.get({x: midX, y});
+        if (cell !== " ") {
+            topLeft.y = y;
+            break;
+        }
+    }
+    for (let y = matrix.size.y-1; y >= 0; y--) {
+        const cell = matrix.get({x: midX, y});
+        if (cell !== " ") {
+            bottomRight.y = y;
+            break;
+        }
+    }
+
+    const midY = Math.floor(matrix.size.y / 2);
+
+    for (let x = 0; x < matrix.size.x; x++) {
+        const cell = matrix.get({x, y: midY});
+        if (cell !== " ") {
+            topLeft.x = x;
+            break;
+        }
+    }
+    for (let x = matrix.size.x-1; x >= 0; x--) {
+        const cell = matrix.get({x, y: midY});
+        if (cell !== " ") {
+            bottomRight.x = x;
+            break;
+        }
+    }
+    return {
+        topLeft,
+        bottomRight
+    };
+};
+
+type Border = {
+    topLeft: Coordinate,
+    bottomRight: Coordinate
+}
+
+const isInBorder = (c: Coordinate, b: Border): boolean => {
+    return (c.x === b.topLeft.x || c.x === b.bottomRight.x) || (c.y === b.topLeft.y || c.y === b.bottomRight.y);
+}
+
 
 export const donutMaze = entryForFile(
     async ({ lines, outputCallback }) => {
@@ -99,28 +155,48 @@ export const donutMaze = entryForFile(
         const matrix = parseLines(lines); 
         const {portals, start, end} = analyzeMatrix(matrix);
         const portalMap = createPortalMap(portals); 
-        const distances = calculateDistancesGenericCoordinates(
-            (c) => matrix.get(c),
-            (start, end) => (start.distance || 0) + 1,
-            c => {
-                return getSurrounding(c).map(coordinate => {
-                    const n = matrix.get(coordinate);
-                    if (n === ".") {
-                        return {...coordinate, depth: c.depth};
-                    }
-                    const portaled = portalMap.get(serializeCoordinate(c));
-                    if (portaled === undefined) {
-                        return null;
-                    }
-                    return {...portaled, depth: 0};
-                }).filter(e => e !== null).map(e => e!);
-            },
-            {x: start.x, y: start.y, depth: 0},
-            e => `${e.x}|${e.y}|${e.depth}`
-        ); 
-        await outputCallback(distances.map({...end, depth: 0})); 
+
+        const border = getBorder(matrix);
+
+        let found = false;
+        let maxDepth = 0;
+
+        while (!found) {
+            await outputCallback("Trying with depth " + maxDepth);
+            const distances = calculateDistancesGenericCoordinates(
+                (c) => matrix.get(c),
+                (start, end) => (start.distance || 0) + 1,
+                c => {
+                    return getSurrounding(c).map(coordinate => {
+                        const n = matrix.get(coordinate);
+                        if (n === ".") {
+                            return {...coordinate, depth: c.depth};
+                        }
+                        const portaled = portalMap.get(serializeCoordinate(c));
+                        if (portaled === undefined) {
+                            return null;
+                        }
+                        const depthIncrement = isInBorder(c, border) ? -1 : 1;
+                        const newDepth = c.depth + depthIncrement;
+                        if (newDepth < 0 || newDepth > maxDepth) {
+                            return null;
+                        }
+                        return {...portaled, depth: newDepth};
+                    }).filter(e => e !== null).map(e => e!);
+                },
+                {x: start.x, y: start.y, depth: 0},
+                e => `${e.x}|${e.y}|${e.depth}`
+            ); 
+            const endDistance = distances.map({...end, depth: 0});
+            if (endDistance !== null) {
+                await outputCallback(endDistance);
+                found = true;
+                return;
+            }
+            maxDepth++;
+        }
     },
-    { key: "donut-maze", title: "Donut Maze"}
+    { key: "donut-maze", title: "Donut Maze", stars: 2}
 );
 
 function parseLines(lines: string[]): FixedSizeMatrix<string> {
