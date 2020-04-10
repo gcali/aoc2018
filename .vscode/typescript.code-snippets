@@ -26,7 +26,7 @@
 			"    },",
 			"    async ({ lines, outputCallback }) => {",
 			"        throw Error(\"Not implemented\");",
-			"    }",
+			"    },",
 			"    { key: \"${2:key}\", title: \"${3:title}\"}",
 			");"
 		],

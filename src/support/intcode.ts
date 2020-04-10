@@ -1,6 +1,6 @@
 import { voidIsPromise } from "./async";
 
-type Memory = number[];
+export type Memory = number[];
 
 type ParameterMode = "Position" | "Immediate" | "Relative";
 interface Operation {

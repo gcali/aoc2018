@@ -1,6 +1,5 @@
 import { entryForFile } from "../../entry";
 import { Stack } from 'linq-typescript';
-import { parseLines } from '../2019/many-worlds-interpretation';
 
 type Group = Element[]; 
 type Garbage = string; 

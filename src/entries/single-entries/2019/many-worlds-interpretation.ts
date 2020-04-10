@@ -2,316 +2,157 @@ import { entryForFile } from "../../entry";
 import { FixedSizeMatrix } from "../../../support/matrix";
 import { calculateDistances, CellWithDistance } from "../../../support/labyrinth";
 import { manhattanDistance, getSurrounding, Coordinate, CCoordinate, getDirection } from "../../../support/geometry";
-import { List } from "linq-typescript";
 
-interface Door {
-    key: string;
-}
-
-export interface Key {
-    name: string;
-}
-
-let maxDepth = 0;
-let currentIteration = 0;
-
-interface PathLookup { [key: string]: CCoordinate[]; }
-
-function stateSerializer(currentCoordinate: Coordinate, keys: string[]): string {
-    const key = JSON.stringify({
-        c: currentCoordinate, k: keys.sort()
-    });
-    return key;
-}
-
-type LabyrinthCell = "#" | "." | "@" | Door | Key;
-
-function isDoor(e: LabyrinthCell): e is Door {
-    return (e as Door).key !== undefined;
-}
-
-export function isKey(e: LabyrinthCell): e is Key {
-    return (e as Key).name !== undefined;
-}
-
-export class Labyrinth {
-
-    public readonly startCoordinate: Coordinate;
-    constructor(private matrix: FixedSizeMatrix<LabyrinthCell>) {
-        const startCoordinate = matrix.findOne((c) => c === "@");
-        if (!startCoordinate) {
-            throw new RangeError("Could not find starting cell");
-        }
-        this.startCoordinate = startCoordinate;
-    }
-
-    public toString(): string {
-        return this.matrix.toString((e) => {
-            if (e === undefined) {
-                return "";
-            } else if (typeof (e) === "string") {
-                return e;
-            } else if (isDoor(e)) {
-                return e.key.toUpperCase();
-            } else {
-                return e.name;
-            }
-        });
-    }
-
-    public getDestinations() {
-        const distances = this.getDistances();
-        const destinations = this.filterDestinations(distances);
-        return destinations;
-    }
-
-    public getDestinationsWithPaths(): {destination: CellWithDistance<Key>, path: CCoordinate[]}[] {
-        const distances = this.getDistances();
-        const destinations = this.filterDestinations(distances);
-        return destinations.map((destination) => ({
-            destination,
-            path: this.getPathFor(destination.coordinate, distances)
-        }));
-    }
-
-    public moveTo(target: Coordinate): Labyrinth {
-        const matrix = this.matrix.copy();
-        matrix.set(this.startCoordinate, ".");
-        const targetCell = matrix.get(target);
-        if (!targetCell || isDoor(targetCell) || targetCell === "#") {
-            throw new Error("Cannot move to " + JSON.stringify(target));
-        }
-        matrix.set(target, "@");
-        if (targetCell && isKey(targetCell)) {
-            const findDoor = matrix.findOne((e) => isDoor(e) && e.key === targetCell.name);
-            if (findDoor !== null) {
-                matrix.set(findDoor, ".");
-            }
-        }
-        return new Labyrinth(matrix);
-    }
-
-    public getPathFor(target: Coordinate, cachedDistances: Array<CellWithDistance<LabyrinthCell>> | null = null) {
-        if (cachedDistances === null) {
-            cachedDistances = this.getDistances();
-        }
-
-        const cellFinder = (cellToFind: Coordinate) =>
-            new List(
-                cachedDistances!
-                    .filter((c) => manhattanDistance(c.coordinate, cellToFind) === 0)
-            ).firstOrDefault() || null;
-
-        let currentCell = cellFinder(target);
-        if (currentCell === null || currentCell.distance === null) {
-            throw new Error("Could not find distance for target");
-        }
-        const steps: CCoordinate[] = [];
-        while (currentCell!.distance! > 0) {
-            if (!currentCell) {
-                throw new Error("Current cell should be valorized");
-            }
-            const targetCoordinate: Coordinate = currentCell!.coordinate;
-            const targetDistance: number = currentCell.distance!;
-            const candidateSteps = getCandidateSteps(targetCoordinate, cellFinder, targetDistance);
-            if (candidateSteps.length < 1) {
-                throw new Error(`Could not find a path for ${JSON.stringify(targetCoordinate)} :(`);
-            }
-            steps.push(getDirection(candidateSteps[0]!.coordinate, currentCell!.coordinate));
-            currentCell = candidateSteps[0]!;
-        }
-
-        return steps.reverse();
-    }
-
-    public createGraph(currentNodeName: string, existingNodesArg?: Set<string>, depth: number = 1): GraphNode[] {
-        if (maxDepth < depth) {
-            console.log("Reached new depth: " + depth);
-            maxDepth = depth;
-        }
-        if (depth === 1) {
-            currentIteration = 0;
-        }
-        if (++currentIteration % 1000 === 0) {
-            console.log(`Currently at iteration ${currentIteration/1000}`);
-        }
-        const currentNode: GraphNode = {
-            name: currentNodeName,
-            edges: []
-        };
-
-        const existingNodes = existingNodesArg || new Set<string>();
-        const keys = this.listKeys();
-        if (keys.length === 0) {
-            return [];
-        }
-        const destinations = this.getDestinationsWithPaths();
-        if (destinations.length === 0) {
-            throw new Error("Cannot reach any key");
-        }
-        const toExplore: CellWithDistance<Key>[] = [];
-        destinations.forEach(destination => {
-                const name = createKeyName(destination.destination.cell.name, keys);
-                currentNode.edges.push(
-                    {
-                        name,
-                        weight: destination.path.length
-                    }
-                );
-                if (!existingNodes.has(name)) {
-                    toExplore.push(destination.destination);
-                    existingNodes.add(name);
-                }
-            }
-        );
-        const recursiveNodes = toExplore.map(e => {
-            const newLabyrinth = this.moveTo(e.coordinate);
-            const nodes = newLabyrinth.createGraph(createKeyName(e.cell.name, keys), existingNodes, depth+1);
-            return nodes;
-        }).flat();
-        return recursiveNodes.concat([currentNode]);
-    }
-
-    public async newFindBestStrategy(debug?: Debug, cache?: PathLookup): Promise<CCoordinate[]> {
-        const destination = this.getDestinationsWithPaths();
-        if (debug) {
-            await debug.output("Available keys: " + destination.length);
-        }
-        return [];
-    };
-
-    public async findBestStrategy(debug?: Debug, cache?: PathLookup): Promise<CCoordinate[]> {
-        if (cache) {
-            const cachedValue = cache[stateSerializer(this.startCoordinate, this.listKeys())];
-            if (cachedValue !== undefined && cachedValue !== null) {
-                if (debug && debug.level <= 8) {
-                    await debug.output("Cached!");
-                }
-                return cachedValue;
-            }
-        } else {
-            cache = {};
-        }
-        while (true) {
-            const destinations = this.getDestinationsWithPaths();
-            if (destinations.length === 0) {
-                return [];
-            }
-            let bestResult = Number.POSITIVE_INFINITY;
-            let bestSteps: CCoordinate[] = [];
-            const wrappedDebug: Debug | undefined = debug ? ({
-                output: async (s) => await debug.output(" " + s),
-                pause: debug.pause,
-                level: debug.level + 1
-
-            }) : undefined;
-            for (const destination of destinations) {
-                if (debug) {
-                    if (debug.level <= 6) {
-                        await debug.output("Cell: " + JSON.stringify(destination.destination.cell));
-                    } else {
-                        await debug.pause();
-                    }
-                }
-                const labyrinthAfterMoving = this.moveTo(destination.destination.coordinate);
-                const recursiveResult = await labyrinthAfterMoving.findBestStrategy(wrappedDebug, cache);
-                const steps = destination.path.concat(recursiveResult);
-                const currentResult = recursiveResult.length + destination.destination.distance!;
-                if (currentResult < bestResult) {
-                    bestResult = currentResult;
-                    bestSteps = steps;
-                }
-            }
-            cache[stateSerializer(this.startCoordinate, this.listKeys())] = bestSteps;
-            return bestSteps;
-        }
-    }
-    public listKeys(): string[] {
-        return this.matrix.data.filter((d) => d && isKey(d)).map((d) => (d as Key).name);
-    }
-
-    public getDistances() {
-
-        const distanceMap = calculateDistances(
-            (c) => this.matrix.get(c),
-            (a, b) => {
-                const destination = this.matrix.get(b);
-                if (!destination || destination === "#" || isDoor(destination)) {
-                    return null;
-                } else {
-                    return manhattanDistance(a.coordinate, b) + a.distance!;
-                }
-            },
-            getSurrounding,
-            this.startCoordinate
-        );
-
-        return distanceMap.list;
-    }
-
-    private filterDestinations(distances: Array<CellWithDistance<LabyrinthCell>>): CellWithDistance<Key>[] {
-        return distances.filter((e) => isKey(e.cell)).map((e => e as CellWithDistance<Key>));
-    }
-
-
-}
-
-export function getCandidateSteps(
-    targetCoordinate: Coordinate,
-    cellFinder: (cellToFind: Coordinate) => CellWithDistance<LabyrinthCell> | null,
-    targetDistance: number) {
-    return getSurrounding(targetCoordinate)
-        .map((t) => cellFinder(t))
-        .filter((e) => e !== null && e.distance === targetDistance - 1);
-}
-
-export function parseLines(lines: string[]): Labyrinth {
-    const flat = lines.flatMap((line) => line.split("").map((token: string): LabyrinthCell => {
-        switch (token) {
-            case "#":
-            case ".":
-            case "@":
-                return token;
-            default:
-                if (token.toUpperCase() === token) {
-                    return {
-                        key: token.toLowerCase()
-                    } as Door;
-                } else {
-                    return {
-                        name: token
-                    } as Key;
-                }
-        }
-    }));
-    const matrix = new FixedSizeMatrix<LabyrinthCell>({ x: lines[0].length, y: lines.length });
-    matrix.setFlatData(flat);
-    return new Labyrinth(matrix);
-}
-
-interface Debug {
-    output: (s: string) => Promise<void>;
-    pause: () => Promise<void>;
-    level: number;
-}
-
-type GraphNode = {
-    name: string;
-    edges: {name: string, weight: number}[]
+const parseLines = (lines: string[]): FixedSizeMatrix<string> => {
+    const xSize = lines[0].length;
+    const ySize = lines.length;
+    const matrix = new FixedSizeMatrix<string>({x: xSize, y: ySize});
+    matrix.setFlatData(lines.map(e => e.trim().split("")).flat());
+    return matrix;
 };
 
-const createKeyName = (key: string, keys: string[]): string => {
-    return `${key}|${keys.join(",")}`;
+type FixedCell = "#" | ".";
+
+const isFixedCell = (e: string): e is FixedCell => {
+    return e === "#" || e === "."; 
+}
+
+type RawKey = string;
+
+const isRawKey = (e: string): e is RawKey => {
+    return !isFixedCell(e) && e.toLowerCase() === e;
 }
 
 export const manyWorldInterpretation = entryForFile(
     async ({ lines, outputCallback, pause, isCancelled }) => {
-        const labyrinth = parseLines(lines);
-        await outputCallback(labyrinth.toString());
-        await outputCallback(labyrinth.createGraph("start"));
-        // await outputCallback(await labyrinth.findBestStrategy({ output: outputCallback, pause, level: 0 }));
+        const matrix = parseLines(lines);
+        const matrixStart = matrix.findOneWithCoordinate((e, c) => e === "@");
+        if (matrixStart === null) {
+            throw new Error("Cannot find start");
+        }
+        matrix.set(matrixStart, ".");
+        let expectedOpenDoors = 0;
+        await matrix.onEveryCell((c, e) => {
+            if (e && isRawKey(e)) {
+                expectedOpenDoors++;
+            }
+        })
+        await outputCallback(expectedOpenDoors);
+        let iterations = 0;
+        console.log(
+            traverseMatrix(
+                matrix,
+                [matrixStart],
+                [],
+                expectedOpenDoors,
+                new Map<string, number>(),
+                () => {
+                    iterations++;
+                    if (iterations % 1000 === 0) {
+                        console.log(`Iterations: ${iterations/1000}k`);
+                    }
+                }
+            ));
     },
     async ({ lines, outputCallback, pause, isCancelled }) => {
+        const matrix = parseLines(lines);
+        const matrixStart = matrix.findOneWithCoordinate((e, c) => e === "@");
+        if (matrixStart === null) {
+            throw new Error("Cannot find start");
+        }
+        matrix.set(matrixStart, "#");
+        getSurrounding(matrixStart).forEach(s => matrix.set(s, "#"));
+        const matrixStarts = [1,-1].flatMap(x => [1,-1].map(y => ({x: matrixStart.x + x,y: matrixStart.y + y})));
+        let expectedOpenDoors = 0;
+        await matrix.onEveryCell((c, e) => {
+            if (e && isRawKey(e)) {
+                expectedOpenDoors++;
+            }
+        })
+        await outputCallback(expectedOpenDoors);
+        let iterations = 0;
+        console.log(
+            traverseMatrix(
+                matrix,
+                matrixStarts,
+                [],
+                expectedOpenDoors,
+                new Map<string, number>(),
+                () => {
+                    iterations++;
+                    if (iterations % 1000 === 0) {
+                        console.log(`Iterations: ${iterations/1000}k`);
+                    }
+                }
+            ));
     },
-    { key: "many-worlds-interpretation", title: "Many-Worlds Interpration" }
+    { key: "many-worlds-interpretation", title: "Many-Worlds Interpration", stars: 2 }
 );
+
+type Cache = Map<string, number>;
+
+const serializeState = (coordinate: Coordinate[], openDoors: string[]) => {
+    return JSON.stringify({cs: coordinate.map(c => ({x:c.x, y: c.y})), d: openDoors.sort()});
+}
+
+function traverseMatrix(
+    matrix: FixedSizeMatrix<string>,
+    matrixStarts: Coordinate[],
+    openDoors: string[],
+    expectedOpenDoors: number,
+    cache: Cache,
+    debug?: () => void): number { 
+    if (debug) {
+        debug();
+    } 
+    const serializedState = serializeState(matrixStarts, openDoors);
+    const cachedValue = cache.get(serializedState);
+    if (cachedValue !== undefined) {
+        return cachedValue;
+    }
+    
+    const reachableKeys = 
+        matrixStarts.flatMap((matrixStart, index) => {
+            return calculateDistances((e) => matrix.get(e), (start, end) => {
+                const origin = start.cell;
+                if (!isFixedCell(origin) && 
+                    openDoors.indexOf(origin) < 0 && 
+                    openDoors.indexOf(origin.toUpperCase()) < 0) {
+                    return null;
+                }
+                const destination = matrix.get(end);
+                if (!destination || 
+                    (destination !== "." && destination.toUpperCase() === destination && openDoors.indexOf(destination) < 0)
+                    || destination === "#") {
+                    return null;
+                }
+                return manhattanDistance(start.coordinate, end) + (start.distance || 0);
+            }, getSurrounding, matrixStart!).list
+                .filter(e => isRawKey(e.cell))
+                .filter(e => openDoors.indexOf(e.cell.toUpperCase()) < 0)
+                .map(e => ({reachable: e, startIndex: index}));
+        });
+
+    if (reachableKeys.length === 0) {
+        if (openDoors.length !== expectedOpenDoors) {
+            throw new Error("Did not open all doors");
+        }
+        return 0;
+    }
+    // console.log({depth, branching: reachableKeys.length});
+    const nestedTotals = reachableKeys.map(cell => {
+        const newOpenDoors = openDoors.concat([cell.reachable.cell.toUpperCase()]);
+        const nestedDistance = traverseMatrix(
+            matrix, 
+            matrixStarts.map((start, index) => index === cell.startIndex ? cell.reachable.coordinate : start), 
+            newOpenDoors, 
+            expectedOpenDoors, 
+            cache,
+            debug);
+        return nestedDistance + cell.reachable.distance!; 
+    });
+    const bestNestedTotal = nestedTotals.reduce((acc, next) => Math.min(acc, next), Number.POSITIVE_INFINITY);
+    cache.set(serializedState, bestNestedTotal);
+    return bestNestedTotal;
+}
+

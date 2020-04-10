@@ -67,6 +67,8 @@ import { modeMaze } from "./single-entries/2018/mode-maze";
 import { experimentalEmergencyTransportation } from "./single-entries/2018/experimental-emergency-transportation";
 import { immuneSystemSimulator20XX } from "./single-entries/2018/immune-system-simulator-20xx";
 import { fourDimensionalAdventure } from "./single-entries/2018/four-dimensional-adventure";
+import { tractorBeam } from './single-entries/2019/tractor-beam';
+import { donutMaze } from './single-entries/2019/donut-maze';
 
 export interface EntryRoute extends EntryRouteBase {
     date: number;
@@ -199,6 +201,8 @@ export const entryList: { [key: string]: EntryRoute[] } = {
         flawedFrequencyTransmission,
         setAndForget,
         manyWorldInterpretation,
+        tractorBeam,
+        donutMaze
     ])
 };
 
