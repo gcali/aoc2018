@@ -306,7 +306,6 @@ describe("Set and forget", () => {
         const compression = await findCompressed(groupBy([
             "R",8,"R",8,"R",4,"R",4,"R",8,"L",6,"L",2,"R",4,"R",4,"R",8,"R",8,"R",8,"L",6,"L",2
         ], 2).map(e => e.join("")), async () => {});
-        console.log(compression);
         expect(compression).not.to.be.null;
     });
 

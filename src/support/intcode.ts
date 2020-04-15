@@ -100,9 +100,10 @@ interface ExecutionArgs {
     close?: () => void | Promise<void>;
     data?: Data;
     debug?: (e: any) => Promise<void>;
+    next?: () => Promise<void>;
 }
 
-export async function execute({ memory, input, output, close, data, debug }: ExecutionArgs): Promise<Memory> {
+export async function execute({ memory, input, output, close, data, debug, next }: ExecutionArgs): Promise<Memory> {
     if (!data) {
         data = {
             relativeBase: 0
@@ -115,6 +116,9 @@ export async function execute({ memory, input, output, close, data, debug }: Exe
     while ((getMemoryAddress(memory, instructionPointer) % 100) !== 99) {
         try {
             [instructionPointer, memory] = await executeInstruction(instructionPointer, memory, input, output, data);
+            if (next) {
+                await next();
+            }
         } catch (e) {
             if (isStopExecution(e)) {
                 break;

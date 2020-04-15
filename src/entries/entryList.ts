@@ -70,6 +70,9 @@ import { fourDimensionalAdventure } from "./single-entries/2018/four-dimensional
 import { tractorBeam } from './single-entries/2019/tractor-beam';
 import { donutMaze } from './single-entries/2019/donut-maze';
 import { springdroidAdventure } from './single-entries/2019/springroid-adventure';
+import { slamShuffle } from './single-entries/2019/slam-shuffle';
+import { categorySix } from './single-entries/2019/category-six';
+import { planetOfDiscord } from './single-entries/2019/planet-of-discord';
 
 export interface EntryRoute extends EntryRouteBase {
     date: number;
@@ -204,7 +207,10 @@ export const entryList: { [key: string]: EntryRoute[] } = {
         manyWorldInterpretation,
         tractorBeam,
         donutMaze,
-        springdroidAdventure
+        springdroidAdventure,
+        slamShuffle,
+        categorySix,
+        planetOfDiscord
     ])
 };
 

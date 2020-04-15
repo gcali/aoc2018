@@ -38,6 +38,18 @@ export class FixedSizeMatrix<T> {
         }
     }
 
+    public reduce<TAcc>(
+        callback: ((accumulator: TAcc, next: {coordinate: Coordinate, cell: T | undefined}) => TAcc),
+        startAccumulator: TAcc
+    ): TAcc {
+        for (let y = 0; y < this.size.y; y++) {
+            for (let x = 0; x < this.size.x; x++) {
+                startAccumulator = callback(startAccumulator, {coordinate: {x,y}, cell: this.get({x,y})});
+            }
+        }
+        return startAccumulator;
+    }
+
     public findOne(predicate: (cell: T) => boolean): Coordinate | null {
         // for (let x = 0; x < this.size.x; x++) {
         //     for (let y = 0; y < this.size.y; y++) {
@@ -125,6 +137,10 @@ export class FixedSizeMatrix<T> {
             return null;
         }
         return c.y * this.size.x + c.x;
+    }
+
+    public simpleSerialize(): string {
+        return this.data.join("");
     }
 
     public isSameAs(other: FixedSizeMatrix<T>, customComparer?: (a: (T | undefined), b: (T | undefined)) => boolean): boolean {
