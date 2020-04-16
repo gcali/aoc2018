@@ -1,5 +1,5 @@
 import { entryForFile } from "../../entry";
-import { parseMemory, execute } from "../../../support/intcode";
+import { parseMemory, execute, stopExecution } from "../../../support/intcode";
 import { stringify } from "querystring";
 import { UnknownSizeField } from "../../../support/field";
 import { directions, CCoordinate, Coordinate, manhattanDistance } from "../../../support/geometry";
@@ -146,6 +146,10 @@ export const cryostasis = entryForFile(
                     break;
 
 
+                case "clear":
+                    await outputCallback(null);
+                    break;
+
                 default:
                     break;
             }
@@ -230,7 +234,8 @@ export const cryostasis = entryForFile(
                             line = await additionalInputReader.read();
                         }
                         if (line === null) {
-                            throw new Error("User closed down");
+                            stopExecution();
+                            continue;
                         }
                         if (line.toLowerCase().startsWith("cheat")) {
                             await handleCustomCommand(line);
@@ -330,7 +335,7 @@ export const cryostasis = entryForFile(
     async ({ lines, outputCallback }) => {
         throw Error("Not implemented");
     },
-    { key: "cryostasis", title: "Cryostasis"}
+    { key: "cryostasis", title: "Cryostasis", stars: 1, hasAdditionalInput: true}
 );
 
 function createMap(exploration: { exploringLocation: Coordinate | null; exploreResult: string | null; explored: Set<string>; field: UnknownSizeField<string>; currentPosition: { x: number; y: number; }; autoMovements: string[]; }) {

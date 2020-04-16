@@ -27,6 +27,7 @@ interface EntryMetadata {
     key: string;
     stars?: 1 | 2;
     title: string;
+    hasAdditionalInput?: boolean;
 }
 
 export interface Entry {
