@@ -7,6 +7,10 @@ export interface EntryCallbackArg {
     pause: (() => Promise<void>);
     statusCallback?: ((outputStatus: Message) => Promise<void>);
     isCancelled?: (() => boolean);
+    additionalInputReader?: {
+        read: () => Promise<string | null>;
+        close: () => void;
+    }
 }
 
 type OldEntryCallback = (

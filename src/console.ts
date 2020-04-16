@@ -1,13 +1,15 @@
 import minimist from "minimist";
 
 const args = (minimist as any)(process.argv.slice(2), {
-    alias: { e: "entry", h: "help", s: "second", l: "list", y: "year", n: "noNumber" },
+    alias: { e: "entry", h: "help", s: "second", l: "list", y: "year", n: "noNumber", f: "file"},
     number: ["e", "y"],
     default: {
         "y": null,
         "e": null,
-        "n": false
+        "n": false,
+        "f": null
     },
+    string: ["file"],
     boolean: ["help", "second", "list", "noNumber"],
 });
 
@@ -57,9 +59,46 @@ if (index <= 0 || index >= entryList[year].length) {
 const entryCallback = entryList[year][index].entry;
 
 
-import { readStdin } from "./support/stdin-reader";
+import { readStdin, Reader, generateFileReader, stdinReadLineByLine } from "./support/stdin-reader";
 
-readStdin(async (lines) => {
+const isReadingFromFile = args.f !== null && args.f.length > 0;
+let reader: Reader | null = null;
+let additionalInputReader: undefined | {
+    read: () => Promise<string | null>;
+    close: () => void;
+};
+// let additionalReader: undefined | (() => Promise<string>);
+// let closer: undefined | (() => void);
+if (isReadingFromFile) {
+    reader = generateFileReader(args.f);
+    const lines: (string | null)[] = [];
+    let resolver: ((s: string | null) => void) | null = null;
+    const additionalReader = async (): Promise<string | null> => {
+        if (lines.length > 0) {
+            const first = lines.shift()!;
+            return first;
+        } else {
+            return await new Promise<string | null>((resolve, reject) => resolver = resolve);
+        }
+    }
+    const closer = stdinReadLineByLine(line => {
+        if (resolver !== null) {
+            const r = resolver;
+            resolver = null;
+            r(line);
+        } else {
+            lines.push(line);
+        }
+    });
+    additionalInputReader = {
+        close: closer,
+        read: additionalReader
+    };
+} else {
+    reader = readStdin;
+}
+
+reader(async (lines) => {
     // tslint:disable-next-line:no-console
     const outputCallback = async (line: string) => console.log(line);
     if (args.s) {
@@ -68,7 +107,8 @@ readStdin(async (lines) => {
             lines,
             outputCallback,
             // tslint:disable-next-line:no-empty
-            pause: async () => { }
+            pause: async () => { },
+            additionalInputReader
         }/*, lines, outputCallback*/);
     } else {
         await entryCallback.first({
@@ -76,7 +116,8 @@ readStdin(async (lines) => {
             outputCallback,
             isCancelled: () => false,
             // tslint:disable-next-line:no-empty
-            pause: async () => { }
+            pause: async () => { },
+            additionalInputReader
         });
     }
 });

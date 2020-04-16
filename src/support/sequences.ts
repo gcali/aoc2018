@@ -45,3 +45,14 @@ export function* subsequenceGenerator<T>(array: T[]): Iterable<T[]> {
         }
     }
 }
+
+export function* subsetGenerator<T>(array: T[], start: number): Iterable<T[]> {
+    if (start >= array.length) {
+        yield [];
+        return;
+    }
+    for (const sub of subsetGenerator(array, start + 1)) {
+        yield sub;
+        yield [array[start]].concat(sub);
+    }
+}

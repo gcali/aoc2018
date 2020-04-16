@@ -73,6 +73,7 @@ import { springdroidAdventure } from './single-entries/2019/springroid-adventure
 import { slamShuffle } from './single-entries/2019/slam-shuffle';
 import { categorySix } from './single-entries/2019/category-six';
 import { planetOfDiscord } from './single-entries/2019/planet-of-discord';
+import { cryostasis } from './single-entries/2019/cryostasis';
 
 export interface EntryRoute extends EntryRouteBase {
     date: number;
@@ -210,7 +211,8 @@ export const entryList: { [key: string]: EntryRoute[] } = {
         springdroidAdventure,
         slamShuffle,
         categorySix,
-        planetOfDiscord
+        planetOfDiscord,
+        cryostasis
     ])
 };
 

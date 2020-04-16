@@ -90,7 +90,7 @@ export class FixedSizeMatrix<T> {
         }
     }
 
-    public set(c: Coordinate, value: T) {
+    public set(c: Coordinate, value: T | undefined) {
         c = this._delta.opposite.sum(c);
         const index = this.indexCalculator(c);
         if (index !== null) {

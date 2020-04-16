@@ -5,9 +5,9 @@ import { coordinateToKey } from './oxygen-system';
 
 type Cell = "#" | ".";
 
-type Planet = FixedSizeMatrix<Cell>;
+export type Planet = FixedSizeMatrix<Cell>;
 
-type PlanetWithDepth = {
+export type PlanetWithDepth = {
     planet: Planet,
     depth: number
 };
@@ -23,23 +23,23 @@ const parseLines = (lines: string[]): Planet => {
     return matrix;
 } 
 
-const getInnerAdjacentPositions = (c: Coordinate, inner: PlanetWithDepth): Coordinate[] => {
-    const center = getCenter(inner.planet.size);
+export const getInnerAdjacentPositions = (c: Coordinate, innerSize: Coordinate): Coordinate[] => {
+    const center = getCenter(innerSize);
     if (isDir(c, center, directions.up)) {
-        return range(inner.planet.size.x).map(x => ({x, y: 0}));
+        return range(innerSize.x).map(x => ({x, y: 0}));
     } else if (isDir(c, center, directions.down)) {
-        return range(inner.planet.size.x).map(x => ({x, y: inner.planet.size.y -1}));
+        return range(innerSize.x).map(x => ({x, y: innerSize.y -1}));
     } else if (isDir(c, center, directions.left)) {
-        return range(inner.planet.size.y).map(y => ({x: 0, y}));
+        return range(innerSize.y).map(y => ({x: 0, y}));
     } else if (isDir(c, center, directions.right)) {
-        return range(inner.planet.size.y).map(y => ({x: inner.planet.size.x - 1, y}));
+        return range(innerSize.y).map(y => ({x: innerSize.x - 1, y}));
     } else {
         throw new Error("Invalid inner position");
     }
 }
 
-const getOuterAdjacentPositions = (c: Coordinate, outer: PlanetWithDepth): Coordinate[] => {
-    const center = getCenter(outer.planet.size);
+export const getOuterAdjacentPositions = (c: Coordinate, outerSize: Coordinate): Coordinate[] => {
+    const center = getCenter(outerSize);
     const result: Coordinate[] = [];
     if (c.x === 0) {
         result.push(directions.left.sum(center));
@@ -47,11 +47,11 @@ const getOuterAdjacentPositions = (c: Coordinate, outer: PlanetWithDepth): Coord
     if (c.y === 0) {
         result.push(directions.up.sum(center));
     } 
-    if (c.x === outer.planet.size.x - 1) {
+    if (c.x === outerSize.x - 1) {
         result.push(directions.right.sum(center));
     }
 
-    if (c.y === outer.planet.size.y - 1) {
+    if (c.y === outerSize.y - 1) {
         result.push(directions.down.sum(center));
     }
     return result;
@@ -60,7 +60,7 @@ const getOuterAdjacentPositions = (c: Coordinate, outer: PlanetWithDepth): Coord
 const bugCounter = (acc: number, next: Cell) => acc + (next === "#" ? 1 : 0);
 
 const countExternal = (c: Coordinate, main: PlanetWithDepth, outer: PlanetWithDepth): number => {
-    const adjacentCellPositions = getOuterAdjacentPositions(c, outer);
+    const adjacentCellPositions = getOuterAdjacentPositions(c, outer.planet.size);
     const adjacentCells: Cell[] = adjacentCellPositions
         .map(adjacentCellPosition => outer.planet.get(adjacentCellPosition))
         .filter(cell => cell !== undefined)
@@ -76,15 +76,20 @@ const isDir = (c: Coordinate, r: Coordinate, direction: CCoordinate): boolean =>
 }
 
 const countInternal = (c: Coordinate, main: PlanetWithDepth, inner: PlanetWithDepth): number => {
-    const adjacentCellPositions = getInnerAdjacentPositions(c, inner);
+    const adjacentCellPositions = getInnerAdjacentPositions(c, inner.planet.size);
     const adjacentCells: Cell[] = adjacentCellPositions
         .map(adjacentCellPosition => inner.planet.get(adjacentCellPosition))
         .filter(cell => cell !== undefined)
         .map(cell => cell!);
-    return adjacentCells.concat(getSurrounding(c).map(e => main.planet.get(e)).filter(e => e).map(e => e!))
+    return adjacentCells.concat(
+            getSurrounding(c)
+            .map(e => main.planet.get(e))
+            .filter(e => e)
+            .map(e => e!)
+        )
         .reduce(bugCounter, 0) 
 }
-const countNeighbourBugs = (
+export const countNeighbourBugs = (
     c: Coordinate,
     main: PlanetWithDepth,
     outer: PlanetWithDepth | undefined, 
@@ -99,11 +104,11 @@ const countNeighbourBugs = (
         .map(c => main.planet.get(c))
         .filter(c => c)
         .map(c => c!)
-        .reduce((acc, next) => acc + (next === "#" ? 1 : 0), 0); 
+        .reduce(bugCounter, 0); 
 };
 
 const passDepthTime = async (ps: PlanetWithDepth[]): Promise<PlanetWithDepth[]> => {
-    extendDepths(ps);
+    ps = extendDepths(ps);
     const result = ps.map(e => ({
         depth: e.depth,
         planet: e.planet.copy()
@@ -144,6 +149,8 @@ const emptyPlanetGenerator = (size: Coordinate): Planet => {
     const flatData: "."[] = [...Array(size.x * size.y).keys()].map(e => ".");
     const matrix = new FixedSizeMatrix<Cell>(size);
     matrix.setFlatData(flatData);
+    const center = getCenter(size);
+    matrix.set(center, undefined);
     return matrix;
 };
 
@@ -169,16 +176,16 @@ const getAdditionalDepths = (outer: PlanetWithDepth, inner: PlanetWithDepth): Pl
     return result; 
 }
 
-const sortDepths = (planets: PlanetWithDepth[]): void => {
-    planets.sort((a, b) => a.depth - b.depth);
+const sortDepths = (planets: PlanetWithDepth[]): PlanetWithDepth[] => {
+    return planets.sort((a, b) => a.depth - b.depth);
 }
 
-const extendDepths = (planets: PlanetWithDepth[]): void => {
-    sortDepths(planets);
+const extendDepths = (planets: PlanetWithDepth[]): PlanetWithDepth[] => {
+    planets = sortDepths(planets);
     const [outer, inner] = [planets[0], planets[planets.length -1 ]];
     const additional = getAdditionalDepths(outer, inner);
     additional.forEach(a => planets.push(a));
-    sortDepths(additional);
+    return sortDepths(planets);
 }
 
 const calculateValue = (p: Planet): number => {
@@ -218,20 +225,26 @@ export const planetOfDiscord = entryForFile(
     },
     async ({ lines, outputCallback }) => {
         const basePlanet = parseLines(lines);
+        basePlanet.set({x: 2, y: 2}, undefined);
         let depths: PlanetWithDepth[] = [{planet: basePlanet, depth: 0}];
         for (let i = 0; i < 200; i++) {
             depths = await passDepthTime(depths);
         }
+
+        // for (const d of depths) {
+        //     await outputCallback("Depth: " + d.depth);
+        //     await outputCallback(d.planet.toString(e => e || " "));
+        // }
         await outputCallback(
             depths
                 .map(d => d.planet.reduce((acc, next) => acc + (next.cell === "#" ? 1 : 0), 0))
                 .reduce((acc, next) => acc + next)
         );
     },
-    { key: "planet-of-discord", title: "Planet of Discord"}
+    { key: "planet-of-discord", title: "Planet of Discord", stars: 2}
 );
 
-function getCenter(size: Coordinate) {
+export function getCenter(size: Coordinate) {
     return {
         x: Math.floor(size.x / 2),
         y: Math.floor(size.y / 2)
@@ -248,6 +261,8 @@ function handleCellTimePass(e: string | undefined, nBugs: number, newPlanet: Fix
         if (nBugs === 1 || nBugs === 2) {
             newPlanet.set(c, "#");
         }
+    } else if (e === undefined) {
+        //center
     }
     else {
         throw new Error("Invalid cell");
