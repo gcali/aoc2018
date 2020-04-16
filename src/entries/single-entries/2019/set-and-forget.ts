@@ -156,7 +156,7 @@ export const setAndForget = entryForFile(
         const memory = parseMemory(lines[0]);
         const buffer: string[] = [];
         await execute({
-            memory, input: async () => {throw new Error("Why did you call me?");}, output: async (n) => {
+            memory, input: async () => {throw new Error("Why did you call me?"); }, output: async (n) => {
                 const c = String.fromCharCode(n);
                 buffer.push(c);
             }
@@ -172,7 +172,7 @@ export const setAndForget = entryForFile(
         const memory = parseMemory(lines[0]);
         const buffer: string[] = [];
         await execute({
-            memory, input: async () => {throw new Error("Why did you call me?")}, output: async (n) => {
+            memory, input: async () => {throw new Error("Why did you call me?"); }, output: async (n) => {
                 const c = String.fromCharCode(n);
                 buffer.push(c);
             }
@@ -182,7 +182,7 @@ export const setAndForget = entryForFile(
 
         const serializedMovements = /*movements.join(",");//*/groupBy(movements, 2).map((g) => `${g[0]}${g[1]}`).join("\n");
         await outputCallback(serializedMovements);
-        const functions = await findCompressed(movements.map(e => e.toString()), outputCallback);
+        const functions = await findCompressed(movements.map((e) => e.toString()), outputCallback);
         if (functions === null) {
             await outputCallback("Nothing found!");
             return;
@@ -194,7 +194,7 @@ export const setAndForget = entryForFile(
             functions.bCandidate.join(","),
             functions.cCandidate.join(","),
             "n\n"
-        ].join("\n").split("").map(c =>  c.charCodeAt(0));
+        ].join("\n").split("").map((c) =>  c.charCodeAt(0));
 
         memory[0] = 2;
         let nextSend = 0;
@@ -212,31 +212,31 @@ export const setAndForget = entryForFile(
             answer.push(n);
         }});
 
-        await outputCallback(answer[answer.length-1]);
+        await outputCallback(answer[answer.length - 1]);
     },
     {key: "set-and-forget", title: "Set and Forget", stars: 2}
 );
 
-const findCandidates = <T,>(e: T[], except: T[]): T[][] => {
+const findCandidates = <T, >(e: T[], except: T[]): T[][] => {
     let start = 0;
     while (except.indexOf(e[start]) >= 0) {
         start++;
     }
     const results: T[][] = [];
-    let end = start+1;
+    let end = start + 1;
 
     while (end < e.length && (end - start) <= 20) {
         if (except.indexOf(e[end]) >= 0) {
             break;
         }
-        results.push(e.slice(start,end));
+        results.push(e.slice(start, end));
         end++;
     }
     // if (results.length === 0) {
     //     throw new Error("No candidates found");
-    // } 
+    // }
     return results;
-}
+};
 
 export function smartCompression(movements: string[]): any {
     const aCandidates = findCandidates(movements, []);
@@ -248,10 +248,10 @@ export function smartCompression(movements: string[]): any {
         const bCandidates = findCandidates(aReplaced, ["A"]);
         for (const bCandidate of bCandidates) {
             const bReplaced = replaceCandidate(aReplaced, bCandidate, "B");
-            const cCandidates = findCandidates(bReplaced, ["A","B"]);
+            const cCandidates = findCandidates(bReplaced, ["A", "B"]);
             for (const cCandidate of cCandidates) {
                 const finalReplace = replaceCandidate(bReplaced, cCandidate, "C");
-                if (finalReplace.filter(e => e !== "A" && e !== "B" && e !== "C").length > 0) {
+                if (finalReplace.filter((e) => e !== "A" && e !== "B" && e !== "C").length > 0) {
                     continue;
                 }
                 if (finalReplace.length > 20) {
@@ -311,14 +311,14 @@ export async function findCompressed(
     return null;
 }
 
-function isCandidateTooLong(candidate: (Movement | string)[]) {
+function isCandidateTooLong(candidate: Array<Movement | string>) {
     return candidate.join(",").length > 20;
 }
 
-function replaceCandidate(movements: string[], candidate: (Movement | string)[], candidateName: string): string[] {
+function replaceCandidate(movements: string[], candidate: Array<Movement | string>, candidateName: string): string[] {
     const serializedMovements = movements.join(",");
     const serializedCandidate = candidate.join(",");
-    const re = new RegExp(serializedCandidate, 'g');
+    const re = new RegExp(serializedCandidate, "g");
     const replaced = serializedMovements.replace(re, candidateName);
     const newMovements = replaced.split(",");
     return newMovements;

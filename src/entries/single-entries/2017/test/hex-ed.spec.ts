@@ -1,7 +1,7 @@
 import "mocha";
-import { applyDirections, Direction } from '../hex-ed';
-import { expect } from 'chai';
-import { hexManhattanDistance } from '../../../../support/hex-geometry';
+import { applyDirections, Direction } from "../hex-ed";
+import { expect } from "chai";
+import { hexManhattanDistance } from "../../../../support/hex-geometry";
 
 const center = {
     x: 0,
@@ -28,7 +28,7 @@ describe("Hex Ed", () => {
     });
 
     it("Should get right distance for loop", () => {
-        const resultPosition = applyDirections(center, ["ne","ne","sw","sw"]);
+        const resultPosition = applyDirections(center, ["ne", "ne", "sw", "sw"]);
         const resultDistance = hexManhattanDistance(center, resultPosition);
         expect(resultDistance).to.equal(0);
     });

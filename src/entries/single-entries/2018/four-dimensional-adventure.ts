@@ -1,6 +1,6 @@
 import { entryForFile } from "../../entry";
-import { Stack } from 'linq-typescript';
-import wu from 'wu';
+import { Stack } from "linq-typescript";
+import wu from "wu";
 
 interface Coordinate {
     x: number;
@@ -14,27 +14,19 @@ const manhattanDistance = (a: Coordinate, b: Coordinate) => [
     (e: Coordinate) => e.y,
     (e: Coordinate) => e.z,
     (e: Coordinate) => e.t
-].map(e => Math.abs(e(a) - e(b))).reduce((acc, next) => acc + next);
+].map((e) => Math.abs(e(a) - e(b))).reduce((acc, next) => acc + next);
 
 const parseLines = (lines: string[]): Coordinate[] => {
     return lines.map(deserializeNode);
 };
 
 const deserializeNode = (line: string): Coordinate => {
-        const [x,y,z,t] = line.trim().split(",").map(e => parseInt(e,10));
-        return { x,y,z,t };
+        const [x, y, z, t] = line.trim().split(",").map((e) => parseInt(e, 10));
+        return { x, y, z, t };
 };
 
 class Graph {
     private readonly nodeMap: Map<string, Set<string>> = new Map<string, Set<string>>();
-
-    private serializeNode(node: Coordinate): string {
-        return `${node.x},${node.y},${node.z},${node.t}`;
-    }
-
-    private deserializeNode(line: string): Coordinate {
-        return deserializeNode(line);
-    }
 
     public addNode(node: Coordinate): void {
         const key = this.serializeNode(node);
@@ -65,13 +57,13 @@ class Graph {
             }
             visited.add(next);
             const neighbours = this.nodeMap.get(next) || new Set<string>();
-            neighbours.forEach(neighbour => {
+            neighbours.forEach((neighbour) => {
                 if (!visited.has(neighbour)) {
                     toVisit.push(neighbour);
                 }
             });
         }
-        return wu(visited.values()).map(e => this.deserializeNode(e)).toArray();
+        return wu(visited.values()).map((e) => this.deserializeNode(e)).toArray();
     }
 
     public findConstellations(): Coordinate[][] {
@@ -88,10 +80,18 @@ class Graph {
                 continue;
             }
             const constellation = this.visit(next);
-            constellation.forEach(e => visited.add(this.serializeNode(e)));
+            constellation.forEach((e) => visited.add(this.serializeNode(e)));
             constellations.push(constellation);
         }
         return constellations;
+    }
+
+    private serializeNode(node: Coordinate): string {
+        return `${node.x},${node.y},${node.z},${node.t}`;
+    }
+
+    private deserializeNode(line: string): Coordinate {
+        return deserializeNode(line);
     }
 
     private getNodeList(a: Coordinate): Set<string> {
@@ -113,11 +113,11 @@ export const fourDimensionalAdventure = entryForFile(
         for (let outer = 0; outer < points.length; outer++) {
             graph.addNode(points[outer]);
             for (let inner = outer + 1; inner < points.length; inner++) {
-                if (manhattanDistance(points[outer],points[inner]) <= 3) {
+                if (manhattanDistance(points[outer], points[inner]) <= 3) {
                     graph.addEdge(points[outer], points[inner]);
                 }
             }
-        } 
+        }
 
         const constellations = graph.findConstellations();
         await outputCallback(constellations.length);

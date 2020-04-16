@@ -1,7 +1,7 @@
 export const modInverse = (n: number, mod: number): number => {
     const {a, b} = calculateExtended(n, mod, 1);
     return a > 0 ? a : a + mod;
-}
+};
 
 const calculateExtended = (aP: number, bP: number, m: number): {
     a: number,
@@ -38,10 +38,10 @@ const calculateExtended = (aP: number, bP: number, m: number): {
         throw new Error("Inversion did not work");
     }
     return result;
-}
-
-type ExtendedEuclidFactor = {
-    n: number,
-    a: number,
-    b: number
 };
+
+interface ExtendedEuclidFactor {
+    n: number;
+    a: number;
+    b: number;
+}

@@ -1,10 +1,10 @@
 import { entryForFile } from "../../entry";
-import { parseMemory, execute } from '../../../support/intcode';
-import { stringify } from 'querystring';
-import { UnknownSizeField } from '../../../support/field';
-import { directions, CCoordinate, Coordinate, manhattanDistance } from '../../../support/geometry';
-import { Field } from './oxygen-system';
-import { subsetGenerator } from '../../../support/sequences';
+import { parseMemory, execute } from "../../../support/intcode";
+import { stringify } from "querystring";
+import { UnknownSizeField } from "../../../support/field";
+import { directions, CCoordinate, Coordinate, manhattanDistance } from "../../../support/geometry";
+import { Field } from "./oxygen-system";
+import { subsetGenerator } from "../../../support/sequences";
 
 export const cryostasis = entryForFile(
     async ({ lines, outputCallback, additionalInputReader}) => {
@@ -53,16 +53,16 @@ export const cryostasis = entryForFile(
         };
 
         const movementMap: {[key: string]: CCoordinate} = {
-            "north": directions.up,
-            "south": directions.down,
-            "east": directions.right,
-            "west": directions.left
+            north: directions.up,
+            south: directions.down,
+            east: directions.right,
+            west: directions.left
         };
 
 
         const handleCustomCommand = async (line: string) => {
             await outputCallback("");
-            const words = line.toLowerCase().split(" ").filter(e => e.length > 0);
+            const words = line.toLowerCase().split(" ").filter((e) => e.length > 0);
             const command = words[1];
             switch (command) {
                 case "map":
@@ -122,7 +122,7 @@ export const cryostasis = entryForFile(
                             "west",
                             "east",
                             "north",
-                            "south", 
+                            "south",
                             "east",
                             "east",
                             "north",
@@ -153,7 +153,7 @@ export const cryostasis = entryForFile(
         };
 
         const executeCommand = async (line: string) =>  {
-            line.split("").map(e => e.charCodeAt(0)).forEach(e => inputBuffer.push(e));
+            line.split("").map((e) => e.charCodeAt(0)).forEach((e) => inputBuffer.push(e));
             inputBuffer.push("\n".charCodeAt(0));
             await outputCallback("Executing: " + line);
         };
@@ -181,9 +181,9 @@ export const cryostasis = entryForFile(
                                     continue;
                                 }
                                 if (hacking.isTooMuch === "light" && hacking.lastDrop !== null) {
-                                    await outputCallback("----------------- Too light")
+                                    await outputCallback("----------------- Too light");
                                     const length = hacking.subsets.length;
-                                    hacking.subsets = hacking.subsets.filter(subset => {
+                                    hacking.subsets = hacking.subsets.filter((subset) => {
                                         for (const hasDropped of hacking.lastDrop!) {
                                             if (subset.indexOf(hasDropped) < 0) {
                                                 return true;
@@ -197,9 +197,9 @@ export const cryostasis = entryForFile(
                                     }
                                     await outputCallback("                                       Remaining: " + hacking.subsets.length);
                                 } else if (hacking.isTooMuch === "heavy" && hacking.lastDrop !== null) {
-                                    await outputCallback("----------------- Too heavy")
+                                    await outputCallback("----------------- Too heavy");
                                     const length = hacking.subsets.length;
-                                    hacking.subsets = hacking.subsets.filter(subset => {
+                                    hacking.subsets = hacking.subsets.filter((subset) => {
                                         for (const wouldDrop of subset) {
                                             if (hacking.lastDrop!.indexOf(wouldDrop) < 0) {
                                                 return true;
@@ -221,7 +221,7 @@ export const cryostasis = entryForFile(
                                 hacking.dropping = null;
                             } else {
                                 const toDrop = hacking.dropping.shift()!;
-                                hacking.currentInventory = hacking.currentInventory.filter(e => e !== toDrop);
+                                hacking.currentInventory = hacking.currentInventory.filter((e) => e !== toDrop);
                                 line = "drop " + toDrop;
                             }
                         } else if (exploration.autoMovements.length > 0) {
@@ -248,22 +248,22 @@ export const cryostasis = entryForFile(
             },
             output: async (n) => {
                 if ("\n".charCodeAt(0) === n) {
-                    const line = outputBuffer.map(n => String.fromCharCode(n)).join("");
-                        const trimmed = line.trim();
-                        if (trimmed.length === 0) {
+                    const line = outputBuffer.map((n) => String.fromCharCode(n)).join("");
+                    const trimmed = line.trim();
+                    if (trimmed.length === 0) {
                             possibleMovements.populating = false;
                         }
-                        if (line.indexOf("Pressure-Sensitive Floor") >= 0) {
+                    if (line.indexOf("Pressure-Sensitive Floor") >= 0) {
                             hacking.isTooMuch = null;
                         }
-                        if (line.indexOf("loud, robotic voice says \"Alert!") >= 0){ 
+                    if (line.indexOf("loud, robotic voice says \"Alert!") >= 0) {
                             if (line.indexOf("are heavier than the detected") >= 0) {
                                 hacking.isTooMuch = "light";
                             } else {
                                 hacking.isTooMuch = "heavy";
                             }
                         }
-                        if (line === "Command?") {
+                    if (line === "Command?") {
                             inventory.isPopulating = false;
                             autoTake.populating = false;
                             if (exploration.exploringLocation !== null && exploration.exploreResult !== null) {
@@ -283,12 +283,11 @@ export const cryostasis = entryForFile(
                             possibleMovements.movements.push(trimmed.slice(2));
                         } else if (inventory.isPopulating && trimmed.length > 0) {
                             inventory.elements.push(trimmed.slice(2));
-                        }
-                        else if (autoTake.populating && trimmed.length > 0) {
+                        } else if (autoTake.populating && trimmed.length > 0) {
                             const item = trimmed.slice(2);
                             if ([
-                                "infinite loop", 
-                                "giant electromagnet", 
+                                "infinite loop",
+                                "giant electromagnet",
                                 "escape pod",
                                 "molten lava",
                                 "photons"
@@ -302,7 +301,7 @@ export const cryostasis = entryForFile(
                                 exploration.exploreResult = null;
                                 exploration.exploringLocation = null;
                                 if (hacking.isHacking) {
-                                    //failed exploration
+                                    // failed exploration
                                     hacking.toRecover = [...inventory.elements];
                                 }
                             }
@@ -337,7 +336,7 @@ export const cryostasis = entryForFile(
 function createMap(exploration: { exploringLocation: Coordinate | null; exploreResult: string | null; explored: Set<string>; field: UnknownSizeField<string>; currentPosition: { x: number; y: number; }; autoMovements: string[]; }) {
     const maxLength = [...exploration.explored.values()].reduce((acc, next) => Math.max(acc, next.length), 0);
     const matrix = exploration.field.toMatrix();
-    const output = matrix.toString(e => {
+    const output = matrix.toString((e) => {
         if (!e) {
             return "".padStart(maxLength, " ");
         }

@@ -88,7 +88,7 @@ export class MutableMachine {
     }
 
     private calculateValue(instruction: Instruction): number {
-        const i = instruction; 
+        const i = instruction;
         switch (i.code) {
             case "addr":
                 return this.registers[i.a] + this.registers[i.b];

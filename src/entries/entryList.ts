@@ -67,13 +67,13 @@ import { modeMaze } from "./single-entries/2018/mode-maze";
 import { experimentalEmergencyTransportation } from "./single-entries/2018/experimental-emergency-transportation";
 import { immuneSystemSimulator20XX } from "./single-entries/2018/immune-system-simulator-20xx";
 import { fourDimensionalAdventure } from "./single-entries/2018/four-dimensional-adventure";
-import { tractorBeam } from './single-entries/2019/tractor-beam';
-import { donutMaze } from './single-entries/2019/donut-maze';
-import { springdroidAdventure } from './single-entries/2019/springroid-adventure';
-import { slamShuffle } from './single-entries/2019/slam-shuffle';
-import { categorySix } from './single-entries/2019/category-six';
-import { planetOfDiscord } from './single-entries/2019/planet-of-discord';
-import { cryostasis } from './single-entries/2019/cryostasis';
+import { tractorBeam } from "./single-entries/2019/tractor-beam";
+import { donutMaze } from "./single-entries/2019/donut-maze";
+import { springdroidAdventure } from "./single-entries/2019/springroid-adventure";
+import { slamShuffle } from "./single-entries/2019/slam-shuffle";
+import { categorySix } from "./single-entries/2019/category-six";
+import { planetOfDiscord } from "./single-entries/2019/planet-of-discord";
+import { cryostasis } from "./single-entries/2019/cryostasis";
 
 export interface EntryRoute extends EntryRouteBase {
     date: number;
@@ -89,18 +89,18 @@ interface EntryRouteBase {
 
 interface EntryRouteCustom {
     entry: Entry;
-    hasCustomComponent: true
+    hasCustomComponent: true;
 }
 
 const isEntryRouteBase = (e: Entry | EntryRouteBase | EntryRouteCustom): e is EntryRouteBase => {
     return (e as EntryRouteBase).name !== undefined;
-}
+};
 
 const isEntryRouteCustom = (e: Entry | EntryRouteCustom): e is EntryRouteCustom => {
     return (e as EntryRouteCustom).hasCustomComponent === true;
-}
+};
 
-function enrichList(entries: (EntryRouteBase | Entry | EntryRouteCustom)[]): EntryRoute[] {
+function enrichList(entries: Array<EntryRouteBase | Entry | EntryRouteCustom>): EntryRoute[] {
     return entries.map((e, index) => {
         if (isEntryRouteBase(e)) {
             return { ...e, date: index + 1 };
@@ -115,7 +115,7 @@ function enrichList(entries: (EntryRouteBase | Entry | EntryRouteCustom)[]): Ent
                 title: entry.metadata.title,
                 stars: entry.metadata.stars,
                 date: index + 1,
-                entry: entry,
+                entry,
                 hasCustomComponent
             };
         }

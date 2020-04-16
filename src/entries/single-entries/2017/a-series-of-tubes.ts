@@ -1,8 +1,8 @@
 import { entryForFile } from "../../entry";
-import { FixedSizeMatrix } from '../../../support/matrix';
-import { CCoordinate, Coordinate, directions, rotate, Rotation, manhattanDistance } from '../../../support/geometry';
-import { NotImplementedError } from '../../../support/error';
-import { groupBy } from '../../../support/sequences'; 
+import { FixedSizeMatrix } from "../../../support/matrix";
+import { CCoordinate, Coordinate, directions, rotate, Rotation, manhattanDistance } from "../../../support/geometry";
+import { NotImplementedError } from "../../../support/error";
+import { groupBy } from "../../../support/sequences";
 
 type Axis = "horizontal" | "vertical";
 
@@ -25,8 +25,8 @@ function expectedFromDirection(direction: CCoordinate) {
 }
 
 interface State  {
-    position: Coordinate,
-    direction: CCoordinate
+    position: Coordinate;
+    direction: CCoordinate;
 }
 
 type Field = FixedSizeMatrix<string>;
@@ -39,12 +39,12 @@ function isLine(s: string) {
 
 function travel(field: Field, state: State, letterCallback: LetterCallback): State | null {
     const direction = state.direction;
-    const expected = expectedFromDirection(direction); 
+    const expected = expectedFromDirection(direction);
     const currentCell = field.get(state.position);
     if (currentCell === undefined) {
         return null;
     }
-    const nextCoordinate = direction.sum(state.position); 
+    const nextCoordinate = direction.sum(state.position);
     const nextCell = field.get(nextCoordinate);
     if (nextCell === " " || nextCell === undefined) {
         return null;
@@ -52,10 +52,10 @@ function travel(field: Field, state: State, letterCallback: LetterCallback): Sta
         return {...state, position: nextCoordinate};
     } else if (nextCell === "+") {
         const rotations: Rotation[] = ["Clockwise", "Counterclockwise"];
-        const candidateDirections = rotations.map(rotation => rotate(state.direction, rotation));
+        const candidateDirections = rotations.map((rotation) => rotate(state.direction, rotation));
         const resultStates = candidateDirections
-            .map(direction => ({direction, state: travel(field, {position: nextCoordinate, direction}, () => {})}))
-            .filter(result => result.state !== null)
+            .map((direction) => ({direction, state: travel(field, {position: nextCoordinate, direction}, () => {})}))
+            .filter((result) => result.state !== null)
         ;
         if (resultStates.length !== 1) {
             throw new Error("Invalid states :( " + JSON.stringify(resultStates));
@@ -70,11 +70,11 @@ function travel(field: Field, state: State, letterCallback: LetterCallback): Sta
 
 export const aSeriesOfTubes = entryForFile(
     async ({ lines, outputCallback }) => {
-        lines = lines.map(line => line.trimEnd());
+        lines = lines.map((line) => line.trimEnd());
         const maxLineSize = lines.reduce((acc, next) => acc + next.length, 0);
-        lines = lines.map(line => line.padEnd(maxLineSize, " "));
+        lines = lines.map((line) => line.padEnd(maxLineSize, " "));
         const matrix: Field = new FixedSizeMatrix<string>({x: maxLineSize, y: lines.length});
-        const flat = lines.map(l => l.split("")).flat();
+        const flat = lines.map((l) => l.split("")).flat();
         matrix.setFlatData(flat);
 
         const startingPoint = matrix.findOneWithCoordinate((cell, coordinate) => coordinate.y === 0 && cell === "|");
@@ -92,7 +92,7 @@ export const aSeriesOfTubes = entryForFile(
         while (state !== null) {
             state = travel(matrix, state, (letter, direction, coordinate) => {
                 foundLetters.push(letter);
-                matrix.set(coordinate, expectedFromDirection(direction)); 
+                matrix.set(coordinate, expectedFromDirection(direction));
             });
             // if (state != null) {
             //     const output: ({coordinate: Coordinate, cell: string})[] = [];
@@ -117,11 +117,11 @@ export const aSeriesOfTubes = entryForFile(
 
     },
     async ({ lines, outputCallback }) => {
-        lines = lines.map(line => line.trimEnd());
+        lines = lines.map((line) => line.trimEnd());
         const maxLineSize = lines.reduce((acc, next) => acc + next.length, 0);
-        lines = lines.map(line => line.padEnd(maxLineSize, " "));
+        lines = lines.map((line) => line.padEnd(maxLineSize, " "));
         const matrix: Field = new FixedSizeMatrix<string>({x: maxLineSize, y: lines.length});
-        const flat = lines.map(l => l.split("")).flat();
+        const flat = lines.map((l) => l.split("")).flat();
         matrix.setFlatData(flat);
 
         const startingPoint = matrix.findOneWithCoordinate((cell, coordinate) => coordinate.y === 0 && cell === "|");
@@ -141,7 +141,7 @@ export const aSeriesOfTubes = entryForFile(
         while (state !== null) {
             state = travel(matrix, state, (letter, direction, coordinate) => {
                 foundLetters.push(letter);
-                matrix.set(coordinate, expectedFromDirection(direction)); 
+                matrix.set(coordinate, expectedFromDirection(direction));
             });
             if (state != null && (lastPosition === null || manhattanDistance(state.position, lastPosition) !== 0)) {
                 count++;

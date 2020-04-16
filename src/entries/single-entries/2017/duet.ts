@@ -1,5 +1,5 @@
 import { entryForFile } from "../../entry";
-import { Queue } from '../../../support/data-structure';
+import { Queue } from "../../../support/data-structure";
 
 type Command = "snd" | "set" | "add" | "mul" | "mod" | "rcv" | "jgz";
 
@@ -9,31 +9,31 @@ interface Instruction {
 }
 
 const parseLines = (lines: string[]): Instruction[] => {
-    return lines.map(line => line.trim().split(" ")).map(tokens => {
+    return lines.map((line) => line.trim().split(" ")).map((tokens) => {
         return {
             command: tokens[0] as Command,
             args: tokens.slice(1)
         };
     });
-}
+};
 
 type SoundCallback = (frequency: number) => void;
 type RecoverCallback = (() => void) | ReceiveCallback;
-type ReceiveCallback = {receive: () => number | void};
+interface ReceiveCallback {receive: () => number | void; }
 
 function isReceive(e: RecoverCallback): e is ReceiveCallback {
-    return (<ReceiveCallback>e).receive !== undefined;
+    return (e as ReceiveCallback).receive !== undefined;
 }
 
 type Registers = Map<string, number>;
 
 const registerFactory = (): Registers => {
     const map = new Map<string, number>();
-    [...Array('z'.charCodeAt(0) - 'a'.charCodeAt(0) + 1).keys()]
-        .map(index => String.fromCharCode('a'.charCodeAt(0) + index))
-        .forEach(e => map.set(e, 0));
+    [...Array("z".charCodeAt(0) - "a".charCodeAt(0) + 1).keys()]
+        .map((index) => String.fromCharCode("a".charCodeAt(0) + index))
+        .forEach((e) => map.set(e, 0));
     return map;
-}
+};
 
 const getConstantOrRegister = (e: string, registers: Registers): number => {
     if (registers.has(e)) {
@@ -44,11 +44,11 @@ const getConstantOrRegister = (e: string, registers: Registers): number => {
         return value;
     }
     throw new Error("Invalid value: " + e);
-}
+};
 
 interface Callbacks {
-    soundCallback: SoundCallback,
-    recoverCallback: RecoverCallback
+    soundCallback: SoundCallback;
+    recoverCallback: RecoverCallback;
 }
 
 const executeInstruction = (
@@ -57,7 +57,7 @@ const executeInstruction = (
     registers: Registers,
     callbacks: Callbacks
 )
-    : [number, Registers] =>{
+    : [number, Registers] => {
         const increasedIndex = currentIndex + 1;
         const args = instruction.args;
         const gcr = (index: number) => getConstantOrRegister(args[index], registers);
@@ -92,13 +92,13 @@ const executeInstruction = (
                 registers.set(args[0], gcr(1));
                 break;
             case "snd":
-                callbacks.soundCallback(gcr(0)); 
+                callbacks.soundCallback(gcr(0));
                 break;
             default:
                 throw new Error("Could not execute instruction '" + instruction.command + "'");
         }
         return [increasedIndex, registers];
-}
+};
 
 export const duet = entryForFile(
     async ({ lines, outputCallback }) => {
@@ -114,7 +114,7 @@ export const duet = entryForFile(
                 currentIndex,
                 registers,
                 {
-                    soundCallback: sound => lastSound = sound,
+                    soundCallback: (sound) => lastSound = sound,
                     recoverCallback: () => hasRecovered = true
                 }
             );
@@ -128,8 +128,8 @@ export const duet = entryForFile(
         let aRegisters = registerFactory();
         let bRegisters = registerFactory();
         bRegisters.set("p", 1);
-        let a2bPipe: Queue<number> = new Queue<number>();
-        let b2aPipe: Queue<number> = new Queue<number>();
+        const a2bPipe: Queue<number> = new Queue<number>();
+        const b2aPipe: Queue<number> = new Queue<number>();
         let isAWaiting = false;
         let isBWaiting = false;
         let hasAEnded = false;

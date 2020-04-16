@@ -1,5 +1,5 @@
 import { entryForFile } from "../../entry";
-import { parseMemory, execute, Memory } from '../../../support/intcode';
+import { parseMemory, execute, Memory } from "../../../support/intcode";
 
 export const springdroidAdventure = entryForFile(
     async ({ lines, outputCallback }) => {
@@ -115,7 +115,7 @@ export const springdroidAdventure = entryForFile(
 
             "AND D J",
             "RUN",
-        ]
+        ];
         const memory = parseMemory(lines[0]);
         const output: string[] = await executeAscii(program5, memory);
         await outputCallback(output.join(""));
@@ -125,7 +125,7 @@ export const springdroidAdventure = entryForFile(
 
 async function executeAscii(program: string[], memory: Memory) {
     const output: string[] = [];
-    const input = program.concat([""]).join("\n").split("").map(e => e.charCodeAt(0));
+    const input = program.concat([""]).join("\n").split("").map((e) => e.charCodeAt(0));
     let nextInput = 0;
     await execute({
         memory,
@@ -135,8 +135,7 @@ async function executeAscii(program: string[], memory: Memory) {
         output: async (n) => {
             if (n > 255) {
                 output.push(n.toString());
-            }
-            else {
+            } else {
                 output.push(String.fromCharCode(n));
             }
         }

@@ -7,21 +7,21 @@ const parseLines = (lines: string[]): FixedSizeMatrix<string> => {
     const xSize = lines[0].length;
     const ySize = lines.length;
     const matrix = new FixedSizeMatrix<string>({x: xSize, y: ySize});
-    matrix.setFlatData(lines.map(e => e.trim().split("")).flat());
+    matrix.setFlatData(lines.map((e) => e.trim().split("")).flat());
     return matrix;
 };
 
 type FixedCell = "#" | ".";
 
 const isFixedCell = (e: string): e is FixedCell => {
-    return e === "#" || e === "."; 
-}
+    return e === "#" || e === ".";
+};
 
 type RawKey = string;
 
 const isRawKey = (e: string): e is RawKey => {
     return !isFixedCell(e) && e.toLowerCase() === e;
-}
+};
 
 export const manyWorldInterpretation = entryForFile(
     async ({ lines, outputCallback, pause, isCancelled }) => {
@@ -36,7 +36,7 @@ export const manyWorldInterpretation = entryForFile(
             if (e && isRawKey(e)) {
                 expectedOpenDoors++;
             }
-        })
+        });
         await outputCallback(expectedOpenDoors);
         let iterations = 0;
         console.log(
@@ -49,7 +49,7 @@ export const manyWorldInterpretation = entryForFile(
                 () => {
                     iterations++;
                     if (iterations % 1000 === 0) {
-                        console.log(`Iterations: ${iterations/1000}k`);
+                        console.log(`Iterations: ${iterations / 1000}k`);
                     }
                 }
             ));
@@ -61,14 +61,14 @@ export const manyWorldInterpretation = entryForFile(
             throw new Error("Cannot find start");
         }
         matrix.set(matrixStart, "#");
-        getSurrounding(matrixStart).forEach(s => matrix.set(s, "#"));
-        const matrixStarts = [1,-1].flatMap(x => [1,-1].map(y => ({x: matrixStart.x + x,y: matrixStart.y + y})));
+        getSurrounding(matrixStart).forEach((s) => matrix.set(s, "#"));
+        const matrixStarts = [1, -1].flatMap((x) => [1, -1].map((y) => ({x: matrixStart.x + x, y: matrixStart.y + y})));
         let expectedOpenDoors = 0;
         await matrix.onEveryCell((c, e) => {
             if (e && isRawKey(e)) {
                 expectedOpenDoors++;
             }
-        })
+        });
         await outputCallback(expectedOpenDoors);
         let iterations = 0;
         console.log(
@@ -81,7 +81,7 @@ export const manyWorldInterpretation = entryForFile(
                 () => {
                     iterations++;
                     if (iterations % 1000 === 0) {
-                        console.log(`Iterations: ${iterations/1000}k`);
+                        console.log(`Iterations: ${iterations / 1000}k`);
                     }
                 }
             ));
@@ -92,8 +92,8 @@ export const manyWorldInterpretation = entryForFile(
 type Cache = Map<string, number>;
 
 const serializeState = (coordinate: Coordinate[], openDoors: string[]) => {
-    return JSON.stringify({cs: coordinate.map(c => ({x:c.x, y: c.y})), d: openDoors.sort()});
-}
+    return JSON.stringify({cs: coordinate.map((c) => ({x: c.x, y: c.y})), d: openDoors.sort()});
+};
 
 function traverseMatrix(
     matrix: FixedSizeMatrix<string>,
@@ -101,36 +101,36 @@ function traverseMatrix(
     openDoors: string[],
     expectedOpenDoors: number,
     cache: Cache,
-    debug?: () => void): number { 
+    debug?: () => void): number {
     if (debug) {
         debug();
-    } 
+    }
     const serializedState = serializeState(matrixStarts, openDoors);
     const cachedValue = cache.get(serializedState);
     if (cachedValue !== undefined) {
         return cachedValue;
     }
-    
-    const reachableKeys = 
+
+    const reachableKeys =
         matrixStarts.flatMap((matrixStart, index) => {
             return calculateDistances((e) => matrix.get(e), (start, end) => {
                 const origin = start.cell;
-                if (!isFixedCell(origin) && 
-                    openDoors.indexOf(origin) < 0 && 
+                if (!isFixedCell(origin) &&
+                    openDoors.indexOf(origin) < 0 &&
                     openDoors.indexOf(origin.toUpperCase()) < 0) {
                     return null;
                 }
                 const destination = matrix.get(end);
-                if (!destination || 
+                if (!destination ||
                     (destination !== "." && destination.toUpperCase() === destination && openDoors.indexOf(destination) < 0)
                     || destination === "#") {
                     return null;
                 }
                 return manhattanDistance(start.coordinate, end) + (start.distance || 0);
             }, getSurrounding, matrixStart!).list
-                .filter(e => isRawKey(e.cell))
-                .filter(e => openDoors.indexOf(e.cell.toUpperCase()) < 0)
-                .map(e => ({reachable: e, startIndex: index}));
+                .filter((e) => isRawKey(e.cell))
+                .filter((e) => openDoors.indexOf(e.cell.toUpperCase()) < 0)
+                .map((e) => ({reachable: e, startIndex: index}));
         });
 
     if (reachableKeys.length === 0) {
@@ -140,16 +140,16 @@ function traverseMatrix(
         return 0;
     }
     // console.log({depth, branching: reachableKeys.length});
-    const nestedTotals = reachableKeys.map(cell => {
+    const nestedTotals = reachableKeys.map((cell) => {
         const newOpenDoors = openDoors.concat([cell.reachable.cell.toUpperCase()]);
         const nestedDistance = traverseMatrix(
-            matrix, 
-            matrixStarts.map((start, index) => index === cell.startIndex ? cell.reachable.coordinate : start), 
-            newOpenDoors, 
-            expectedOpenDoors, 
+            matrix,
+            matrixStarts.map((start, index) => index === cell.startIndex ? cell.reachable.coordinate : start),
+            newOpenDoors,
+            expectedOpenDoors,
             cache,
             debug);
-        return nestedDistance + cell.reachable.distance!; 
+        return nestedDistance + cell.reachable.distance!;
     });
     const bestNestedTotal = nestedTotals.reduce((acc, next) => Math.min(acc, next), Number.POSITIVE_INFINITY);
     cache.set(serializedState, bestNestedTotal);

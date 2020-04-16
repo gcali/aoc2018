@@ -43,14 +43,14 @@ export const experimentalEmergencyTransportation = entryForFile(
     },
     async ({ lines, outputCallback }) => {
         const nanobotInfo = parseLines(lines);
-        const distanceRanges = nanobotInfo.map(e => ({
+        const distanceRanges = nanobotInfo.map((e) => ({
             distance: manhattanDistance({x: 0, y: 0, z: 0}, e.coordinate),
             radius: e.radius
-        })).map(e => ({
+        })).map((e) => ({
             start: Math.max(0, e.distance - e.radius),
             end: e.distance + e.radius
         }));
-        const segments = distanceRanges.flatMap(e => [
+        const segments = distanceRanges.flatMap((e) => [
             {pos: e.start, value: 1},
             {pos: e.end, value: -1}
         ]).sort((a, b) => a.pos - b.pos);
@@ -59,7 +59,7 @@ export const experimentalEmergencyTransportation = entryForFile(
         let bestPos = null;
         let bestEnd = null;
         let updateBestEnd = false;
-        segments.forEach(e => {
+        segments.forEach((e) => {
             currentCount += e.value;
             if (currentCount > maxCount) {
                 updateBestEnd = true;

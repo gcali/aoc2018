@@ -58,7 +58,7 @@ export const entry = entryForFile(
         }
         await outputCallback(`Result: ${machine.registers[0]}`);
 
-        //by looking at the code, it calculates the sum of divisors; here's the one I used, translated:
+        // by looking at the code, it calculates the sum of divisors; here's the one I used, translated:
         /*
  0 goto 17
  1 b = 1
@@ -89,17 +89,17 @@ export const entry = entryForFile(
 26 goto 1
 27 e = 27
 28 e = e * 28
-29 e = e + 29 
+29 e = e + 29
 30 e = e * 30
-31 e = e * 14 
+31 e = e * 14
 32 e = e * 32
 33 d = e + d
 34 a = 0
-35 goto 1 
+35 goto 1
         */
 
-        //the setup of the values is the one in lines 27-34 (the first entry used 17-24); then it's just a question
-        //of calculating sum of divisors, I used the console directly, here's the function:
+        // the setup of the values is the one in lines 27-34 (the first entry used 17-24); then it's just a question
+        // of calculating sum of divisors, I used the console directly, here's the function:
         /*
 let divisorSum = (c) => {
     let sum = 0;

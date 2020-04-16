@@ -1,14 +1,14 @@
 import { entryForFile } from "../../entry";
-import { DefaultListDictionaryString } from '../../../support/data-structure';
+import { DefaultListDictionaryString } from "../../../support/data-structure";
 type Operation = "inc" | "dec";
 type Operator = ">" | "<" | ">=" | "<=" | "==" | "!=";
-type Condition = {
+interface Condition {
     left: string;
     operator: Operator;
     right: number;
 }
 
-type Action = {
+interface Action {
     target: string;
     operation: Operation;
     amount: number;
@@ -18,6 +18,8 @@ interface Instruction {
     condition: Condition;
 }
 class RegisterState {
+
+    public currentMax: number = Number.NEGATIVE_INFINITY;
     private readonly state = new Map<string, number>();
 
     public update(register: string, calc: (v: number) => number) {
@@ -26,8 +28,6 @@ class RegisterState {
         this.currentMax = Math.max(this.currentMax, newValue);
         this.state.set(register, newValue);
     }
-
-    public currentMax: number = Number.NEGATIVE_INFINITY;
 
     public get(register: string): number {
         const existing = this.state.get(register);
@@ -60,16 +60,16 @@ const checkCondition = (condition: Condition, state: RegisterState): boolean => 
             return leftValue >= condition.right;
     }
     throw new Error("Invalid operator " + condition.operator);
-}
+};
 
 const updateState = (action: Action, state: RegisterState) => {
     state.update(
         action.target,
-        value => action.operation === "dec" ? 
-                    value - action.amount : 
+        (value) => action.operation === "dec" ?
+                    value - action.amount :
                     value + action.amount
-        ); 
-}
+        );
+};
 
 export const heardYouLikeRegisters = entryForFile(
     async ({ lines, outputCallback, pause, isCancelled }) => {
@@ -90,7 +90,7 @@ export const heardYouLikeRegisters = entryForFile(
 );
 
 function executeInstructions(instructions: Instruction[], state: RegisterState) {
-    instructions.forEach(instruction => {
+    instructions.forEach((instruction) => {
         if (checkCondition(instruction.condition, state)) {
             updateState(instruction.action, state);
         }
@@ -99,16 +99,16 @@ function executeInstructions(instructions: Instruction[], state: RegisterState) 
 
 function parseInstructions(lines: string[]) {
     return lines.map((line: string): Instruction => {
-        const tokens = line.split(" ").map(e => e.trim());
+        const tokens = line.split(" ").map((e) => e.trim());
         return {
             action: {
                 target: tokens[0],
-                operation: <Operation>tokens[1],
+                operation: tokens[1] as Operation,
                 amount: parseInt(tokens[2], 10),
             },
             condition: {
                 left: tokens[4],
-                operator: <Operator>tokens[5],
+                operator: tokens[5] as Operator,
                 right: parseInt(tokens[6], 10)
             }
         };

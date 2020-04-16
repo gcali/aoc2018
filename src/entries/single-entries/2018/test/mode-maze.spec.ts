@@ -5,7 +5,7 @@ import { expectSameArrays } from "../../../../support/assertions";
 import { expect } from "chai";
 import { manhattanDistance } from "../../../../support/geometry";
 
-//import {data as onlineMap} from "./mode-maze-test-data";
+// import {data as onlineMap} from "./mode-maze-test-data";
 import wu from "wu";
 
 const expectedErosions: number[][] = [

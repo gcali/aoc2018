@@ -1,22 +1,22 @@
-import { Coordinate, sumCoordinate, manhattanDistance, getSurrounding, getBoundaries, CCoordinate, isInBounds } from '../../../support/geometry';
-import { FixedSizeMatrix } from '../../../support/matrix';
-import wu from 'wu';
+import { Coordinate, sumCoordinate, manhattanDistance, getSurrounding, getBoundaries, CCoordinate, isInBounds } from "../../../support/geometry";
+import { FixedSizeMatrix } from "../../../support/matrix";
+import wu from "wu";
 
 import Graph from "node-dijkstra";
-import { entryForFile } from '../../entry';
+import { entryForFile } from "../../entry";
 
 interface Input {
-    target: Coordinate,
-    depth: number
+    target: Coordinate;
+    depth: number;
 }
 
 const parseLines = (lines: string[]): Input => {
-    const [x,y] = lines[1].split(" ")[1].split(",").map(e => parseInt(e, 10));
+    const [x, y] = lines[1].split(" ")[1].split(",").map((e) => parseInt(e, 10));
     return {
         depth: parseInt(lines[0].split(" ")[1], 10),
         target: {x, y}
     };
-}
+};
 
 export const buildMatrix = (input: Input, delta?: number | Coordinate): FixedSizeMatrix<number> => {
     if (!delta) {
@@ -28,29 +28,29 @@ export const buildMatrix = (input: Input, delta?: number | Coordinate): FixedSiz
         }
     }
     return new FixedSizeMatrix<number>(sumCoordinate(input.target, delta as Coordinate));
-}
+};
 
 export const fillMatrix = (matrix: FixedSizeMatrix<number>, input: Input): void => {
     for (let x = 0; x < matrix.size.x; x++) {
         for (let y = 0; y < matrix.size.y; y++) {
             if (x === 0 && y === 0) {
-                matrix.set({x,y}, input.depth)
-            } else if (manhattanDistance({x,y}, input.target) === 0)  {
+                matrix.set({x, y}, input.depth);
+            } else if (manhattanDistance({x, y}, input.target) === 0)  {
                 matrix.set(input.target, input.depth);
             } else if (x === 0) {
-                matrix.set({x,y}, erode(y * 48271, input));
+                matrix.set({x, y}, erode(y * 48271, input));
             } else if (y === 0) {
-                matrix.set({x,y}, erode(x * 16807, input));
+                matrix.set({x, y}, erode(x * 16807, input));
             } else {
-                matrix.set({x,y}, erode(matrix.get({x: x-1,y})! * matrix.get({x,y: y-1})!, input));
+                matrix.set({x, y}, erode(matrix.get({x: x - 1, y})! * matrix.get({x, y: y - 1})!, input));
             }
         }
     }
-}
+};
 
 const erode = (n: number, input: Input): number => {
-    return (n + input.depth) % 20183
-}
+    return (n + input.depth) % 20183;
+};
 
 export type ErosionLevel = 0 | 1 | 2;
 
@@ -59,18 +59,18 @@ const createErosionMatrix = (matrix: FixedSizeMatrix<number>): FixedSizeMatrix<E
     matrix.onEveryCell((coordinate, cell) => {
         if (cell !== undefined) {
             newMatrix.set(coordinate, (cell % 3) as ErosionLevel);
-        } 
+        }
     });
     return newMatrix;
-}
+};
 
 export type Tool = "climb" | "light" | "none";
 
-export type Node = {coordinate: Coordinate, tool: Tool};
+export interface Node {coordinate: Coordinate; tool: Tool; }
 
 export const serializeNode = ({coordinate, tool}: Node): string => `${coordinate.x},${coordinate.y},${tool}`;
 export const deserializeNode = (serialized: string): Node => {
-    const [x,y,tool] = serialized.split(",");
+    const [x, y, tool] = serialized.split(",");
     if (tool !== "climb" && tool !== "light" && tool !== "none") {
         throw new Error("Invalid tool");
     }
@@ -96,18 +96,18 @@ const getValidTools = (erosionLevel: ErosionLevel): Tool[] => {
 
 const tools: Tool[] = ["climb", "light", "none"];
 
-type NodePaths = {[key: string]: number};
+interface NodePaths {[key: string]: number; }
 
-type PathNode = {
-    serialized: string,
-    node: Node,
-    distance: number | null
-};
+interface PathNode {
+    serialized: string;
+    node: Node;
+    distance: number | null;
+}
 
 class CustomGraph {
     private readonly _nodeMap = new Map<string, NodePaths>();
-     
-    public addNode(node: Node, neighbours: {node: Node, weight: number}[]) {
+
+    public addNode(node: Node, neighbours: Array<{node: Node, weight: number}>) {
         this._nodeMap.set(
             serializeNode(node),
             neighbours.reduce((acc: NodePaths, next) => {
@@ -117,27 +117,27 @@ class CustomGraph {
         );
     }
 
-    public path(startNode: Node, endNode: Node, options?: {cost?: boolean}): 
+    public path(startNode: Node, endNode: Node, options?: {cost?: boolean}):
         number | null {
-            const toVisit: PathNode[] = wu(this._nodeMap.keys()).map(key => ({
+            const toVisit: PathNode[] = wu(this._nodeMap.keys()).map((key) => ({
                 serialized: key,
                 node: deserializeNode(key),
                 distance: null
             })).toArray();
             const endSerialized = serializeNode(endNode);
             wu(toVisit)
-                .filter(e => e.node.tool === startNode.tool && manhattanDistance(e.node.coordinate, startNode.coordinate) === 0)
-                .forEach(e => e.distance = 0);
+                .filter((e) => e.node.tool === startNode.tool && manhattanDistance(e.node.coordinate, startNode.coordinate) === 0)
+                .forEach((e) => e.distance = 0);
             while (toVisit.length > 0) {
                 const candidateDistance = wu(toVisit)
-                    .filter(n => n.distance !== null)
-                    .map(d => d.distance)
+                    .filter((n) => n.distance !== null)
+                    .map((d) => d.distance)
                     .reduce((acc, next) => Math.min(acc!, next!))
                 ;
                 if (candidateDistance === null) {
                     break;
                 }
-                const candidateNode = wu(toVisit.map((e, i) => ({e,i}))).find(e => e.e.distance === candidateDistance);
+                const candidateNode = wu(toVisit.map((e, i) => ({e, i}))).find((e) => e.e.distance === candidateDistance);
                 if (candidateNode === undefined || candidateNode.e.distance === null) {
                     throw new Error("Could not find node :(");
                 }
@@ -146,9 +146,9 @@ class CustomGraph {
                 }
                 const neighbours = this._nodeMap.get(candidateNode.e.serialized);
                 if (neighbours) {
-                    Object.keys(neighbours).forEach(key => {
+                    Object.keys(neighbours).forEach((key) => {
                         const serializedNode = key;
-                        const toVisitNode = wu(toVisit).find(node => node.serialized === serializedNode);
+                        const toVisitNode = wu(toVisit).find((node) => node.serialized === serializedNode);
                         if (toVisitNode !== undefined) {
                             toVisitNode.distance = candidateNode.e.distance! + neighbours[key];
                             if (toVisitNode.serialized === endSerialized) {
@@ -179,7 +179,7 @@ export const matrixSerializer = (e: 0 | 1 | 2 | undefined): "." | "=" | "|" | "X
 export const modeMaze = entryForFile(
     async ({ lines, outputCallback }) => {
         const input = parseLines(lines);
-        const erosionMatrix = createErosionMatrixFromInput(input); 
+        const erosionMatrix = createErosionMatrixFromInput(input);
         await outputCallback(erosionMatrix.toString(matrixSerializer));
         let sum = 0;
         erosionMatrix.onEveryCell((coordinate, cell) => {
@@ -189,7 +189,7 @@ export const modeMaze = entryForFile(
     },
     async ({ lines, outputCallback }) => {
         const input = parseLines(lines);
-        const erosionMatrix = createErosionMatrixFromInput(input); 
+        const erosionMatrix = createErosionMatrixFromInput(input);
 
         const resultPath = calculatePath(erosionMatrix, input.target);
 
@@ -198,7 +198,7 @@ export const modeMaze = entryForFile(
         }
         await outputCallback(resultPath.cost);
 
-        new Map<string, number>().keys()
+        new Map<string, number>().keys();
     },
     { key: "mode-maze", title: "Mode Maze", stars: 2, }
 );
@@ -216,12 +216,12 @@ export function calculatePath(erosionMatrix: FixedSizeMatrix<ErosionLevel>, targ
     erosionMatrix.onEveryCell((coordinate, erosionLevel) => {
         if (erosionLevel !== undefined) {
             const validTools = getValidTools(erosionLevel);
-            validTools.forEach(tool => {
+            validTools.forEach((tool) => {
                 const neighbours = getSurrounding(coordinate);
-                const neighbourNodes: {
+                const neighbourNodes: Array<{
                     node: Node;
                     weight: number;
-                }[] = neighbours.map(nCoord => {
+                }> = neighbours.map((nCoord) => {
                     const nErosion = erosionMatrix.get(nCoord);
                     if (nErosion !== undefined) {
                         const nTools = getValidTools(nErosion);
@@ -236,9 +236,9 @@ export function calculatePath(erosionMatrix: FixedSizeMatrix<ErosionLevel>, targ
                         }
                     }
                     return null;
-                }).filter(e => e !== null)
-                    .map(e => e!);
-                validTools.forEach(otherTool => {
+                }).filter((e) => e !== null)
+                    .map((e) => e!);
+                validTools.forEach((otherTool) => {
                     if (otherTool !== tool) {
                         neighbourNodes.push({ node: { coordinate, tool: otherTool }, weight: 7 });
                     }

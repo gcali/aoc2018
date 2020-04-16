@@ -1,30 +1,30 @@
 import "mocha";
 
 import { expect } from "chai";
-import { UlamCalculator } from '../ulam';
-import { manhattanDistance, Coordinate } from '../geometry';
+import { UlamCalculator } from "../ulam";
+import { manhattanDistance, Coordinate } from "../geometry";
 
 describe("ulam", () => {
     it("should calculate correctly base square sizes", () => {
         const calculator = new UlamCalculator();
         const data = [...Array(25).keys()]
-        .map(k => k + 1)
-        .map(k => {
+        .map((k) => k + 1)
+        .map((k) => {
             if (k === 1) {
-                return [k,1];
+                return [k, 1];
             } else if (k <= 9) {
-                return [k,3];
+                return [k, 3];
             } else {
-                return [k,5];
+                return [k, 5];
             }
         });
 
-        data.forEach(e => {
+        data.forEach((e) => {
             expect(calculator.findSquareSize(e[0])).to.equal(e[1], "Fail for " + e);
-        })
+        });
     });
     it("should find coordinates", () => {
-        const expectedData: [number,Coordinate][] = [
+        const expectedData: Array<[number, Coordinate]> = [
             [1, {x: 0, y: 0}],
             [2, {x: 1, y: 0}],
             [3, {x: 1, y: 1}],
@@ -44,11 +44,11 @@ describe("ulam", () => {
 
         const ulamCalculator = new UlamCalculator();
 
-        expectedData.forEach(data => {
+        expectedData.forEach((data) => {
             expect(manhattanDistance(
                 data[1],
                 ulamCalculator.getCoordinatesFromValue(data[0])
             )).to.equal(0, "Fail for " + JSON.stringify({...data[1], v: data[0]}));
-        })
+        });
     });
-})
+});

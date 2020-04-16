@@ -1,7 +1,7 @@
 import { entryForFile } from "../../entry";
 import { List } from "linq-typescript";
-import wu from 'wu';
-import { serializeTime } from '../../../support/time';
+import wu from "wu";
+import { serializeTime } from "../../../support/time";
 
 const basePattern = [0, 1, 0, -1];
 
@@ -40,11 +40,11 @@ export class Pattern {
     public static default(): Pattern {
         return new Pattern(basePattern);
     }
+
+    public delta: number = 1;
     constructor(private localBasePattern: number[]) {
 
     }
-
-    public delta: number = 1;
 
     public get(index: number, position: number): number {
         const factor = position + 1;
@@ -68,14 +68,14 @@ export const flawedFrequencyTransmission = entryForFile(
     async ({ lines, outputCallback, pause, isCancelled }) => {
         const input = parseLines(lines);
         const repeatedInput = Array.from({ length: 10000 }, () => input).flat();
-        const interestingDigits = parseInt(input.slice(0,7).join(""), 10);
+        const interestingDigits = parseInt(input.slice(0, 7).join(""), 10);
         let iterationTime: number | null = null;
         for (let iteration = 0; iteration < 100; iteration++) {
             const startIterationTime = new Date().getTime();
             for (let d = repeatedInput.length - 1; d >= interestingDigits; d--) {
                 let s = repeatedInput[d];
                 if (d + 1 < repeatedInput.length) {
-                    s += repeatedInput[d+1];
+                    s += repeatedInput[d + 1];
                 }
                 repeatedInput[d] = s;
             }

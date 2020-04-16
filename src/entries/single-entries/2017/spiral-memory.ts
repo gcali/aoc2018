@@ -1,12 +1,12 @@
 import { entryForFile } from "../../entry";
-import { UlamCalculator } from '../../../support/ulam';
-import { manhattanDistance, directions, getSurrounding, getFullSurrounding } from '../../../support/geometry';
-import { UnknownSizeField } from '../../../support/field';
+import { UlamCalculator } from "../../../support/ulam";
+import { manhattanDistance, directions, getSurrounding, getFullSurrounding } from "../../../support/geometry";
+import { UnknownSizeField } from "../../../support/field";
 
 function parseLines(lines: string[]): number[][] {
     return lines
         .map((l) => l.trim())
-        .map(line => line.split("\t").map(token => parseInt(token, 10)))
+        .map((line) => line.split("\t").map((token) => parseInt(token, 10)))
     ;
 }
 
@@ -33,12 +33,12 @@ export const spiralMemory = entryForFile(
         ];
         let currentDirection = 0;
 
-        field.set({x:0, y:0}, 1);
+        field.set({x: 0, y: 0}, 1);
         let currentPosition = {x: 0, y: 0};
-        let i = 0;
+        const i = 0;
         while (true) {
             currentPosition = directionOrder[currentDirection].sum(currentPosition);
-            const value = getFullSurrounding(currentPosition).map(c => field.get(c)).filter(e => e !== null).reduce((acc: number, next) => acc + next!, 0);
+            const value = getFullSurrounding(currentPosition).map((c) => field.get(c)).filter((e) => e !== null).reduce((acc: number, next) => acc + next!, 0);
             if (value > target) {
                 await outputCallback(value);
                 return;
@@ -50,14 +50,13 @@ export const spiralMemory = entryForFile(
                 currentDirection = (currentDirection + 1) % directionOrder.length;
                 if (nextIteration > 0) {
                     toDo = next;
-                }
-                else {
+                } else {
                     nextIteration = 2;
                     next++;
                     toDo = next;
                 }
             }
-        } 
+        }
     },
     { key: "spiral-memory", title: "Spiral Memory", stars: 2, }
 );

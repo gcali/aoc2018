@@ -1,6 +1,6 @@
 import { entryForFile } from "../../entry";
-import { modInverse } from '../../../support/algebra';
-import { serializeTime } from '../../../support/time';
+import { modInverse } from "../../../support/algebra";
+import { serializeTime } from "../../../support/time";
 
 export class Deck {
     public positions: number[];
@@ -26,6 +26,31 @@ export class Deck {
         return this;
     }
 
+    public cut(n: number): Deck {
+        const length = this.size;
+        if (this.shouldReverse) {
+            n *= -1;
+        }
+        if (n > 0) {
+            return this.internalCut(n);
+        } else {
+            return this.internalCut(length + n);
+        }
+    }
+
+    public increment(n: number): Deck {
+        const length = this.size;
+        const factor = this.shouldReverse ? modInverse(n, length) : n;
+        for (let i = 0; i < this.positions.length; i++) {
+            this.positions[i] = (this.positions[i] * factor) % length;
+        }
+        return this;
+    }
+
+    public sort(): Array<{card: number, index: number}> {
+        return this.positions.map((e, i) => ({e, i})).sort((a, b) => a.e - b.e).map((e) => ({card: e.i, index: e.e}));
+    }
+
     private internalCut(n: number): Deck {
         if (n < 0) {
             throw new Error("Expected a positive number");
@@ -42,35 +67,10 @@ export class Deck {
         return this;
 
     }
-
-    public cut(n: number): Deck {
-        const length = this.size;
-        if (this.shouldReverse) {
-            n *= -1;
-        }
-        if (n > 0) {
-            return this.internalCut(n);
-        } else {
-            return this.internalCut(length + n);
-        }
-    }
-
-    public increment(n : number): Deck {
-        const length = this.size;
-        const factor = this.shouldReverse ? modInverse(n, length) : n;
-        for (let i = 0; i < this.positions.length; i++) {
-            this.positions[i] = (this.positions[i] * factor) % length;
-        }
-        return this;
-    }
-
-    public sort(): {card: number, index: number}[] {
-        return this.positions.map((e, i) => ({e, i})).sort((a, b) => a.e - b.e).map(e => ({card: e.i, index: e.e}));
-    }
 }
 
 export const executeInput = (lines: string[], deck: Deck): void => {
-    lines.forEach(line => {
+    lines.forEach((line) => {
         if (line.indexOf("deal into new stack") >= 0) {
             deck.deal();
         } else {
@@ -84,24 +84,24 @@ export const executeInput = (lines: string[], deck: Deck): void => {
                 throw new Error("Could not parse " + line);
             }
         }
-    }); 
-}
+    });
+};
 
 export const findNumberAtPosition = async (
     input: string[],
     size: number,
-    position: number, 
-    times: number, 
+    position: number,
+    times: number,
     debug?: (s: string) => Promise<void>
 ): Promise<number> => {
-    const reversedInput = [...input]//.reverse();
+    const reversedInput = [...input]; // .reverse();
     const deck = new Deck(size, [position]);
     deck.shouldReverse = true;
     const cache = new Map<number, number>();
     const history: number[] = [];
     for (let i = 0; i < times; i++) {
         if (debug && i > 0 && i % 10000 === 0) {
-            await debug(`Iteration ${i/1000}k`);
+            await debug(`Iteration ${i / 1000}k`);
         }
         const e = deck.positions[0];
         const hit = cache.get(e);

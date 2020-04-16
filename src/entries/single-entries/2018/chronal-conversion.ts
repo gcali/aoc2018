@@ -1,5 +1,5 @@
 import { entryForFile } from "../../entry";
-import { Machine, Instruction, OpCode, MutableMachine } from './chronal-classification';
+import { Machine, Instruction, OpCode, MutableMachine } from "./chronal-classification";
 
 export const chronalConversion = entryForFile(
     async ({ lines, outputCallback }) => {
@@ -9,7 +9,7 @@ export const chronalConversion = entryForFile(
         while (machine.isExecutable(instructions.length)) {
             const instruction = instructions[machine.nextInstructionAddress];
             machine.execute(instruction);
-            if (machine.nextInstructionAddress === instructions.length -3) {
+            if (machine.nextInstructionAddress === instructions.length - 3) {
                 await outputCallback(machine.registers[4]);
             }
         }

@@ -1,6 +1,6 @@
 import { entryForFile } from "../../entry";
-import { FixedSizeMatrix } from '../../../support/matrix';
-import { manhattanDistance, Coordinate, CCoordinate } from '../../../support/geometry';
+import { FixedSizeMatrix } from "../../../support/matrix";
+import { manhattanDistance, Coordinate, CCoordinate } from "../../../support/geometry";
 
 type Grid = FixedSizeMatrix<string>;
 
@@ -10,7 +10,7 @@ const flipHorizontal = (matrix: Grid): Grid => {
         newGrid.set({y: coordinate.y, x: matrix.size.x - coordinate.x - 1}, cell!);
     });
     return newGrid;
-}
+};
 
 const generateAllSymmetries = (matrix: Grid): Grid[] => {
     const result = [];
@@ -34,7 +34,7 @@ const matches = (matrix: Grid, symmetries: Grid[]): boolean => {
         }
     }
     return false;
-}
+};
 
 interface GridWithDelta {
     grid: Grid;
@@ -46,7 +46,7 @@ const extractGrid = (grid: Grid, offset: Coordinate, size: Coordinate): Grid => 
     const cOffset = new CCoordinate(offset.x, offset.y);
     for (let x = 0; x < size.x; x++) {
         for (let y = 0; y < size.y; y++) {
-            gridResult.set({x, y}, grid.get(cOffset.sum({x,y}))!);
+            gridResult.set({x, y}, grid.get(cOffset.sum({x, y}))!);
         }
     }
     return gridResult;
@@ -60,7 +60,7 @@ const splitWithDelta = (fullGrid: Grid): GridWithDelta[] => {
             const subGrid = extractGrid(fullGrid, {x, y}, {x: size, y: size});
             result.push({
                 grid: subGrid,
-                delta: {x: x/size, y: y/size}
+                delta: {x: x / size, y: y / size}
             });
         }
     }
@@ -69,10 +69,10 @@ const splitWithDelta = (fullGrid: Grid): GridWithDelta[] => {
 
 const joinDeltas = (deltas: GridWithDelta[]): Grid => {
     const subSize = deltas[0].grid.size.x;
-    const maxX = deltas.map(d => d.delta.x).reduce((acc, next) => Math.max(acc, next));
+    const maxX = deltas.map((d) => d.delta.x).reduce((acc, next) => Math.max(acc, next));
     const size = subSize * (maxX + 1);
     const resultGrid = new FixedSizeMatrix<string>({x: size, y: size});
-    deltas.forEach(subGrid => {
+    deltas.forEach((subGrid) => {
         subGrid.grid.onEveryCell((coordinate, cell) => {
             const setCoordinate = {
                 x: coordinate.x + subGrid.delta.x * subSize,
@@ -86,14 +86,14 @@ const joinDeltas = (deltas: GridWithDelta[]): Grid => {
         });
     });
     return resultGrid;
-}
+};
 const transpose = (matrix: Grid): Grid => {
     const result = new FixedSizeMatrix<string>(matrix.size);
     matrix.onEveryCell((coordinate, cell) => {
         result.set({x: coordinate.y, y: coordinate.x}, cell!);
     });
     return result;
-}
+};
 
 interface Rule {
     matching: Grid[];
@@ -101,10 +101,10 @@ interface Rule {
 }
 
 const parseRules = (lines: string[]): Rule[] => {
-    return lines.map(line => line.trim()).filter(line => line.length > 0).map(line => {
+    return lines.map((line) => line.trim()).filter((line) => line.length > 0).map((line) => {
         const [left, right] = line.trim().split(" => ");
-        const leftFlat = left.split("").filter(e => e !== "/");
-        const rightFlat = right.split("").filter(e => e !== "/");
+        const leftFlat = left.split("").filter((e) => e !== "/");
+        const rightFlat = right.split("").filter((e) => e !== "/");
         const leftSize = Math.sqrt(leftFlat.length);
         const rightSize = Math.sqrt(rightFlat.length);
         const baseRuleMatch = new FixedSizeMatrix<string>({x: leftSize, y: leftSize});
@@ -115,12 +115,12 @@ const parseRules = (lines: string[]): Rule[] => {
             matching: generateAllSymmetries(baseRuleMatch),
             result: rightGrid
         };
-    })
+    });
 };
 
 const iterate = (grid: Grid, rules: Rule[]): Grid => {
     const splitGrids = splitWithDelta(grid);
-    const mappedGrids: GridWithDelta[] = splitGrids.map(subGrid => {
+    const mappedGrids: GridWithDelta[] = splitGrids.map((subGrid) => {
         for (const rule of rules) {
             if (matches(subGrid.grid, rule.matching)) {
                 return {
@@ -146,9 +146,9 @@ export const fractalArt = entryForFile(
         for (let i = 0; i < total; i++) {
             grid = iterate(grid, rules);
             sizes.push(grid.size.x);
-        };
-        await outputCallback(grid.toString(e => e || " "));
-        await outputCallback(grid.data.filter(e => e === "#").length);
+        }
+        await outputCallback(grid.toString((e) => e || " "));
+        await outputCallback(grid.data.filter((e) => e === "#").length);
     },
     async ({ lines, outputCallback }) => {
         const startGrid = new FixedSizeMatrix<string>({x: 3, y: 3});
@@ -162,8 +162,8 @@ export const fractalArt = entryForFile(
             await outputCallback("Iteration: " + i);
             grid = iterate(grid, rules);
             sizes.push(grid.size.x);
-        };
-        await outputCallback(grid.data.filter(e => e === "#").length);
+        }
+        await outputCallback(grid.data.filter((e) => e === "#").length);
     },
     { key: "fractal-art", title: "Fractal Art", stars: 2, }
 );

@@ -1,5 +1,5 @@
 import { entryForFile } from "../../entry";
-import { Tree, Queue } from '../../../support/data-structure';
+import { Tree, Queue } from "../../../support/data-structure";
 
 const parseLines = (lines: string[]): Map<string, DiscDefinition> => {
     const definitions = lines.map((line: string): DiscDefinition => {
@@ -18,9 +18,9 @@ const parseLines = (lines: string[]): Map<string, DiscDefinition> => {
         };
     });
     const map = new Map<string, DiscDefinition>();
-    definitions.forEach(definition => map.set(definition.head.name, definition));
+    definitions.forEach((definition) => map.set(definition.head.name, definition));
     return map;
-}
+};
 
 const buildTree = (
     startTree: string,
@@ -28,28 +28,28 @@ const buildTree = (
 ): Tree<WeightedProgram> => {
     const definition = definitions.get(startTree)!;
     const tree = new Tree<WeightedProgram>(definition.head);
-    const subTrees = definition.children.map(child => buildTree(child, definitions));
-    subTrees.forEach(subTree => tree.appendTree(subTree));
+    const subTrees = definition.children.map((child) => buildTree(child, definitions));
+    subTrees.forEach((subTree) => tree.appendTree(subTree));
     return tree;
+};
+
+interface UnbalancedResult {
+    isUnbalanced: true;
+    requiredWeight: number;
 }
 
-type UnbalancedResult = {
-    isUnbalanced: true,
-    requiredWeight: number
-};
-
-type BalancedResult = { 
-    isUnbalanced: false,
-    totalWeight: number,
-    headWeight: number
-};
+interface BalancedResult {
+    isUnbalanced: false;
+    totalWeight: number;
+    headWeight: number;
+}
 
 
 type CheckResult = UnbalancedResult | BalancedResult;
 
 const isUnbalanced = (e: CheckResult): e is UnbalancedResult => {
     return e.isUnbalanced;
-}
+};
 
 const findUnbalancedIndex = (weights: number[]): number | null => {
     const min = weights.reduce((acc, next) => Math.min(acc, next));
@@ -57,11 +57,11 @@ const findUnbalancedIndex = (weights: number[]): number | null => {
     if (min === max) {
         return null;
     }
-    const isMinUnbalanced = weights.filter(w => w === min).length == 1;
+    const isMinUnbalanced = weights.filter((w) => w === min).length == 1;
     const target = isMinUnbalanced ? min : max;
     return weights.indexOf(target);
-}
-const checkWeight = (tree: Tree<WeightedProgram>):  CheckResult => {
+};
+const checkWeight = (tree: Tree<WeightedProgram>): CheckResult => {
     if (tree.children.length === 0) {
         return {
             isUnbalanced: false,
@@ -69,20 +69,20 @@ const checkWeight = (tree: Tree<WeightedProgram>):  CheckResult => {
             headWeight: tree.head.weight
         };
     }
-    const childrenResults = tree.children.map(child => checkWeight(child));
-    const unbalancedResults = childrenResults.filter(e => isUnbalanced(e));
+    const childrenResults = tree.children.map((child) => checkWeight(child));
+    const unbalancedResults = childrenResults.filter((e) => isUnbalanced(e));
     if (unbalancedResults.length > 0) {
         return unbalancedResults[0];
     }
-    const balancedResults: BalancedResult[] = childrenResults.map(e => e as BalancedResult);
-    const childrenWeights = balancedResults.map(e => e.totalWeight);
+    const balancedResults: BalancedResult[] = childrenResults.map((e) => e as BalancedResult);
+    const childrenWeights = balancedResults.map((e) => e.totalWeight);
     const unbalancedIndex = findUnbalancedIndex(childrenWeights);
     if (unbalancedIndex === null) {
         return {
             isUnbalanced: false,
             totalWeight: childrenWeights.reduce((acc, next) => acc + next) + tree.head.weight,
             headWeight: tree.head.weight
-        }
+        };
     }
     const otherIndex = (unbalancedIndex + 1) % balancedResults.length;
     const delta = balancedResults[unbalancedIndex].totalWeight - balancedResults[otherIndex].totalWeight;
@@ -91,7 +91,7 @@ const checkWeight = (tree: Tree<WeightedProgram>):  CheckResult => {
         requiredWeight: balancedResults[unbalancedIndex].headWeight - delta
     };
     return result;
-}
+};
 
 interface WeightedProgram {
     weight: number;
@@ -99,8 +99,8 @@ interface WeightedProgram {
 }
 
 interface DiscDefinition {
-    head: WeightedProgram,
-    children: string[]
+    head: WeightedProgram;
+    children: string[];
 }
 export const recursiveCircus = entryForFile(
     async ({ lines, outputCallback, pause, isCancelled }) => {
@@ -120,13 +120,13 @@ export const recursiveCircus = entryForFile(
 );
 
 function findBottom(lines: string[]) {
-    const withRightSide = lines.filter(l => l.indexOf(">") >= 0);
-    const onlyRightHand = withRightSide.map(line => line.split(">")[1].trim());
+    const withRightSide = lines.filter((l) => l.indexOf(">") >= 0);
+    const onlyRightHand = withRightSide.map((line) => line.split(">")[1].trim());
     const rightHandValues = new Set<string>(onlyRightHand
-        .flatMap(right => right.split(",")
-            .map(e => e.trim())));
-    const leftValues = lines.map(line => line.split(" ")[0].trim());
-    const bottomValue = leftValues.filter(value => !rightHandValues.has(value))[0];
+        .flatMap((right) => right.split(",")
+            .map((e) => e.trim())));
+    const leftValues = lines.map((line) => line.split(" ")[0].trim());
+    const bottomValue = leftValues.filter((value) => !rightHandValues.has(value))[0];
     return bottomValue;
 }
 

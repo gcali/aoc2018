@@ -1,4 +1,4 @@
-import { flatten } from 'wu';
+import { flatten } from "wu";
 
 export interface HexCubeCoordinate {
     x: number;
@@ -12,7 +12,7 @@ export const sumHexCoordinates = (a: HexCubeCoordinate, b: HexCubeCoordinate): H
         y: a.y + b.y,
         z: a.z + b.z
     };
-}
+};
 
 export const flatHexDirections = {
     northWest: {x: -1, y: 1, z: 0},
@@ -24,5 +24,5 @@ export const flatHexDirections = {
 };
 
 export const hexManhattanDistance = (a: HexCubeCoordinate, b: HexCubeCoordinate): number => {
-    return (Math.abs(a.x - b.x) + Math.abs(a.y - b.y) + Math.abs(a.z - b.z))/2;
-}
+    return (Math.abs(a.x - b.x) + Math.abs(a.y - b.y) + Math.abs(a.z - b.z)) / 2;
+};

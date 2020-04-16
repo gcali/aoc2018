@@ -29,6 +29,6 @@ describe("Boundaries", () => {
 
     it("should have 0 size for empty list", () => {
         expect(manhattanDistance(getBoundaries([]).size, { x: 0, y: 0 })).to.equal(0);
-    })
+    });
 
 });

@@ -1,7 +1,7 @@
 import { entryForFile } from "../../entry";
 export const aMazeOfTwistyTrampolinesAllAlike = entryForFile(
     async ({ lines, outputCallback, pause, isCancelled }) => {
-        const instructions = lines.map(l => parseInt(l, 10));
+        const instructions = lines.map((l) => parseInt(l, 10));
         let ip = 0;
         let i = 0;
         while (ip >= 0 && ip < instructions.length) {
@@ -13,7 +13,7 @@ export const aMazeOfTwistyTrampolinesAllAlike = entryForFile(
         await outputCallback(i);
     },
     async ({ lines, outputCallback, pause, isCancelled }) => {
-        const instructions = lines.map(l => parseInt(l, 10));
+        const instructions = lines.map((l) => parseInt(l, 10));
         let ip = 0;
         let i = 0;
         while (ip >= 0 && ip < instructions.length) {

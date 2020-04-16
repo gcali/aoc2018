@@ -2,7 +2,7 @@ import "mocha";
 import { expect } from "chai";
 import { Field, findCompressed } from "../set-and-forget";
 import { expectSameArrays } from "../../../../support/assertions";
-import { groupBy } from '../../../../support/sequences';
+import { groupBy } from "../../../../support/sequences";
 
 describe("Set and forget", () => {
     it("finds the correct number of intersections on basic example", async () => {
@@ -289,23 +289,23 @@ describe("Set and forget", () => {
         const field = new Field(rows);
         const movements = await field.getMovements();
         expectSameArrays(
-            movements, 
+            movements,
             [
-            "R",8,"R",8,"R",4,"R",4,"R",8,"L",6,"L",2,"R",4,"R",4,"R",8,"R",8,"R",8,"L",6,"L",2
+            "R", 8, "R", 8, "R", 4, "R", 4, "R", 8, "L", 6, "L", 2, "R", 4, "R", 4, "R", 8, "R", 8, "R", 8, "L", 6, "L", 2
             ]);
     });
 
     it("can compress example input", async () => {
         const compression = await findCompressed([
-            "R",8,"R",8,"R",4,"R",4,"R",8,"L",6,"L",2,"R",4,"R",4,"R",8,"R",8,"R",8,"L",6,"L",2
-        ].map(e => e.toString()), async () => {});
+            "R", 8, "R", 8, "R", 4, "R", 4, "R", 8, "L", 6, "L", 2, "R", 4, "R", 4, "R", 8, "R", 8, "R", 8, "L", 6, "L", 2
+        ].map((e) => e.toString()), async () => {});
         expect(compression).not.to.be.null;
     });
 
     it("can compress example input by pairs", async () => {
         const compression = await findCompressed(groupBy([
-            "R",8,"R",8,"R",4,"R",4,"R",8,"L",6,"L",2,"R",4,"R",4,"R",8,"R",8,"R",8,"L",6,"L",2
-        ], 2).map(e => e.join("")), async () => {});
+            "R", 8, "R", 8, "R", 4, "R", 4, "R", 8, "L", 6, "L", 2, "R", 4, "R", 4, "R", 8, "R", 8, "R", 8, "L", 6, "L", 2
+        ], 2).map((e) => e.join("")), async () => {});
         expect(compression).not.to.be.null;
     });
 

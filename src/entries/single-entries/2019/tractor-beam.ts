@@ -1,28 +1,28 @@
 import { entryForFile } from "../../entry";
-import { parseMemory, execute, Memory } from '../../../support/intcode';
-import { FixedSizeMatrix } from '../../../support/matrix';
-import { UnknownSizeField } from '../../../support/field';
-import { Coordinate, CCoordinate, manhattanDistance } from '../../../support/geometry';
-import { exec } from 'child_process';
+import { parseMemory, execute, Memory } from "../../../support/intcode";
+import { FixedSizeMatrix } from "../../../support/matrix";
+import { UnknownSizeField } from "../../../support/field";
+import { Coordinate, CCoordinate, manhattanDistance } from "../../../support/geometry";
+import { exec } from "child_process";
 
-type BeamOutput = {
+interface BeamOutput {
     field: UnknownSizeField<"#" | ".">;
     size: Coordinate;
 }
 
-const left = new CCoordinate(-1,0);
-const right = new CCoordinate(1,0);
+const left = new CCoordinate(-1, 0);
+const right = new CCoordinate(1, 0);
 
-type RowInfo = {
+interface RowInfo {
     rowStart: number;
-    rowLength: number; 
-};
+    rowLength: number;
+}
 
-type RowMapData = (RowInfo | undefined)[];
+type RowMapData = Array<RowInfo | undefined>;
 
 const serializePoint = (c: Coordinate): string => {
     return `${c.x},${c.y}`;
-}
+};
 
 
 
@@ -32,11 +32,11 @@ export const tractorBeam = entryForFile(
         let isPulled = 0;
         for (let x = 0; x < 50; x++) {
             for (let y = 0; y < 50; y++) {
-                const toServe = [x,y];
+                const toServe = [x, y];
                 let nextToServe = 0;
                 await execute({
                     memory,
-                    input: async () => toServe[nextToServe++], 
+                    input: async () => toServe[nextToServe++],
                     output: async (n) => isPulled += n
                 });
             }
@@ -47,7 +47,7 @@ export const tractorBeam = entryForFile(
         const memory = parseMemory(lines[0]);
 
         let startPoint = {x: 3, y: 4};
-        const delta = new CCoordinate(1,1);
+        const delta = new CCoordinate(1, 1);
 
         const rowData: RowMapData = [];
 
@@ -70,7 +70,7 @@ export const tractorBeam = entryForFile(
             let rowStart = startPoint;
             while (await isPulled(memory, rowStart)) {
                 rowStart = left.sum(rowStart);
-            } 
+            }
             rowStart = right.sum(rowStart);
 
             console.log("Left start: " + serializePoint(rowStart));
@@ -78,7 +78,7 @@ export const tractorBeam = entryForFile(
             const lastRowInfo = await setRowData(memory, rowStart, rowData);
             if (
                 lastRowInfo.rowLength >= expectedSize &&
-                rowStart.x >= expectedSize && 
+                rowStart.x >= expectedSize &&
                 rowStart.y >= expectedSize
                 ) {
                     const interestingTopRow = rowStart.y - expectedSize + 1;
@@ -90,8 +90,8 @@ export const tractorBeam = entryForFile(
                             topStart: topRowInfo.rowStart,
                             topLength: topRowInfo.rowLength,
                             delta: deltaX,
-                        })
-                        if (topRowInfo.rowLength -deltaX >= expectedSize) {
+                        });
+                        if (topRowInfo.rowLength - deltaX >= expectedSize) {
                             await outputCallback({x: rowStart.x, y: interestingTopRow});
                             return;
                         }
@@ -131,7 +131,7 @@ const isRowLongEnough = async (
         startPoint = right.sum(startPoint);
     }
     return true;
-}
+};
 
 const isPulled = async (memory: Memory, coordinate: Coordinate): Promise<boolean> => {
     const toServe = [coordinate.x, coordinate.y];
@@ -141,9 +141,9 @@ const isPulled = async (memory: Memory, coordinate: Coordinate): Promise<boolean
         memory,
         input: async () => toServe[nextToServe++],
         output: async (n) => result = (n === 1)
-    })
+    });
     return result;
-}
+};
 
 const enlarge = async (
     memory: Memory,
@@ -151,25 +151,25 @@ const enlarge = async (
     toSize: Coordinate
 ): Promise<void> => {
     const toFill: Coordinate[] = [];
-    const newSize = { 
+    const newSize = {
         x: Math.max(toSize.x, output.size.x),
         y: Math.max(toSize.y, output.size.y)
     };
     for (let x = Math.max(Math.min(output.size.x, toSize.x) - 1, 0); x < newSize.x; x++) {
         for (let y = Math.max(Math.min(output.size.y, toSize.y) - 1, 0); y < newSize.y; y++) {
             if (x >= output.size.x || y >= output.size.y) {
-                toFill.push({x,y});
+                toFill.push({x, y});
             }
         }
     }
     await fillField(memory, output, toFill);
     output.size = newSize;
 
-}
+};
 
 const fillField = async (
     memory: Memory,
-    output: BeamOutput, 
+    output: BeamOutput,
     toFill: Coordinate[]
 ): Promise<void> => {
     for (const coordinate of toFill) {
@@ -187,4 +187,4 @@ const fillField = async (
             }
         });
     }
-}
+};

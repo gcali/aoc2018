@@ -1,14 +1,14 @@
 import { entryForFile } from "../../entry";
-import { Stack } from 'linq-typescript';
+import { Stack } from "linq-typescript";
 
 const parseLines = (lines: string[]): PipeDefinition[] => {
-    return lines.map(line => {
+    return lines.map((line) => {
         const [sourceToken, targetToken] = line.split(" <-> ");
         const source = parseInt(sourceToken, 10);
-        const targets = targetToken.split(", ").map(e => parseInt(e, 10));
+        const targets = targetToken.split(", ").map((e) => parseInt(e, 10));
         return { source, targets };
     });
-}; 
+};
 
 interface PipeDefinition {
     source: number;
@@ -24,14 +24,14 @@ class Graph {
     }
 
     public addDefinition(pipeDefinition: PipeDefinition) {
-        pipeDefinition.targets.forEach(target => this.addLink(pipeDefinition.source, target));
+        pipeDefinition.targets.forEach((target) => this.addLink(pipeDefinition.source, target));
     }
 
     public addDefinitions(pipeDefinitions: PipeDefinition[]) {
-        pipeDefinitions.forEach(definition => this.addDefinition(definition));
+        pipeDefinitions.forEach((definition) => this.addDefinition(definition));
     }
 
-    getNodes(): number[] {
+    public getNodes(): number[] {
         return [...this._map.keys()];
     }
 
@@ -50,7 +50,7 @@ class Graph {
             visited.add(toVisit);
             callback(toVisit);
             const linked = this.getLinked(toVisit);
-            linked.forEach(e => stack.push(e));
+            linked.forEach((e) => stack.push(e));
         }
     }
 
@@ -68,8 +68,8 @@ class Graph {
             adjacency = new Set<number>();
             this._map.set(source, adjacency);
         }
-        adjacency.add(target); 
-    } 
+        adjacency.add(target);
+    }
 }
 
 export const digitalPlumber = entryForFile(
@@ -78,7 +78,7 @@ export const digitalPlumber = entryForFile(
         const graph = new Graph();
         graph.addDefinitions(definitions);
         let count = 0;
-        graph.dfs(0, e => count++);
+        graph.dfs(0, (e) => count++);
         await outputCallback(count);
     },
     async ({ lines, outputCallback }) => {
@@ -92,14 +92,14 @@ export const digitalPlumber = entryForFile(
             const next = stack.pop();
             if (next === undefined) {
                 break;
-            } 
+            }
             if (visited.has(next)) {
                 continue;
             }
             count++;
-            graph.dfs(next, e => visited.add(e));
+            graph.dfs(next, (e) => visited.add(e));
         }
         await outputCallback(count);
     },
     { key: "digital-plumber", title: "Digital Plumber", stars: 2, }
-);  
+);

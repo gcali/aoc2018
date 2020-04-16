@@ -4,11 +4,11 @@ type State = number[];
 
 const serializeState = (state: State): string => {
     return JSON.stringify(state);
-}
+};
 
 const shiftIndex = <T>(array: T[], index: number, delta: number): number => {
     return (index + delta) % array.length;
-}
+};
 
 const distribute = (state: State, maxIndex: number, maxValue: number): State => {
     const newState = [...state];
@@ -25,7 +25,7 @@ const distribute = (state: State, maxIndex: number, maxValue: number): State => 
 
 export const memoryReallocation = entryForFile(
     async ({ lines, outputCallback, pause, isCancelled }) => {
-        let state = lines[0].split("\t").map(e => parseInt(e, 10));
+        let state = lines[0].split("\t").map((e) => parseInt(e, 10));
         const createdStates = new Set<string>();
         while (true) {
             const maxValue = state.reduce((acc, next) => Math.max(acc, next));
@@ -40,7 +40,7 @@ export const memoryReallocation = entryForFile(
         await outputCallback(createdStates.size + 1);
     },
     async ({ lines, outputCallback, pause, isCancelled }) => {
-        let state = lines[0].split("\t").map(e => parseInt(e, 10));
+        let state = lines[0].split("\t").map((e) => parseInt(e, 10));
         const createdStates = new Map<string, number>();
         let lastSerialization: string | null = null;
         while (true) {
@@ -52,7 +52,7 @@ export const memoryReallocation = entryForFile(
                 lastSerialization = serialization;
                 break;
             }
-            createdStates.set(serialization, createdStates.size + 1)
+            createdStates.set(serialization, createdStates.size + 1);
         }
         await outputCallback((createdStates.size + 1) - createdStates.get(lastSerialization)!);
     },

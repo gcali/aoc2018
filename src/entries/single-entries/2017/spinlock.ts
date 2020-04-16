@@ -18,7 +18,7 @@ export const spinlock = entryForFile(
         // const buffer: number[] = [0];
         let lastAdd = 0;
         let currentPosition = 0;
-        const total = 50 * 10**6;
+        const total = 50 * 10 ** 6;
         for (let i = 1; i <= total; i++) {
             currentPosition = (currentPosition + steps) % i + 1;
             if (currentPosition === 1) {

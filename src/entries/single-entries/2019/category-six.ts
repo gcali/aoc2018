@@ -1,50 +1,50 @@
 import { entryForFile } from "../../entry";
-import { Memory, parseMemory, execute } from '../../../support/intcode';
-import { Queue } from '../../../support/data-structure';
+import { Memory, parseMemory, execute } from "../../../support/intcode";
+import { Queue } from "../../../support/data-structure";
 
 type PacketSender = (n: number) => (((n: number) => undefined) | undefined);
 
 interface Program {
     memory: Memory;
-    inputQueue: Queue<Packet | number>,
-    address: number,
-    packetSender?: PacketSender,
-    nextPacket?: Packet,
-    resolver?: () => void,
-};
+    inputQueue: Queue<Packet | number>;
+    address: number;
+    packetSender?: PacketSender;
+    nextPacket?: Packet;
+    resolver?: () => void;
+}
 
 interface Packet {
-    x: number,
-    y?: number,
-    isFromNat?: boolean
+    x: number;
+    y?: number;
+    isFromNat?: boolean;
 }
 
 const isPacket = (e: Packet | number): e is Packet => {
     return (e as Packet).x !== undefined;
-}
+};
 
 class ClosingDown extends Error {
     public readonly FLAG = "ClosingDown";
     constructor(s: string) {
-        super(s); 
+        super(s);
     }
 }
 
 export const categorySix = entryForFile(
     async ({ lines, outputCallback }) => {
         const memory = parseMemory(lines[0]);
-        const programs: Program[] = [...Array(50).keys()].map(i => ({
+        const programs: Program[] = [...Array(50).keys()].map((i) => ({
             memory,
             inputQueue: new Queue<Packet | number>(),
             address: i
         }));
 
-        programs.forEach(p => p.inputQueue.add(p.address));
+        programs.forEach((p) => p.inputQueue.add(p.address));
 
         let sentPackets = 0;
         let receivedPackets = 0;
         let realOutput: null | ((n: number) => void);
-        let iteration = 0;
+        const iteration = 0;
         let shouldClose = false;
         const emptyPromise = async () => {
             while (!shouldClose) {
@@ -52,7 +52,7 @@ export const categorySix = entryForFile(
             }
             await outputCallback("NAT closing down");
         };
-        const promises: Promise<any>[] = programs.map<Promise<any>>(p =>
+        const promises: Array<Promise<any>> = programs.map<Promise<any>>((p) =>
             execute({
                 memory: p.memory,
                 input: async () => {
@@ -85,25 +85,24 @@ export const categorySix = entryForFile(
                     }
                     if (!p.packetSender) {
                         const address = n;
-                        p.packetSender = (x => {
+                        p.packetSender = ((x) => {
                             const packet: Packet = {
                                 x
-                            }
+                            };
                             if (address !== 255) {
                                 programs[address].inputQueue.add(packet);
                             }
-                            return y => {
+                            return (y) => {
                                 if (address === 255) {
                                     console.log("Packet: " + y);
                                     shouldClose = true;
-                                }
-                                else {
+                                } else {
                                     packet.y = y;
                                     sentPackets++;
                                     console.log(`Packet sent, pkts: ${receivedPackets}/${sentPackets}`);
                                 }
                                 return undefined;
-                            }
+                            };
                         });
                     } else {
                         p.packetSender = p.packetSender(n);
@@ -119,13 +118,13 @@ export const categorySix = entryForFile(
                     const promise = new Promise<void>((resolve, reject) => {
                         p.resolver = resolve;
                     });
-                    const otherResolver = programs[(p.address+1) % programs.length].resolver;
+                    const otherResolver = programs[(p.address + 1) % programs.length].resolver;
                     if (otherResolver) {
                         otherResolver();
                     }
                     await promise;
                 }
-            })).concat([emptyPromise()])
+            })).concat([emptyPromise()]);
 
         try {
             await Promise.all(promises);
@@ -139,21 +138,21 @@ export const categorySix = entryForFile(
     },
     async ({ lines, outputCallback }) => {
         const memory = parseMemory(lines[0]);
-        const programs: Program[] = [...Array(50).keys()].map(i => ({
+        const programs: Program[] = [...Array(50).keys()].map((i) => ({
             memory,
             inputQueue: new Queue<Packet | number>(),
             address: i
         }));
 
-        programs.forEach(p => p.inputQueue.add(p.address));
+        programs.forEach((p) => p.inputQueue.add(p.address));
 
         let sentPackets = 0;
         let receivedPackets = 0;
         let natPacket: Packet | null = null;
-        let iteration = 0;
+        const iteration = 0;
         let shouldClose = false;
         let lastNatY: number | null = null;
-        const isIdle = (): boolean => programs.filter(p => p.inputQueue.isEmpty).length === programs.length;
+        const isIdle = (): boolean => programs.filter((p) => p.inputQueue.isEmpty).length === programs.length;
         const emptyPromise = async () => {
             while (!shouldClose) {
                 if (natPacket === null || !isIdle()) {
@@ -170,7 +169,7 @@ export const categorySix = entryForFile(
             }
             await outputCallback("NAT closing down");
         };
-        const promises: Promise<any>[] = programs.map<Promise<any>>(p =>
+        const promises: Array<Promise<any>> = programs.map<Promise<any>>((p) =>
             execute({
                 memory: p.memory,
                 input: async () => {
@@ -188,7 +187,7 @@ export const categorySix = entryForFile(
                                 shouldClose = true;
                                 throw new ClosingDown("Closing down");
                             }
-                            console.log(`From NAT, not duplicate: ${y} !== ${lastNatY} `)
+                            console.log(`From NAT, not duplicate: ${y} !== ${lastNatY} `);
                             lastNatY = y;
                         }
                         p.nextPacket = undefined;
@@ -212,22 +211,22 @@ export const categorySix = entryForFile(
                     }
                     if (!p.packetSender) {
                         const address = n;
-                        p.packetSender = (x => {
+                        p.packetSender = ((x) => {
                             const packet: Packet = {
                                 x
-                            }
+                            };
                             if (address !== 255) {
                                 programs[address].inputQueue.add(packet);
                             } else {
                                 console.log("Sending packet to NAT");
                                 natPacket = packet;
                             }
-                            return y => {
+                            return (y) => {
                                 packet.y = y;
                                 sentPackets++;
                                 console.log(`Packet sent, pkts: ${receivedPackets}/${sentPackets}`);
                                 return undefined;
-                            }
+                            };
                         });
                     } else {
                         p.packetSender = p.packetSender(n);
@@ -243,13 +242,13 @@ export const categorySix = entryForFile(
                     const promise = new Promise<void>((resolve, reject) => {
                         p.resolver = resolve;
                     });
-                    const otherResolver = programs[(p.address+1) % programs.length].resolver;
+                    const otherResolver = programs[(p.address + 1) % programs.length].resolver;
                     if (otherResolver) {
                         otherResolver();
                     }
                     await promise;
                 }
-            })).concat([emptyPromise()])
+            })).concat([emptyPromise()]);
 
         try {
             await Promise.all(promises);
@@ -261,5 +260,5 @@ export const categorySix = entryForFile(
             }
         }
     },
-    { key: "category-six", title: "Category Six", stars:2}
+    { key: "category-six", title: "Category Six", stars: 2}
 );

@@ -3,6 +3,10 @@ import wu, { zip } from "wu";
 import { voidIsPromise, isPromise } from "./async";
 
 export class FixedSizeMatrix<T> {
+
+    public get delta() {
+        return this._delta;
+    }
     public data: Array<T | undefined>;
 
     private _delta: CCoordinate = new CCoordinate(0, 0);
@@ -12,10 +16,6 @@ export class FixedSizeMatrix<T> {
 
     public setDelta(delta: CCoordinate) {
         this._delta = delta;
-    }
-
-    public get delta() {
-        return this._delta;
     }
 
     public fill(fillValue: T | undefined) {
@@ -44,7 +44,7 @@ export class FixedSizeMatrix<T> {
     ): TAcc {
         for (let y = 0; y < this.size.y; y++) {
             for (let x = 0; x < this.size.x; x++) {
-                startAccumulator = callback(startAccumulator, {coordinate: {x,y}, cell: this.get({x,y})});
+                startAccumulator = callback(startAccumulator, {coordinate: {x, y}, cell: this.get({x, y})});
             }
         }
         return startAccumulator;
@@ -62,7 +62,7 @@ export class FixedSizeMatrix<T> {
         return this.findOneWithCoordinate((cell, coordinate) => predicate(cell));
     }
 
-    public findOneWithCoordinate(predicate: (cell: T, coordinate: Coordinate)=> boolean): Coordinate | null {
+    public findOneWithCoordinate(predicate: (cell: T, coordinate: Coordinate) => boolean): Coordinate | null {
         for (let x = 0; x < this.size.x; x++) {
             for (let y = 0; y < this.size.y; y++) {
                 if (predicate(this.get({ x, y })!, {x, y})) {
@@ -132,13 +132,6 @@ export class FixedSizeMatrix<T> {
         return serialized;
     }
 
-    private indexCalculator(c: Coordinate): number | null {
-        if (c.y < 0 || c.x < 0 || c.x >= this.size.x || c.y >= this.size.y) {
-            return null;
-        }
-        return c.y * this.size.x + c.x;
-    }
-
     public simpleSerialize(): string {
         return this.data.join("");
     }
@@ -158,5 +151,12 @@ export class FixedSizeMatrix<T> {
             }
         }
         return true;
+    }
+
+    private indexCalculator(c: Coordinate): number | null {
+        if (c.y < 0 || c.x < 0 || c.x >= this.size.x || c.y >= this.size.y) {
+            return null;
+        }
+        return c.y * this.size.x + c.x;
     }
 }

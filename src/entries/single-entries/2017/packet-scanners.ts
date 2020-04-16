@@ -19,43 +19,43 @@ class Scanner {
         } else {
             this.position = position;
         }
-    } 
+    }
 
     public clone(): Scanner {
         return new Scanner(this.depth, this.range, this.position, this.direction);
     }
 }
 
-type Field = (Scanner | null)[];
+type Field = Array<Scanner | null>;
 
 const cloneField = (field: Field): Field => {
-    return field.map(e => e ? e.clone() : e);
-}
+    return field.map((e) => e ? e.clone() : e);
+};
 
 const parseLines = (lines: string[]): Field => {
-    const sparseField = lines.map(line => {
-        const [depth, range] = line.split(": ").map(e => parseInt(e, 10));
+    const sparseField = lines.map((line) => {
+        const [depth, range] = line.split(": ").map((e) => parseInt(e, 10));
         return new Scanner(depth, range);
     });
-    const maxDepth = sparseField.map(e => e.depth).reduce((acc, next) => Math.max(acc, next));
-    return [...Array(maxDepth + 1).keys()].map(index => {
-        const scanner = sparseField.filter(e => e.depth === index)[0];
+    const maxDepth = sparseField.map((e) => e.depth).reduce((acc, next) => Math.max(acc, next));
+    return [...Array(maxDepth + 1).keys()].map((index) => {
+        const scanner = sparseField.filter((e) => e.depth === index)[0];
         if (scanner) {
             return scanner;
         }
         return null;
-    }); 
-}
+    });
+};
 
 const tickField = (field: Field) => {
-    field.filter(e => e != null).forEach(e => e!.tick());
-}
+    field.filter((e) => e != null).forEach((e) => e!.tick());
+};
 
 export const packetScanners = entryForFile(
     async ({ lines, outputCallback }) => {
         const field = parseLines(lines);
         let currentPosition = -1;
-        let collisions: Scanner[] = [];
+        const collisions: Scanner[] = [];
         while (currentPosition < field.length) {
             currentPosition++;
             const currentScanner = field[currentPosition];

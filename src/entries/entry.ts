@@ -10,7 +10,7 @@ export interface EntryCallbackArg {
     additionalInputReader?: {
         read: () => Promise<string | null>;
         close: () => void;
-    }
+    };
 }
 
 type OldEntryCallback = (
@@ -23,11 +23,11 @@ export type OutputCallback = ((outputLine: any, shouldClear?: boolean) => Promis
 
 type EntryCallback = (arg: EntryCallbackArg) => Promise<void>;
 
-type EntryMetadata = {
+interface EntryMetadata {
     key: string;
     stars?: 1 | 2;
     title: string;
-};
+}
 
 export interface Entry {
     first: EntryCallback;
@@ -81,6 +81,10 @@ interface ExecutionArgs {
     isCancelled?: (() => boolean);
     pause?: () => Promise<void>;
     statusCallback?: ((outputStatus: Message) => Promise<void>);
+    additionalInputReader?: {
+        read: () => Promise<string | null>;
+        close: () => void;
+    };
 }
 
 export async function executeEntry({
@@ -90,7 +94,8 @@ export async function executeEntry({
     outputCallback,
     isCancelled,
     pause,
-    statusCallback
+    statusCallback,
+    additionalInputReader
 }: ExecutionArgs
 ) {
     let callback: EntryCallback;
@@ -104,6 +109,7 @@ export async function executeEntry({
         outputCallback,
         pause: pause || (() => new Promise<void>((resolve) => setTimeout(resolve, 0))),
         isCancelled,
-        statusCallback
+        statusCallback,
+        additionalInputReader
     });
 }

@@ -1,31 +1,31 @@
 import { entryForFile } from "../../entry";
-import { FixedSizeMatrix } from '../../../support/matrix';
-import { Coordinate, getSurrounding, manhattanDistance } from '../../../support/geometry';
-import { NotImplementedError } from '../../../support/error';
-import { calculateDistances, calculateDistancesGenericCoordinates } from '../../../support/labyrinth';
+import { FixedSizeMatrix } from "../../../support/matrix";
+import { Coordinate, getSurrounding, manhattanDistance } from "../../../support/geometry";
+import { NotImplementedError } from "../../../support/error";
+import { calculateDistances, calculateDistancesGenericCoordinates } from "../../../support/labyrinth";
 
 const getPortalCoordinateAndClean = (c: Coordinate, matrix: FixedSizeMatrix<string>): {f: Coordinate, p: string} => {
     const firstLetter = matrix.get(c);
     matrix.set(c, " ");
     const firstNeighbours = getSurrounding(c)
-        .map(c => ({c, cell: matrix.get(c)}))
-        .filter(e => e.cell && (e.cell === "." || isLetter(e.cell)))
+        .map((c) => ({c, cell: matrix.get(c)}))
+        .filter((e) => e.cell && (e.cell === "." || isLetter(e.cell)))
     ;
     if (firstNeighbours.length === 1) {
         const secondLetter = firstNeighbours[0];
         matrix.set(secondLetter.c, " ");
-        const floorNeighbour = getSurrounding(secondLetter.c).map(c => ({
+        const floorNeighbour = getSurrounding(secondLetter.c).map((c) => ({
             c,
             cell: matrix.get(c)
-        })).filter(e => e.cell === ".")[0].c;
+        })).filter((e) => e.cell === ".")[0].c;
         return {
             f: floorNeighbour,
             p: [firstLetter, secondLetter.cell!].sort().join("")
         };
     } else {
-        const secondLetter = firstNeighbours.filter(e => isLetter(e.cell!))[0];
+        const secondLetter = firstNeighbours.filter((e) => isLetter(e.cell!))[0];
         matrix.set(secondLetter.c, " ");
-        const floor = firstNeighbours.filter(e => !isLetter(e.cell!))[0].c;
+        const floor = firstNeighbours.filter((e) => !isLetter(e.cell!))[0].c;
         return {
             f: floor,
             p: [firstLetter, secondLetter.cell!].sort().join("")
@@ -35,24 +35,24 @@ const getPortalCoordinateAndClean = (c: Coordinate, matrix: FixedSizeMatrix<stri
 
 const isLetter = (s: string): boolean => {
     return s.toLowerCase() !== s || s.toUpperCase() !== s;
-}
+};
 
 const serializeCoordinate = (c: Coordinate): string => {
     return `${c.x}|${c.y}`;
-}
+};
 
 export const analyzeMatrix = (matrix: FixedSizeMatrix<string>): {
-    portals: {c:Coordinate, name: string}[],
+    portals: Array<{c: Coordinate, name: string}>,
     start: Coordinate,
     end: Coordinate} => {
         let start: Coordinate | null = null;
         let end: Coordinate | null = null;
-        const portals: {c: Coordinate, name: string}[] = [];
+        const portals: Array<{c: Coordinate, name: string}> = [];
         for (let x = 0; x < matrix.size.x; x++) {
             for (let y = 0; y < matrix.size.y; y++) {
-                const cell = matrix.get({x,y});
+                const cell = matrix.get({x, y});
                 if (cell && cell.toLowerCase() !== cell) {
-                    const {f: floor, p: name} = getPortalCoordinateAndClean({x,y}, matrix);
+                    const {f: floor, p: name} = getPortalCoordinateAndClean({x, y}, matrix);
                     if (name === "AA") {
                         start = floor;
                     } else if (name === "ZZ") {
@@ -66,8 +66,8 @@ export const analyzeMatrix = (matrix: FixedSizeMatrix<string>): {
         if (start === null || end === null) {
             throw new Error("No start or end found, parsing went wrong");
         }
-        return {portals, start, end}; 
-}
+        return {portals, start, end};
+};
 
 const getBorder = (matrix: FixedSizeMatrix<string>): Border => {
     const midX = Math.floor(matrix.size.x / 2);
@@ -86,7 +86,7 @@ const getBorder = (matrix: FixedSizeMatrix<string>): Border => {
             break;
         }
     }
-    for (let y = matrix.size.y-1; y >= 0; y--) {
+    for (let y = matrix.size.y - 1; y >= 0; y--) {
         const cell = matrix.get({x: midX, y});
         if (cell !== " ") {
             bottomRight.y = y;
@@ -103,7 +103,7 @@ const getBorder = (matrix: FixedSizeMatrix<string>): Border => {
             break;
         }
     }
-    for (let x = matrix.size.x-1; x >= 0; x--) {
+    for (let x = matrix.size.x - 1; x >= 0; x--) {
         const cell = matrix.get({x, y: midY});
         if (cell !== " ") {
             bottomRight.x = x;
@@ -116,26 +116,26 @@ const getBorder = (matrix: FixedSizeMatrix<string>): Border => {
     };
 };
 
-type Border = {
-    topLeft: Coordinate,
-    bottomRight: Coordinate
+interface Border {
+    topLeft: Coordinate;
+    bottomRight: Coordinate;
 }
 
 const isInBorder = (c: Coordinate, b: Border): boolean => {
     return (c.x === b.topLeft.x || c.x === b.bottomRight.x) || (c.y === b.topLeft.y || c.y === b.bottomRight.y);
-}
+};
 
 
 export const donutMaze = entryForFile(
     async ({ lines, outputCallback }) => {
-        const matrix = parseLines(lines); 
+        const matrix = parseLines(lines);
         const {portals, start, end} = analyzeMatrix(matrix);
-        const portalMap = createPortalMap(portals); 
+        const portalMap = createPortalMap(portals);
         const distances = calculateDistances(
             (c) => matrix.get(c),
             (start, end) => (start.distance || 0) + 1,
-            c => {
-                return getSurrounding(c).map(coordinate => {
+            (c) => {
+                return getSurrounding(c).map((coordinate) => {
                     const n = matrix.get(coordinate);
                     if (n === ".") {
                         return coordinate;
@@ -145,16 +145,16 @@ export const donutMaze = entryForFile(
                         return null;
                     }
                     return portaled;
-                }).filter(e => e !== null).map(e => e!);
+                }).filter((e) => e !== null).map((e) => e!);
             },
             start
-        ); 
-        await outputCallback(distances.map(end)); 
+        );
+        await outputCallback(distances.map(end));
     },
     async ({ lines, outputCallback }) => {
-        const matrix = parseLines(lines); 
+        const matrix = parseLines(lines);
         const {portals, start, end} = analyzeMatrix(matrix);
-        const portalMap = createPortalMap(portals); 
+        const portalMap = createPortalMap(portals);
 
         const border = getBorder(matrix);
 
@@ -166,8 +166,8 @@ export const donutMaze = entryForFile(
             const distances = calculateDistancesGenericCoordinates(
                 (c) => matrix.get(c),
                 (start, end) => (start.distance || 0) + 1,
-                c => {
-                    return getSurrounding(c).map(coordinate => {
+                (c) => {
+                    return getSurrounding(c).map((coordinate) => {
                         const n = matrix.get(coordinate);
                         if (n === ".") {
                             return {...coordinate, depth: c.depth};
@@ -182,11 +182,11 @@ export const donutMaze = entryForFile(
                             return null;
                         }
                         return {...portaled, depth: newDepth};
-                    }).filter(e => e !== null).map(e => e!);
+                    }).filter((e) => e !== null).map((e) => e!);
                 },
                 {x: start.x, y: start.y, depth: 0},
-                e => `${e.x}|${e.y}|${e.depth}`
-            ); 
+                (e) => `${e.x}|${e.y}|${e.depth}`
+            );
             const endDistance = distances.map({...end, depth: 0});
             if (endDistance !== null) {
                 await outputCallback(endDistance);
@@ -201,13 +201,13 @@ export const donutMaze = entryForFile(
 
 function parseLines(lines: string[]): FixedSizeMatrix<string> {
     const matrix = new FixedSizeMatrix<string>({ x: lines[0].length, y: lines.length });
-    matrix.setFlatData(lines.flatMap(e => e.split("")));
+    matrix.setFlatData(lines.flatMap((e) => e.split("")));
     return matrix;
 }
 
-function createPortalMap(portals: { c: Coordinate; name: string; }[]) : Map<string, Coordinate> {
+function createPortalMap(portals: Array<{ c: Coordinate; name: string; }>): Map<string, Coordinate> {
     const portalNameMap = new Map<string, Coordinate[]>();
-    portals.forEach(portal => {
+    portals.forEach((portal) => {
         let l = portalNameMap.get(portal.name);
         if (l === undefined) {
             l = [];
@@ -216,7 +216,7 @@ function createPortalMap(portals: { c: Coordinate; name: string; }[]) : Map<stri
         l.push(portal.c);
     });
     const portalMap = new Map<string, Coordinate>();
-    [...portalNameMap.keys()].filter(k => k !== "AA" && k !== "ZZ").map(k => portalNameMap.get(k)!).forEach(ls => {
+    [...portalNameMap.keys()].filter((k) => k !== "AA" && k !== "ZZ").map((k) => portalNameMap.get(k)!).forEach((ls) => {
         if (ls.length !== 2) {
             throw new Error("Parsing went wrong, " + ls.length);
         }

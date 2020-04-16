@@ -1,5 +1,5 @@
 import { entryForFile } from "../../entry";
-import { HexCubeCoordinate, sumHexCoordinates, hexManhattanDistance, flatHexDirections } from '../../../support/hex-geometry';
+import { HexCubeCoordinate, sumHexCoordinates, hexManhattanDistance, flatHexDirections } from "../../../support/hex-geometry";
 
 export type Direction = "s" | "sw" | "nw" | "n" | "ne" | "se";
 
@@ -18,7 +18,7 @@ const directionMapper = (d: Direction): HexCubeCoordinate => {
         case "sw":
             return flatHexDirections.southWest;
     }
-} 
+};
 
 export const applyDirections = (start: HexCubeCoordinate, directions: Direction[], callback?: (currentPosition: HexCubeCoordinate) => void): HexCubeCoordinate => {
         return directions.reduce((acc, next) => {
@@ -28,11 +28,11 @@ export const applyDirections = (start: HexCubeCoordinate, directions: Direction[
             }
             return result;
         }, start);
-}
+};
 
 export const hexEd = entryForFile(
     async ({ lines, outputCallback }) => {
-        const directions = lines[0].split(",").map(e => e as Direction).filter(e => e !== null);
+        const directions = lines[0].split(",").map((e) => e as Direction).filter((e) => e !== null);
 
 
         const center: HexCubeCoordinate = {
@@ -44,7 +44,7 @@ export const hexEd = entryForFile(
         await outputCallback(hexManhattanDistance(center, result));
     },
     async ({ lines, outputCallback }) => {
-        const directions = lines[0].split(",").map(e => e as Direction).filter(e => e !== null);
+        const directions = lines[0].split(",").map((e) => e as Direction).filter((e) => e !== null);
 
 
         const center: HexCubeCoordinate = {
@@ -53,7 +53,7 @@ export const hexEd = entryForFile(
             z: 0
         };
         let maxDistance = Number.NEGATIVE_INFINITY;
-        applyDirections(center, directions, currentPosition => {
+        applyDirections(center, directions, (currentPosition) => {
             maxDistance = Math.max(maxDistance, hexManhattanDistance(center, currentPosition));
         });
         await outputCallback(maxDistance);
