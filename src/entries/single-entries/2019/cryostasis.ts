@@ -81,7 +81,6 @@ export const cryostasis = entryForFile(
                     }
                     autoTake.enable = false;
                     hacking.subsets = [...subsetGenerator(inventory.elements, 0)];
-                    console.log(hacking.subsets);
                     hacking.isHacking = true;
                     hacking.fullInventory = [...inventory.elements];
                     hacking.currentInventory = [...inventory.elements];
