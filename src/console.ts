@@ -101,24 +101,30 @@ if (isReadingFromFile) {
 reader(async (lines) => {
     // tslint:disable-next-line:no-console
     const outputCallback = async (line: string) => console.log(line);
-    if (args.s) {
-        await entryCallback.second({
-            isCancelled: () => false,
-            lines,
-            outputCallback,
-            // tslint:disable-next-line:no-empty
-            pause: async () => { },
-            additionalInputReader
-        }/*, lines, outputCallback*/);
-    } else {
-        await entryCallback.first({
-            lines,
-            outputCallback,
-            isCancelled: () => false,
-            // tslint:disable-next-line:no-empty
-            pause: async () => { },
-            additionalInputReader
-        });
+    try {
+        if (args.s) {
+            await entryCallback.second({
+                isCancelled: () => false,
+                lines,
+                outputCallback,
+                // tslint:disable-next-line:no-empty
+                pause: async () => { },
+                additionalInputReader
+            }/*, lines, outputCallback*/);
+        } else {
+            await entryCallback.first({
+                lines,
+                outputCallback,
+                isCancelled: () => false,
+                // tslint:disable-next-line:no-empty
+                pause: async () => { },
+                additionalInputReader
+            });
+        }
+    } finally {
+        if (additionalInputReader) {
+            additionalInputReader.close();
+        }
     }
 });
 

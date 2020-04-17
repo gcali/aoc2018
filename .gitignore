@@ -2,6 +2,7 @@
 node_modules
 /dist
 /bin
+/tmp
 
 # local env files
 .env.local

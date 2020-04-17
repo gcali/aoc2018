@@ -54,7 +54,7 @@ function travel(field: Field, state: State, letterCallback: LetterCallback): Sta
         const rotations: Rotation[] = ["Clockwise", "Counterclockwise"];
         const candidateDirections = rotations.map((rotation) => rotate(state.direction, rotation));
         const resultStates = candidateDirections
-            .map((direction) => ({direction, state: travel(field, {position: nextCoordinate, direction}, () => {})}))
+            .map((d) => ({direction: d, state: travel(field, {position: nextCoordinate, direction}, () => {})}))
             .filter((result) => result.state !== null)
         ;
         if (resultStates.length !== 1) {

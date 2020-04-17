@@ -47,13 +47,13 @@ const checkCondition = (condition: Condition, state: RegisterState): boolean => 
     const leftValue = state.get(condition.left);
     switch (condition.operator) {
         case "!=":
-            return leftValue != condition.right;
+            return leftValue !== condition.right;
         case "<":
             return leftValue < condition.right;
         case "<=":
             return leftValue <= condition.right;
         case "==":
-            return leftValue == condition.right;
+            return leftValue === condition.right;
         case ">":
             return leftValue > condition.right;
         case ">=":

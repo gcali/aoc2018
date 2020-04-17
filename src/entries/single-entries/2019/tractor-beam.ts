@@ -29,7 +29,7 @@ const serializePoint = (c: Coordinate): string => {
 export const tractorBeam = entryForFile(
     async ({ lines, outputCallback }) => {
         const memory = parseMemory(lines[0]);
-        let isPulled = 0;
+        let howManyPulled = 0;
         for (let x = 0; x < 50; x++) {
             for (let y = 0; y < 50; y++) {
                 const toServe = [x, y];
@@ -37,11 +37,11 @@ export const tractorBeam = entryForFile(
                 await execute({
                     memory,
                     input: async () => toServe[nextToServe++],
-                    output: async (n) => isPulled += n
+                    output: async (n) => howManyPulled += n
                 });
             }
         }
-        await outputCallback(isPulled);
+        await outputCallback(howManyPulled);
     },
     async ({ lines, outputCallback }) => {
         const memory = parseMemory(lines[0]);

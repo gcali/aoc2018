@@ -11,7 +11,13 @@ export const stdinReadLineByLine = (callback: (line: string | null) => void): ((
     }); 
     i.on("line", (line: string) => callback(line));
     i.on("close", () => callback(null));
-    return () => i.close();
+    let hasClosed = false;
+    return () => {
+        if (!hasClosed) {
+            i.close();
+            hasClosed = true;
+        }
+    };
 }
 
 export const readStdin: Reader = (callback: (lines: string[]) => Promise<void>) => {

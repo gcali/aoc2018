@@ -13,7 +13,8 @@ interface DistanceGetter<TValue, TCoordinate> {
     map(c: TCoordinate): (number | null);
 }
 
-type DistanceCalculator<TValue, TCoordinate> = (start: CellWithDistance<TValue, TCoordinate>, end: TCoordinate) => number | null;
+type DistanceCalculator<TValue, TCoordinate> =
+    (start: CellWithDistance<TValue, TCoordinate>, end: TCoordinate) => number | null;
 
 export function calculateDistancesGenericCoordinates<TValue, TCoordinate>(
     fieldGetter: FieldGetter<TValue, TCoordinate>,

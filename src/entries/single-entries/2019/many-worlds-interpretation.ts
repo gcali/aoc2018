@@ -122,7 +122,9 @@ function traverseMatrix(
                 }
                 const destination = matrix.get(end);
                 if (!destination ||
-                    (destination !== "." && destination.toUpperCase() === destination && openDoors.indexOf(destination) < 0)
+                    (destination !== "." &&
+                        destination.toUpperCase() === destination &&
+                        openDoors.indexOf(destination) < 0)
                     || destination === "#") {
                     return null;
                 }

@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "big-integer": "^1.6.48",
+    "bigint-crypto-utils": "^3.0.1",
     "js-combinatorics": "^0.5.5",
     "linq-typescript": "^1.0.251",
     "mathjs": "^6.6.2",
@@ -28,6 +29,7 @@
     "wu": "^2.1.0"
   },
   "devDependencies": {
+    "@babel/plugin-syntax-bigint": "^7.8.3",
     "@types/chai": "^4.2.11",
     "@types/mathjs": "^6.0.5",
     "@types/minimist": "^1.2.0",

@@ -20,7 +20,11 @@ class Generator {
 }
 
 function parseLines(lines: string[]): [number, number] {
-    const [a, b] = lines.map((line) => line.trim()).filter((line) => line).map((line) => line.split(" ")[4]).map((e) => parseInt(e, 10));
+    const [a, b] = lines
+        .map((line) => line.trim())
+        .filter((line) => line)
+        .map((line) => line.split(" ")[4])
+        .map((e) => parseInt(e, 10));
     return [a, b];
 }
 

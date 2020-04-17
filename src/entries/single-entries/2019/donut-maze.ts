@@ -8,16 +8,18 @@ const getPortalCoordinateAndClean = (c: Coordinate, matrix: FixedSizeMatrix<stri
     const firstLetter = matrix.get(c);
     matrix.set(c, " ");
     const firstNeighbours = getSurrounding(c)
-        .map((c) => ({c, cell: matrix.get(c)}))
+        .map((ci) => ({c, cell: matrix.get(ci)}))
         .filter((e) => e.cell && (e.cell === "." || isLetter(e.cell)))
     ;
     if (firstNeighbours.length === 1) {
         const secondLetter = firstNeighbours[0];
         matrix.set(secondLetter.c, " ");
-        const floorNeighbour = getSurrounding(secondLetter.c).map((c) => ({
-            c,
-            cell: matrix.get(c)
-        })).filter((e) => e.cell === ".")[0].c;
+        const floorNeighbour = getSurrounding(secondLetter.c)
+        .map((ci) => ({
+                c: ci,
+                cell: matrix.get(ci)
+            }))
+        .filter((e) => e.cell === ".")[0].c;
         return {
             f: floorNeighbour,
             p: [firstLetter, secondLetter.cell!].sort().join("")
@@ -133,7 +135,7 @@ export const donutMaze = entryForFile(
         const portalMap = createPortalMap(portals);
         const distances = calculateDistances(
             (c) => matrix.get(c),
-            (start, end) => (start.distance || 0) + 1,
+            (s, _) => (s.distance || 0) + 1,
             (c) => {
                 return getSurrounding(c).map((coordinate) => {
                     const n = matrix.get(coordinate);
@@ -165,7 +167,7 @@ export const donutMaze = entryForFile(
             await outputCallback("Trying with depth " + maxDepth);
             const distances = calculateDistancesGenericCoordinates(
                 (c) => matrix.get(c),
-                (start, end) => (start.distance || 0) + 1,
+                (s, _) => (s.distance || 0) + 1,
                 (c) => {
                     return getSurrounding(c).map((coordinate) => {
                         const n = matrix.get(coordinate);
@@ -216,12 +218,15 @@ function createPortalMap(portals: Array<{ c: Coordinate; name: string; }>): Map<
         l.push(portal.c);
     });
     const portalMap = new Map<string, Coordinate>();
-    [...portalNameMap.keys()].filter((k) => k !== "AA" && k !== "ZZ").map((k) => portalNameMap.get(k)!).forEach((ls) => {
-        if (ls.length !== 2) {
-            throw new Error("Parsing went wrong, " + ls.length);
-        }
-        portalMap.set(serializeCoordinate(ls[0]), { x: ls[1].x, y: ls[1].y });
-        portalMap.set(serializeCoordinate(ls[1]), { x: ls[0].x, y: ls[0].y });
-    });
+    [...portalNameMap.keys()]
+        .filter((k) => k !== "AA" && k !== "ZZ")
+        .map((k) => portalNameMap.get(k)!)
+        .forEach((ls) => {
+            if (ls.length !== 2) {
+                throw new Error("Parsing went wrong, " + ls.length);
+            }
+            portalMap.set(serializeCoordinate(ls[0]), { x: ls[1].x, y: ls[1].y });
+            portalMap.set(serializeCoordinate(ls[1]), { x: ls[0].x, y: ls[0].y });
+        });
     return portalMap;
 }

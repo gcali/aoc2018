@@ -1,27 +1,38 @@
-import { entryForFile } from "../../entry";
+import { entryForFile, simpleOutputCallbackFactory } from "../../entry";
 import { modInverse } from "../../../support/algebra";
-import { serializeTime } from "../../../support/time";
+
+type Coefficients = {
+    a: number,
+    b: number,
+};
+
+class CoefficientCalculator {
+
+}
 
 export class Deck {
-    public positions: number[];
+    public positions: Array<bigint>;
 
     public shouldReverse: boolean = false;
 
+    private readonly size: bigint;
+
     constructor(
-        private readonly size: number,
-        positions?: number[]
+        size: bigint | number,
+        positions?: Array<bigint>
     ) {
+        this.size = BigInt(size);
         if (positions) {
             this.positions = positions;
         } else {
-            this.positions = [...Array(size)].map((e, i) => i);
+            this.positions = [...Array(size)].map((e, i) => BigInt(i));
         }
     }
 
     public deal(): Deck {
-        const length = this.size;
+        const length = BigInt(this.size);
         for (let i = 0; i < this.positions.length; i++) {
-            this.positions[i] = length - this.positions[i] - 1;
+            this.positions[i] = length - this.positions[i] - 1n;
         }
         return this;
     }
@@ -31,45 +42,31 @@ export class Deck {
         if (this.shouldReverse) {
             n *= -1;
         }
-        if (n > 0) {
-            return this.internalCut(n);
-        } else {
-            return this.internalCut(length + n);
+        for (let i = 0; i < this.positions.length; i++) {
+            this.positions[i] = (this.positions[i] - BigInt(n) + length) % length;
         }
+        return this;
     }
 
     public increment(n: number): Deck {
         const length = this.size;
-        const factor = this.shouldReverse ? modInverse(n, length) : n;
+        const factor = this.shouldReverse ? modInverse(BigInt(n), length) : BigInt(n);
         for (let i = 0; i < this.positions.length; i++) {
             this.positions[i] = (this.positions[i] * factor) % length;
         }
         return this;
     }
 
-    public sort(): Array<{card: number, index: number}> {
-        return this.positions.map((e, i) => ({e, i})).sort((a, b) => a.e - b.e).map((e) => ({card: e.i, index: e.e}));
+    public sort(): Array<{card: (number | bigint), index: (number | bigint)}> {
+        return this.positions
+            .map((e, i) => ({e, i}))
+            .sort((a, b) => Number(a.e - b.e))
+            .map((e) => ({card: e.i, index: e.e}));
     }
 
-    private internalCut(n: number): Deck {
-        if (n < 0) {
-            throw new Error("Expected a positive number");
-        }
-        const length = this.size;
-        for (let i = 0; i < this.positions.length; i++) {
-            const oldPosition = this.positions[i];
-            if (oldPosition < n) {
-                this.positions[i] = length - n + oldPosition;
-            } else {
-                this.positions[i] = oldPosition - n;
-            }
-        }
-        return this;
-
-    }
 }
 
-export const executeInput = (lines: string[], deck: Deck): void => {
+export const shuffleDeck = (lines: string[], deck: Deck): void => {
     lines.forEach((line) => {
         if (line.indexOf("deal into new stack") >= 0) {
             deck.deal();
@@ -93,12 +90,12 @@ export const findNumberAtPosition = async (
     position: number,
     times: number,
     debug?: (s: string) => Promise<void>
-): Promise<number> => {
-    const reversedInput = [...input]; // .reverse();
-    const deck = new Deck(size, [position]);
+): Promise<number | bigint> => {
+    const reversedInput = [...input].reverse();
+    const deck = new Deck(size, [BigInt(position)]);
     deck.shouldReverse = true;
-    const cache = new Map<number, number>();
-    const history: number[] = [];
+    const cache = new Map<bigint, number>();
+    const history: Array<bigint> = [];
     for (let i = 0; i < times; i++) {
         if (debug && i > 0 && i % 10000 === 0) {
             await debug(`Iteration ${i / 1000}k`);
@@ -106,6 +103,9 @@ export const findNumberAtPosition = async (
         const e = deck.positions[0];
         const hit = cache.get(e);
         if (hit !== undefined) {
+            if (hit !== 0) {
+                throw new Error("How the hell did this happen?");
+            }
             const loopSize = i - hit;
             const remaining = times - i;
             const delta = remaining % loopSize;
@@ -114,7 +114,7 @@ export const findNumberAtPosition = async (
         }
         history.push(e);
         cache.set(e, i);
-        executeInput(reversedInput, deck);
+        shuffleDeck(reversedInput, deck);
     }
     return deck.positions[0];
 };
@@ -122,17 +122,14 @@ export const findNumberAtPosition = async (
 export const slamShuffle = entryForFile(
     async ({ lines, outputCallback }) => {
         const size = 10007;
-        const deck = new Deck(size, [2019]);
-        executeInput(lines, deck);
+        const deck = new Deck(size, [2019n]);
+        shuffleDeck(lines, deck);
         await outputCallback(deck.sort());
     },
     async ({ lines, outputCallback }) => {
         const size = 119315717514047;
         const times = 101741582076661;
         const result = await findNumberAtPosition(lines, size, 2020, times, outputCallback);
-        // const size = 10007;
-        // const times = 1;
-        // const result = await findNumberAtPosition(lines, size, 3074, times, outputCallback);
         await outputCallback(result);
     },
     { key: "slam-shuffle", title: "Slam Shuffle", stars: 1}

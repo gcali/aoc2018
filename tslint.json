@@ -36,6 +36,8 @@
         "allow-empty-catch",
         "allow-empty-functions"
       ]
-    }
+    },
+    "variable-name": false,
+    "no-console": false
   }
 }

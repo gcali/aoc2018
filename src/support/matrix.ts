@@ -121,13 +121,11 @@ export class FixedSizeMatrix<T> {
         let rowIndex = -1;
         const serialized = wu(this.overRows()).map((row) => {
             rowIndex++;
-            // const rowSize = row.length;
             const res = [];
             for (let i = 0; i < row.length; i++) {
                 res.push(stringifier(row[i], this._delta.sum({x: i, y: rowIndex})));
             }
             return res.join("");
-            // return row.map((cell, cellIndex) => stringifier(cell, this.delta.sum({ x: cellIndex, y: rowIndex }))).join("");
         }).toArray().join("\n");
         return serialized;
     }
@@ -136,7 +134,10 @@ export class FixedSizeMatrix<T> {
         return this.data.join("");
     }
 
-    public isSameAs(other: FixedSizeMatrix<T>, customComparer?: (a: (T | undefined), b: (T | undefined)) => boolean): boolean {
+    public isSameAs(
+        other: FixedSizeMatrix<T>,
+        customComparer?: (a: (T | undefined), b: (T | undefined)
+    ) => boolean): boolean {
         if (manhattanDistance(this.size, other.size) !== 0) {
             return false;
         }

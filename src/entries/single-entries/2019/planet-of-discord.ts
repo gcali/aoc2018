@@ -101,9 +101,9 @@ export const countNeighbourBugs = (
         return countInternal(c, main, inner);
     }
     return getSurrounding(c)
-        .map((c) => main.planet.get(c))
-        .filter((c) => c)
-        .map((c) => c!)
+        .map((ci) => main.planet.get(ci))
+        .filter((ci) => ci)
+        .map((ci) => ci!)
         .reduce(bugCounter, 0);
 };
 

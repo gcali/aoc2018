@@ -1,15 +1,15 @@
 import { Coordinate } from "./geometry";
 
 export class UlamCalculator {
-    public getCoordinatesFromValue(v: number): Coordinate {
-        if (v === 1) {
+    public getCoordinatesFromValue(vArg: number): Coordinate {
+        if (vArg === 1) {
             return {x: 0, y: 0};
         }
-        const size = this.findSquareSize(v);
+        const size = this.findSquareSize(vArg);
         const sideDistance = Math.floor(size / 2);
         const min = (size - 1) ** 2;
         const max = size ** 2;
-        const isDown = v > max - size;
+        const isDown = vArg > max - size;
         const sideCalculators = [
             {
                 delta: -size,
@@ -35,15 +35,15 @@ export class UlamCalculator {
 
         for (const calc of sideCalculators) {
             const currentMax = max + calc.delta + size;
-            if (v > max + calc.delta) {
+            if (vArg > max + calc.delta) {
                 const middlePoint = this.findSideMiddlePoint(size, currentMax);
                 return {
-                    x: calc.x(v, middlePoint),
-                    y: calc.y(v, middlePoint)
+                    x: calc.x(vArg, middlePoint),
+                    y: calc.y(vArg, middlePoint)
                 };
             }
         }
-        throw new Error(`Cannot calculate for ${v} :(`);
+        throw new Error(`Cannot calculate for ${vArg} :(`);
     }
 
     public findSideMiddlePoint(size: number, max: number) {

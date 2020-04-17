@@ -1,6 +1,9 @@
-export const modInverse = (n: number, mod: number): number => {
-    const {a, b} = calculateExtended(n, mod, 1);
-    return a > 0 ? a : a + mod;
+import * as bigintCryptoUtils from "bigint-crypto-utils";
+
+export const modInverse = (n: bigint, mod: bigint): bigint => {
+    return bigintCryptoUtils.modInv(n, mod);
+    // const {a, b} = calculateExtended(n, mod, 1);
+    // return a > 0 ? a : a + mod;
 };
 
 const calculateExtended = (aP: number, bP: number, m: number): {
@@ -35,7 +38,7 @@ const calculateExtended = (aP: number, bP: number, m: number): {
         b: b.b * factor
     };
     if (result.a * aP + result.b * bP !== m) {
-        throw new Error("Inversion did not work");
+        throw new Error("Inversion did not work: " + JSON.stringify({...result, factor}));
     }
     return result;
 };

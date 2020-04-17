@@ -291,12 +291,14 @@ describe("Set and forget", () => {
         expectSameArrays(
             movements,
             [
+/* tslint:disable-next-line */
             "R", 8, "R", 8, "R", 4, "R", 4, "R", 8, "L", 6, "L", 2, "R", 4, "R", 4, "R", 8, "R", 8, "R", 8, "L", 6, "L", 2
             ]);
     });
 
     it("can compress example input", async () => {
         const compression = await findCompressed([
+/* tslint:disable-next-line */
             "R", 8, "R", 8, "R", 4, "R", 4, "R", 8, "L", 6, "L", 2, "R", 4, "R", 4, "R", 8, "R", 8, "R", 8, "L", 6, "L", 2
         ].map((e) => e.toString()), async () => {});
         expect(compression).not.to.be.null;
@@ -304,6 +306,7 @@ describe("Set and forget", () => {
 
     it("can compress example input by pairs", async () => {
         const compression = await findCompressed(groupBy([
+/* tslint:disable-next-line */
             "R", 8, "R", 8, "R", 4, "R", 4, "R", 8, "L", 6, "L", 2, "R", 4, "R", 4, "R", 8, "R", 8, "R", 8, "L", 6, "L", 2
         ], 2).map((e) => e.join("")), async () => {});
         expect(compression).not.to.be.null;
