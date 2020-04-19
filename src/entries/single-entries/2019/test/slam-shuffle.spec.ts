@@ -1,5 +1,5 @@
 import "mocha";
-import { shuffleDeck, Deck, findNumberAtPosition } from "../slam-shuffle";
+import { shuffleDeck, Deck, findNumberAtPosition, getCoefficients, CoefficientCalculator } from "../slam-shuffle";
 import { expectSameArrays } from "../../../../support/assertions";
 import { expect } from "chai";
 
@@ -118,6 +118,93 @@ describe("Slam Shuffle", () => {
         expect(firstDeck.positions[0]).to.not.equal(secondDeck.positions[0]);
 
     });
+
+    it("should have same result with shuffle and coefficients", async () => {
+        const deck = new Deck(10);
+
+        shuffleDeck(baseInput, deck);
+        const coefficients = getCoefficients(baseInput, 10n);
+        for (let i = 0; i < 10; i++) {
+            expect(deck.positions[i]).to.equal(coefficients.applyTo(BigInt(i)));
+        }
+    });
+
+    it("should have same result with shuffle and coefficients (big)", async () => {
+        const size = 119315717514047n;
+        const values = [2019n, 2020n];
+
+        const deck = new Deck(size, [...values]);
+
+        shuffleDeck(input, deck);
+        const coefficients = getCoefficients(input, size);
+        for (let i = 0; i < values.length; i++) {
+            const res = coefficients.applyTo(values[i]);
+            try {
+                expect(deck.positions[i]).to.equal(res);
+            } catch (e) {
+                expect.fail(`Failure on iteration ${i}: ${deck.positions[i]} - ${res}`);
+            }
+        }
+    });
+
+    it("should calculate right coefficients for pow 1", () => {
+        const size = 10n;
+        let iterative = getCoefficients(baseInput, size);
+
+        const calculated = getCoefficients(baseInput, size);
+        calculated.pow(1n);
+
+        expect(iterative.coefficients.a.toString()).to.equal(calculated.coefficients.a.toString());
+        expect(iterative.coefficients.b.toString()).to.equal(calculated.coefficients.b.toString());
+    });
+
+    it("should calculate right coefficients for pow 2", () => {
+        const size = 10n;
+        let iterative = getCoefficients(baseInput, size);
+        iterative = getCoefficients(baseInput, size, iterative.coefficients);
+
+        const calculated = getCoefficients(baseInput, size);
+        calculated.pow(2n);
+
+        expect(iterative.coefficients.a.toString()).to.equal(calculated.coefficients.a.toString());
+        expect(iterative.coefficients.b.toString()).to.equal(calculated.coefficients.b.toString());
+    });
+
+    it("should calculate right coefficients for pow 10", () => {
+        const size = 10n;
+        const p = 10n;
+        let iterative = getCoefficients(baseInput, size);
+        for (let i = 1n; i < p; i++) {
+            iterative = getCoefficients(baseInput, size, iterative.coefficients);
+        }
+
+        const calculated = getCoefficients(baseInput, size);
+        calculated.pow(p);
+
+        expect(iterative.coefficients.a.toString()).to.equal(calculated.coefficients.a.toString());
+        expect(iterative.coefficients.b.toString()).to.equal(calculated.coefficients.b.toString());
+    });
+
+    it("should calculate right value for pow 10", () => {
+        const size = 10n;
+        const p = 10n;
+        const calculated = getCoefficients(baseInput, size);
+        calculated.pow(p);
+
+        const deck = new Deck(size, [3n]); 
+        for (let i = 0; i < size; i++) {
+            shuffleDeck(baseInput, deck);
+        }
+
+        const manualValue = deck.positions[0];
+
+        const calculatedValue = calculated.applyTo(3n);
+
+        expect(calculatedValue).to.equal(manualValue);
+
+        
+    });
+
 });
 
 const input = [

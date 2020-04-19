@@ -1,14 +1,98 @@
 import { entryForFile, simpleOutputCallbackFactory } from "../../entry";
-import { modInverse } from "../../../support/algebra";
+import { modInverse, pow } from "../../../support/algebra";
 
 type Coefficients = {
-    a: number,
-    b: number,
+    a: bigint,
+    b: bigint,
 };
 
-class CoefficientCalculator {
+export class CoefficientCalculator {
+    public coefficients: Coefficients;
+    constructor(
+        private size: bigint,
+        coefficients?: Coefficients 
+    ) {
+        if (!coefficients) {
+            this.coefficients = {
+                a: 1n,
+                b: 0n 
+            };
+        } else {
+            this.coefficients = coefficients;
+        } 
+    }
+    public deal(): CoefficientCalculator {
+        const newCoefficients = {
+            a: (this.size - this.coefficients.a) % this.size,
+            b: (this.size - this.coefficients.b - 1n) % this.size
+        };
+        this.coefficients = newCoefficients;
+        return this;
+    }
 
+    public cut(n: bigint): CoefficientCalculator {
+        const newCoefficients = {
+            a: this.coefficients.a,
+            b: (this.size + this.coefficients.b - n) % this.size
+        }
+        this.coefficients = newCoefficients;
+        return this;
+    }
+
+    public increment(n : bigint): CoefficientCalculator {
+        const newCoefficients = {
+            a: (this.coefficients.a * n) % this.size,
+            b: (this.coefficients.b * n) % this.size
+        };
+        this.coefficients = newCoefficients;
+        return this;
+    }
+
+    public applyTo(x: bigint): bigint {
+        return ((this.coefficients.a * x + this.coefficients.b) % this.size + this.size) % this.size;
+    }
+
+    public pow(n: bigint): CoefficientCalculator {
+        const factor = this.coefficients;
+        const an = pow(factor.a, n, this.size);
+        const b = factor.a === 1n ? (factor.b * n) : (factor.b * ((an - 1n) / (factor.a -1n)));
+        this.coefficients = {
+            a: an,
+            b: b % this.size
+        };
+        return this;
+    }
+
+    public invert(): CoefficientCalculator {
+        const aInverted = modInverse(this.coefficients.a, this.size);
+        this.coefficients = {
+            a: aInverted,
+            b: -(aInverted * this.coefficients.b)
+        }
+        return this;
+    }
 }
+
+export const getCoefficients = (lines: string[], size: bigint, startCoefficients?: Coefficients): CoefficientCalculator => {
+    const coefficientCalculator = new CoefficientCalculator(size, startCoefficients);
+    lines.forEach((line) => {
+        if (line.indexOf("deal into new stack") >= 0) {
+            coefficientCalculator.deal();
+        } else {
+            const tokens = line.split(" ");
+            const n = BigInt(parseInt(tokens[tokens.length - 1], 10));
+            if (line.indexOf("increment") >= 0) {
+                coefficientCalculator.increment(n);
+            } else if (line.indexOf("cut") >= 0) {
+                coefficientCalculator.cut(n);
+            } else {
+                throw new Error("Could not parse " + line);
+            }
+        }
+    });
+    return coefficientCalculator;
+}
+
 
 export class Deck {
     public positions: Array<bigint>;
@@ -121,16 +205,28 @@ export const findNumberAtPosition = async (
 
 export const slamShuffle = entryForFile(
     async ({ lines, outputCallback }) => {
-        const size = 10007;
-        const deck = new Deck(size, [2019n]);
-        shuffleDeck(lines, deck);
-        await outputCallback(deck.sort());
+        const size = 10007n;
+        const coeff = getCoefficients(lines, size);
+        const res = coeff.applyTo(2019n);
+        await outputCallback(res);
+        const newCoeff = getCoefficients(lines, size);
+        newCoeff.invert();
+        await outputCallback(newCoeff.applyTo(res));
     },
     async ({ lines, outputCallback }) => {
-        const size = 119315717514047;
-        const times = 101741582076661;
-        const result = await findNumberAtPosition(lines, size, 2020, times, outputCallback);
-        await outputCallback(result);
+        const size = 119315717514047n;
+        const times = 101741582076661n;
+
+    const coeff = getCoefficients(lines, size);
+    coeff.pow(times);
+    coeff.invert();
+    const value = coeff.applyTo(2020n);
+    await outputCallback(value);
+
+    const checkCoeff = getCoefficients(lines, size);
+    checkCoeff.pow(times);
+    const inv = checkCoeff.applyTo(value)
+    await outputCallback(inv);
     },
     { key: "slam-shuffle", title: "Slam Shuffle", stars: 1}
 );
