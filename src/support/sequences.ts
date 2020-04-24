@@ -56,3 +56,26 @@ export function* subsetGenerator<T>(array: T[], start: number): Iterable<T[]> {
         yield [array[start]].concat(sub);
     }
 }
+
+export function* permutationGenerator<T>(array: T[]): Iterable<T[]> {
+    if (array.length === 1) {
+        yield [array[0]];
+    }
+    else {
+        for (let i = 0; i < array.length; i++) {
+            const startElement = array[i];
+            const otherElements = [...array];
+            otherElements.splice(i, 1);
+            for (const perm of permutationGenerator(otherElements)) {
+                yield [startElement].concat(perm);
+            }
+        }
+    }
+}
+
+
+export function* buildGroups<T>(data: T[], size: number, step: number = 1): Iterable<T[]> {
+    for (let i = 0; i <= data.length - size; i += step) {
+        yield data.slice(i, i + size);
+    }
+};

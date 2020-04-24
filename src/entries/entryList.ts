@@ -74,6 +74,24 @@ import { slamShuffle } from "./single-entries/2019/slam-shuffle";
 import { categorySix } from "./single-entries/2019/category-six";
 import { planetOfDiscord } from "./single-entries/2019/planet-of-discord";
 import { cryostasis } from "./single-entries/2019/cryostasis";
+import { notQuiteLisp } from './single-entries/2015/not-quite-lisp';
+import { iWasToldThereWouldBeNoMath } from './single-entries/2015/i-was-told-there-would-be-no-math';
+import { perfectSphericalHousesInAVacuum } from './single-entries/2015/perfect-spherical-houses-in-a-vacuum';
+import { theIdealStockingStuffer } from './single-entries/2015/the-ideal-stocking-stuffer';
+import { internElves } from './single-entries/2015/intern-elves';
+import { probablyAFireHazard } from './single-entries/2015/probably-a-fire-hazard';
+import { someAssemblyRequired } from './single-entries/2015/some-assembly-required';
+import { matchsticks } from './single-entries/2015/matchsticks';
+import { allInASingleNight } from './single-entries/2015/all-in-a-single-night';
+import { elvesLookElvesSay } from './single-entries/2015/elves-look-elves-say';
+import { corporatePolicy } from './single-entries/2015/corporate-policy';
+import { abacusFramework } from './single-entries/2015/abacus-framework';
+import { knightsOfTheDinnerTable } from './single-entries/2015/knights-of-the-dinner-table';
+import { reindeerOlympics } from './single-entries/2015/reindeer-olympics';
+import { scienceForHungryPeople } from './single-entries/2015/science-for-hungry-people';
+import { auntSue } from './single-entries/2015/aunt-sue';
+import { noSuchThingAsTooMuch } from './single-entries/2015/no-such-thing-as-too-much';
+import { likeAGifForYourYard } from './single-entries/2015/like-a-gif-for-your-yard';
 
 export interface EntryRoute extends EntryRouteBase {
     date: number;
@@ -124,6 +142,26 @@ function enrichList(entries: Array<EntryRouteBase | Entry | EntryRouteCustom>): 
 
 
 export const entryList: { [key: string]: EntryRoute[] } = {
+    2015: enrichList([
+        notQuiteLisp,
+        iWasToldThereWouldBeNoMath,
+        perfectSphericalHousesInAVacuum,
+        theIdealStockingStuffer,
+        internElves,
+        probablyAFireHazard,
+        someAssemblyRequired,
+        matchsticks,
+        allInASingleNight,
+        elvesLookElvesSay,
+        corporatePolicy,
+        abacusFramework,
+        knightsOfTheDinnerTable,
+        reindeerOlympics,
+        scienceForHungryPeople,
+        auntSue,
+        noSuchThingAsTooMuch,
+        likeAGifForYourYard
+    ]),
     2017: enrichList([
         inverseCaptcha,
         corruptionChecksum,

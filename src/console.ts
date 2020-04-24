@@ -45,13 +45,13 @@ const year: string = args.y === null ? getLastYear() : args.y;
 if (args.l) {
     let i = 0;
     for (const entry of entryList[year]) {
-        console.log(args.n ? entry.title : `${++i} - ${entry.title}`);
+        console.log(args.n ? entry.title : `${++i} - ${entry.title} ${[...new Array(entry.stars || 0)].map(e => "★").join(" ")}`);
     }
     process.exit(0);
 }
 
 const index: number = (args.e === null ? entryList[year].length : args.e) - 1;
-if (index <= 0 || index >= entryList[year].length) {
+if (index < 0 || index >= entryList[year].length) {
     error();
 }
 
@@ -100,7 +100,13 @@ if (isReadingFromFile) {
 
 reader(async (lines) => {
     // tslint:disable-next-line:no-console
-    const outputCallback = async (line: string) => console.log(line);
+    const outputCallback = async (line: string) => {
+        if (line === null) {
+            console.clear();
+        } else {
+            console.log(line);
+        }
+    }
     try {
         if (args.s) {
             await entryCallback.second({

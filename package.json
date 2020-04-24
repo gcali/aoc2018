@@ -22,6 +22,7 @@
     "mathjs": "^6.6.2",
     "minimist": "^1.2.5",
     "node-dijkstra": "^2.5.0",
+    "ts-md5": "^1.2.7",
     "vue": "^2.6.11",
     "vue-class-component": "^6.0.0",
     "vue-property-decorator": "^7.3.0",
