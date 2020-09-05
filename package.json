@@ -15,6 +15,9 @@
     "console-r": "ts-node src/console.ts"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.30",
+    "@fortawesome/free-solid-svg-icons": "^5.14.0",
+    "@fortawesome/vue-fontawesome": "^2.0.0",
     "big-integer": "^1.6.48",
     "bigint-crypto-utils": "^3.0.1",
     "js-combinatorics": "^0.5.5",
