@@ -1,5 +1,4 @@
 import { entryForFile } from "../../entry";
-import { parse } from 'path';
 
 type State = Map<string, number>;
 

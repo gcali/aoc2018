@@ -35,7 +35,7 @@
     "@types/mathjs": "^6.0.5",
     "@types/minimist": "^1.2.0",
     "@types/mocha": "^5.2.7",
-    "@types/node": "^10.17.18",
+    "@types/node": "^10.17.29",
     "@types/node-dijkstra": "^2.5.0",
     "@types/wu": "^2.1.41",
     "@vue/cli-plugin-babel": "^3.12.1",

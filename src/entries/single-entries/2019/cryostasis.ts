@@ -1,6 +1,5 @@
 import { entryForFile } from "../../entry";
 import { parseMemory, execute, stopExecution } from "../../../support/intcode";
-import { stringify } from "querystring";
 import { UnknownSizeField } from "../../../support/field";
 import { directions, CCoordinate, Coordinate, manhattanDistance } from "../../../support/geometry";
 import { Field } from "./oxygen-system";
