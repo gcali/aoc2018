@@ -20,7 +20,7 @@ const findSequenceLength = (s: string, start: number): number => {
         }
     }
     return i - start;
-}
+};
 
 export const elvesLookElvesSay = entryForFile(
     async ({ lines, outputCallback }) => {

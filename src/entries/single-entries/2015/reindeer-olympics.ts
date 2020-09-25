@@ -4,13 +4,13 @@ interface Reindeer {
     movement: {
         speed: number,
         duration: number
-    },
-    rest: number,
-    name: string
+    };
+    rest: number;
+    name: string;
 }
 
 const parseReindeers = (lines: string[]): Reindeer[] => {
-    return lines.map(line => {
+    return lines.map((line) => {
         const tokens = line.split(" ");
         return {
             name: tokens[0],
@@ -19,7 +19,7 @@ const parseReindeers = (lines: string[]): Reindeer[] => {
                 speed: parseInt(tokens[3], 10),
                 duration: parseInt(tokens[6], 10)
             }
-        }
+        };
     });
 };
 
@@ -36,7 +36,7 @@ export const reindeerOlympics = entryForFile(
     async ({ lines, outputCallback }) => {
         const time = 2503;
         const reindeers = parseReindeers(lines);
-        const distances = reindeers.map(r => ({
+        const distances = reindeers.map((r) => ({
             reindeer: r.name,
             distance: calculateDistance(r, time)
         })).sort((a, b) => a.distance - b.distance);
@@ -45,10 +45,10 @@ export const reindeerOlympics = entryForFile(
     async ({ lines, outputCallback }) => {
         const maxTime = 2503;
         const reindeers = parseReindeers(lines);
-        let points = new Map<string, number>();
-        reindeers.forEach(r => points.set(r.name, 0));
+        const points = new Map<string, number>();
+        reindeers.forEach((r) => points.set(r.name, 0));
         for (let time = 1; time <= maxTime; time++) {
-            const distances = reindeers.map(r => ({
+            const distances = reindeers.map((r) => ({
                 reindeer: r.name,
                 distance: calculateDistance(r, time)
             })).sort((a, b) => b.distance - a.distance);

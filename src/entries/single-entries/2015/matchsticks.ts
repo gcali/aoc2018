@@ -9,7 +9,7 @@ const countRealLetters = (line: string): number => {
         if (skip > 0) {
             skip--;
         } else if (isEscaped) {
-            if(c === "x") {
+            if (c === "x") {
                 skip = 2;
             }
             isEscaped = false;
@@ -32,20 +32,20 @@ const countEncoded = (line: string): number => {
         count++;
     }
     return count;
-}
+};
 
 export const matchsticks = entryForFile(
     async ({ lines, outputCallback }) => {
         const overhead = lines
-            .map(line => line.length - countRealLetters(line))
+            .map((line) => line.length - countRealLetters(line))
             .reduce((acc, next) => acc + next);
         await outputCallback(overhead);
     },
     async ({ lines, outputCallback }) => {
         const encoded = lines
-            .map(line => countEncoded(line) - line.length)
+            .map((line) => countEncoded(line) - line.length)
             .reduce((acc, next) => acc + next);
-            await outputCallback(encoded);
+        await outputCallback(encoded);
     },
     { key: "matchsticks", title: "Matchsticks", stars: 2}
 );

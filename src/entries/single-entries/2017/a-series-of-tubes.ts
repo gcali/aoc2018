@@ -24,7 +24,7 @@ function expectedFromDirection(direction: CCoordinate) {
     return "|";
 }
 
-interface State  {
+interface State {
     position: Coordinate;
     direction: CCoordinate;
 }
@@ -49,22 +49,22 @@ function travel(field: Field, state: State, letterCallback: LetterCallback): Sta
     if (nextCell === " " || nextCell === undefined) {
         return null;
     } else if (isLine(nextCell)) {
-        return {...state, position: nextCoordinate};
+        return { ...state, position: nextCoordinate };
     } else if (nextCell === "+") {
         const rotations: Rotation[] = ["Clockwise", "Counterclockwise"];
         const candidateDirections = rotations.map((rotation) => rotate(state.direction, rotation));
         const resultStates = candidateDirections
-            .map((d) => ({direction: d, state: travel(field, {position: nextCoordinate, direction}, () => {})}))
+            .map((d) => ({ direction: d, state: travel(field, { position: nextCoordinate, direction }, () => { }) }))
             .filter((result) => result.state !== null)
-        ;
+            ;
         if (resultStates.length !== 1) {
             throw new Error("Invalid states :( " + JSON.stringify(resultStates));
         }
-        return {position: nextCoordinate, direction: resultStates[0].direction};
+        return { position: nextCoordinate, direction: resultStates[0].direction };
 
     } else {
         letterCallback(nextCell, direction, nextCoordinate);
-        return {...state, position: nextCoordinate};
+        return { ...state, position: nextCoordinate };
     }
 }
 
@@ -73,7 +73,7 @@ export const aSeriesOfTubes = entryForFile(
         lines = lines.map((line) => line.trimEnd());
         const maxLineSize = lines.reduce((acc, next) => acc + next.length, 0);
         lines = lines.map((line) => line.padEnd(maxLineSize, " "));
-        const matrix: Field = new FixedSizeMatrix<string>({x: maxLineSize, y: lines.length});
+        const matrix: Field = new FixedSizeMatrix<string>({ x: maxLineSize, y: lines.length });
         const flat = lines.map((l) => l.split("")).flat();
         matrix.setFlatData(flat);
 
@@ -94,23 +94,6 @@ export const aSeriesOfTubes = entryForFile(
                 foundLetters.push(letter);
                 matrix.set(coordinate, expectedFromDirection(direction));
             });
-            // if (state != null) {
-            //     const output: ({coordinate: Coordinate, cell: string})[] = [];
-            //     for (let y = -5; y < 5; y++) {
-            //         for (let x = -5; x < 5; x++) {
-            //             const coordinate = {
-            //                 x: state.position.x + x,
-            //                 y: state.position.y + y,
-            //             };
-            //             output.push({coordinate, cell: x === 0 && y === 0 ? "X" : matrix.get(coordinate) || " "});
-            //         }
-            //     }
-            //     if (output.length != 100) {
-            //         throw new Error("Expected 100 of length, got " + output.length);
-            //     }
-            //     const serializedOutput = groupBy(output, 10).map(group => group.map(e => e.cell).join("")).join("\n");
-            //     await outputCallback(serializedOutput);
-            // }
         }
 
         await outputCallback(foundLetters.join(""));
@@ -120,7 +103,7 @@ export const aSeriesOfTubes = entryForFile(
         lines = lines.map((line) => line.trimEnd());
         const maxLineSize = lines.reduce((acc, next) => acc + next.length, 0);
         lines = lines.map((line) => line.padEnd(maxLineSize, " "));
-        const matrix: Field = new FixedSizeMatrix<string>({x: maxLineSize, y: lines.length});
+        const matrix: Field = new FixedSizeMatrix<string>({ x: maxLineSize, y: lines.length });
         const flat = lines.map((l) => l.split("")).flat();
         matrix.setFlatData(flat);
 
@@ -147,23 +130,6 @@ export const aSeriesOfTubes = entryForFile(
                 count++;
                 lastPosition = state.position;
             }
-            // if (state != null) {
-            //     const output: ({coordinate: Coordinate, cell: string})[] = [];
-            //     for (let y = -5; y < 5; y++) {
-            //         for (let x = -5; x < 5; x++) {
-            //             const coordinate = {
-            //                 x: state.position.x + x,
-            //                 y: state.position.y + y,
-            //             };
-            //             output.push({coordinate, cell: x === 0 && y === 0 ? "X" : matrix.get(coordinate) || " "});
-            //         }
-            //     }
-            //     if (output.length != 100) {
-            //         throw new Error("Expected 100 of length, got " + output.length);
-            //     }
-            //     const serializedOutput = groupBy(output, 10).map(group => group.map(e => e.cell).join("")).join("\n");
-            //     await outputCallback(serializedOutput);
-            // }
         }
 
         await outputCallback(count);

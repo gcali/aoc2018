@@ -1,31 +1,31 @@
 import { entryForFile } from "../../entry";
-import { setTimeoutAsync } from '../../../support/async';
-import { FixedSizeMatrix } from '../../../support/matrix';
-import { getSurrounding, manhattanDistance, getFullSurrounding } from '../../../support/geometry';
+import { setTimeoutAsync } from "../../../support/async";
+import { FixedSizeMatrix } from "../../../support/matrix";
+import { getSurrounding, manhattanDistance, getFullSurrounding } from "../../../support/geometry";
 
 type Field = FixedSizeMatrix<"#" | ".">;
 
 const parseField = (lines: string[]): Field => {
     const size = {x: lines[0].length, y: lines.length};
     const field = new FixedSizeMatrix<"#" | ".">(size);
-    field.setFlatData(lines.flatMap(l => l.split("").map(e => e as "#" | ".")));
+    field.setFlatData(lines.flatMap((l) => l.split("").map((e) => e as "#" | ".")));
     return field;
 };
 
 const iterateGame = (field: Field, leaveCornersOn: boolean = false): Field => {
     const newField = field.copy();
     field.onEveryCell((coordinate, cell) => {
-        if (leaveCornersOn && 
+        if (leaveCornersOn &&
             (manhattanDistance(coordinate, {x: 0, y: 0}) === 0
-            || manhattanDistance(coordinate, {x: 0, y: field.size.y-1}) === 0
-            || manhattanDistance(coordinate, {x: field.size.x-1, y: 0}) === 0
-            || manhattanDistance(coordinate, {x: field.size.x-1, y: field.size.y-1}) === 0)
+            || manhattanDistance(coordinate, {x: 0, y: field.size.y - 1}) === 0
+            || manhattanDistance(coordinate, {x: field.size.x - 1, y: 0}) === 0
+            || manhattanDistance(coordinate, {x: field.size.x - 1, y: field.size.y - 1}) === 0)
         ) {
             return;
         }
         const onNeigbours = getFullSurrounding(coordinate)
-            .map(c => field.get(c))
-            .filter(e => e === "#")
+            .map((c) => field.get(c))
+            .filter((e) => e === "#")
             .length;
         if (cell === "#") {
             if (onNeigbours !== 2 && onNeigbours !== 3) {

@@ -1,14 +1,14 @@
 import { entryForFile } from "../../entry";
 import {Md5} from "ts-md5";
 
-const hasLeadingZeros = (s: string, n : number): boolean => {
+const hasLeadingZeros = (s: string, n: number): boolean => {
     for (let i = 0; i < n; i++) {
         if (s[i] !== "0") {
             return false;
         }
     }
     return true;
-}
+};
 
 export const theIdealStockingStuffer = entryForFile(
     async ({ lines, outputCallback }) => {
@@ -37,8 +37,8 @@ export const theIdealStockingStuffer = entryForFile(
             i++;
         }
     },
-    { 
-        key: "the-ideal-stocking-stuffer", 
+    {
+        key: "the-ideal-stocking-stuffer",
         title: "The Ideal Stocking Stuffer",
         stars: 2
     }

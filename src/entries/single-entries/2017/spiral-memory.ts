@@ -7,7 +7,7 @@ function parseLines(lines: string[]): number[][] {
     return lines
         .map((l) => l.trim())
         .map((line) => line.split("\t").map((token) => parseInt(token, 10)))
-    ;
+        ;
 }
 
 export const spiralMemory = entryForFile(
@@ -15,7 +15,7 @@ export const spiralMemory = entryForFile(
         const squareValue = parseInt(lines[0], 10);
         const calculator = new UlamCalculator();
         const coordinates = calculator.getCoordinatesFromValue(squareValue);
-        const distance = manhattanDistance({x: 0, y: 0}, coordinates);
+        const distance = manhattanDistance({ x: 0, y: 0 }, coordinates);
         await outputCallback(distance);
     },
     async ({ lines, outputCallback, pause, isCancelled }) => {
@@ -33,12 +33,15 @@ export const spiralMemory = entryForFile(
         ];
         let currentDirection = 0;
 
-        field.set({x: 0, y: 0}, 1);
-        let currentPosition = {x: 0, y: 0};
+        field.set({ x: 0, y: 0 }, 1);
+        let currentPosition = { x: 0, y: 0 };
         const i = 0;
         while (true) {
             currentPosition = directionOrder[currentDirection].sum(currentPosition);
-            const value = getFullSurrounding(currentPosition).map((c) => field.get(c)).filter((e) => e !== null).reduce((acc: number, next) => acc + next!, 0);
+            const value = getFullSurrounding(currentPosition)
+                .map((c) => field.get(c))
+                .filter((e) => e !== null)
+                .reduce((acc: number, n) => acc + n!, 0);
             if (value > target) {
                 await outputCallback(value);
                 return;

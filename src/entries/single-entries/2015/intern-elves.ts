@@ -2,7 +2,7 @@ import { entryForFile } from "../../entry";
 
 const calculateHasDuplicates = (s: string): boolean => {
     for (let i = 1; i < s.length; i++) {
-        if (s[i] === s[i-1]) {
+        if (s[i] === s[i - 1]) {
             return true;
         }
     }
@@ -17,10 +17,10 @@ const buildGroups = (s: string, size: number): string[] => {
     return res;
 };
 const isNice = (s: string): boolean => {
-    const vowels = ['a', 'e', 'i', 'o', 'u'];
-    const howManyVowels = s.split("").filter(c => vowels.indexOf(c) >= 0).length;
+    const vowels = ["a", "e", "i", "o", "u"];
+    const howManyVowels = s.split("").filter((c) => vowels.indexOf(c) >= 0).length;
     const hasDuplicates = calculateHasDuplicates(s);
-    const hasForbidden = ['ab', 'cd', 'pq', 'xy'].filter(e => s.indexOf(e) >= 0).length > 0;
+    const hasForbidden = ["ab", "cd", "pq", "xy"].filter((e) => s.indexOf(e) >= 0).length > 0;
 
     const conditions = [(howManyVowels >= 3), hasDuplicates, !hasForbidden];
     return conditions.reduce((acc, next) => acc && next);
@@ -29,12 +29,12 @@ const isNice = (s: string): boolean => {
 const hasNicePairs = (s: string): boolean => {
     const pairs = buildGroups(s, 2);
     for (let i = 0; i < pairs.length; i++) {
-        if (pairs.lastIndexOf(pairs[i]) > i+1) {
+        if (pairs.lastIndexOf(pairs[i]) > i + 1) {
             return true;
         }
     }
     return false;
-}
+};
 
 const hasNiceTrios = (s: string): boolean => {
     const trios = buildGroups(s, 3);
@@ -52,11 +52,11 @@ export const internElves = entryForFile(
         await outputCallback(niceLines.length);
     },
     async ({ lines, outputCallback }) => {
-        const niceLines = lines.filter(line => hasNicePairs(line) && hasNiceTrios(line));
+        const niceLines = lines.filter((line) => hasNicePairs(line) && hasNiceTrios(line));
         await outputCallback(niceLines.length);
     },
-    { 
-        key: "intern-elves", 
+    {
+        key: "intern-elves",
         title: "Doesn't He Have Intern-Elves For This?",
         stars: 2
     }

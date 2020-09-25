@@ -1,12 +1,17 @@
 import "mocha";
 import { FixedSizeMatrix } from "../../../../support/matrix";
-import { ErosionLevel, calculatePath, serializeNode, Tool, deserializeNode, Node as AoCNode, createErosionMatrixFromInput, matrixSerializer, buildMatrix, fillMatrix } from "../mode-maze";
+import {
+    ErosionLevel,
+    calculatePath,
+    serializeNode,
+    deserializeNode,
+    Node as AoCNode,
+    createErosionMatrixFromInput,
+    matrixSerializer,
+} from "../mode-maze";
 import { expectSameArrays } from "../../../../support/assertions";
 import { expect } from "chai";
 import { manhattanDistance } from "../../../../support/geometry";
-
-// import {data as onlineMap} from "./mode-maze-test-data";
-import wu from "wu";
 
 const expectedErosions: number[][] = [
     [510, 17317, 13941, 10565, 7189, 3813, 437, 17244, 13868, 10492, 7116, 3740, 364, 17171, 13795, 10419],
@@ -29,12 +34,12 @@ const expectedErosions: number[][] = [
 
 const myInput = {
     depth: 5616,
-    target: {x: 10, y: 785}
+    target: { x: 10, y: 785 }
 };
 
 const siteInput = {
     depth: 510,
-    target: {x: 10, y: 10}
+    target: { x: 10, y: 10 }
 };
 
 const costCalculator = (serializedNodes: string[], startNode: AoCNode): number => {
@@ -54,7 +59,7 @@ const costCalculator = (serializedNodes: string[], startNode: AoCNode): number =
         } else {
             const distance = manhattanDistance(lastPos, node.coordinate);
             if (distance !== 1) {
-                throw new Error(`Expected exactly one step: ${JSON.stringify(lastPos)} ${JSON.stringify(node.coordinate)} ` );
+                throw new Error(`Expected exactly one step: ${JSON.stringify(lastPos)} ${JSON.stringify(node.coordinate)} `);
             }
             cost += 1;
         }
@@ -66,94 +71,59 @@ const costCalculator = (serializedNodes: string[], startNode: AoCNode): number =
 
 describe("Node maze", () => {
     it("should find empty path", () => {
-        const matrix = new FixedSizeMatrix<ErosionLevel>({x: 1, y: 1});
+        const matrix = new FixedSizeMatrix<ErosionLevel>({ x: 1, y: 1 });
         matrix.setFlatData([0]);
         const resultPath = calculatePath(matrix, { x: 0, y: 0 });
         expect(resultPath.cost).to.equal(0);
         expect(resultPath.path).to.be.null;
     });
     it("should find single step path", () => {
-        const matrix = new FixedSizeMatrix<ErosionLevel>({x: 2, y: 1});
+        const matrix = new FixedSizeMatrix<ErosionLevel>({ x: 2, y: 1 });
         matrix.setFlatData([0, 0]);
         const resultPath = calculatePath(matrix, { x: 1, y: 0 });
         expect(resultPath.cost).to.equal(1);
         expectSameArrays(resultPath.path, [
-            serializeNode( {coordinate: {x: 0, y: 0}, tool: "light"}),
-            serializeNode({coordinate: {x: 1, y: 0}, tool: "light"})
+            serializeNode({ coordinate: { x: 0, y: 0 }, tool: "light" }),
+            serializeNode({ coordinate: { x: 1, y: 0 }, tool: "light" })
         ]);
     });
     it("should find two step path", () => {
-        const matrix = new FixedSizeMatrix<ErosionLevel>({x: 3, y: 1});
+        const matrix = new FixedSizeMatrix<ErosionLevel>({ x: 3, y: 1 });
         matrix.setFlatData([0, 0, 0]);
         const resultPath = calculatePath(matrix, { x: 2, y: 0 });
         expect(resultPath.cost).to.equal(2);
         expectSameArrays(resultPath.path, [
-            serializeNode( {coordinate: {x: 0, y: 0}, tool: "light"}),
-            serializeNode( {coordinate: {x: 1, y: 0}, tool: "light"}),
-            serializeNode({coordinate: {x: 2, y: 0}, tool: "light"})
+            serializeNode({ coordinate: { x: 0, y: 0 }, tool: "light" }),
+            serializeNode({ coordinate: { x: 1, y: 0 }, tool: "light" }),
+            serializeNode({ coordinate: { x: 2, y: 0 }, tool: "light" })
         ]);
     });
     it("should find two step with tool change path", () => {
-        const matrix = new FixedSizeMatrix<ErosionLevel>({x: 3, y: 1});
+        const matrix = new FixedSizeMatrix<ErosionLevel>({ x: 3, y: 1 });
         matrix.setFlatData([0, 1, 0]);
         const resultPath = calculatePath(matrix, { x: 2, y: 0 });
         expect(resultPath.cost).to.equal(16);
         expectSameArrays(resultPath.path, [
-            serializeNode( {coordinate: {x: 0, y: 0}, tool: "light"}),
-            serializeNode( {coordinate: {x: 0, y: 0}, tool: "climb"}),
-            serializeNode( {coordinate: {x: 1, y: 0}, tool: "climb"}),
-            serializeNode( {coordinate: {x: 2, y: 0}, tool: "climb"}),
-            serializeNode({coordinate: {x: 2, y: 0}, tool: "light"})
+            serializeNode({ coordinate: { x: 0, y: 0 }, tool: "light" }),
+            serializeNode({ coordinate: { x: 0, y: 0 }, tool: "climb" }),
+            serializeNode({ coordinate: { x: 1, y: 0 }, tool: "climb" }),
+            serializeNode({ coordinate: { x: 2, y: 0 }, tool: "climb" }),
+            serializeNode({ coordinate: { x: 2, y: 0 }, tool: "light" })
         ]);
     });
-
-    // it("should calculate correctly cost given my path", () => {
-    //     const matrix = createErosionMatrixFromInput(myInput);
-    //     const resultPath = calculatePath(matrix, myInput.target);
-    //     const calculatedCost = resultPath.cost;
-    //     const checkedCost = costCalculator(resultPath.path, {coordinate: {x:0,y:0}, tool: "light"});
-    //     expect(checkedCost).to.equal(calculatedCost);
-    // }).timeout(10000);
-
-    // it("should only use legal tools", () => {
-    //     const matrix = createErosionMatrixFromInput(myInput);
-    //     const resultPath = calculatePath(matrix, myInput.target);
-    //     resultPath.path.forEach(step => {
-    //         const node = deserializeNode(step);
-    //         const erosionLevel = matrix.get(node.coordinate);
-    //         expect(erosionLevel).to.not.be.undefined;
-    //         switch (erosionLevel) {
-    //             case 0:
-    //                 expect(node.tool).to.be.oneOf(["climb", "light"]);
-    //                 break;
-    //             case 1:
-    //                 expect(node.tool).to.be.oneOf(["climb","none"]);
-    //                 break;
-    //             case 2:
-    //                 expect(node.tool).to.be.oneOf(["light","none"]);
-    //         }
-    //     });
-    // }).timeout(10000);
-
-    // it("should end with light", () => {
-    //     const matrix = createErosionMatrixFromInput(myInput);
-    //     const resultPath = calculatePath(matrix, myInput.target);
-    //     const {tool} = deserializeNode(resultPath.path[resultPath.path.length-1]);
-    //     expect(tool).to.equal("light");
-    // }).timeout(10000);
 
     it("creates same erosion map as example", () => {
 
         const matrix = createErosionMatrixFromInput({
             depth: 510,
-            target: {x: 10, y: 10},
+            target: { x: 10, y: 10 },
         }, 6);
 
         expect(matrix.size.x).to.equal(16);
         expect(matrix.size.y).to.equal(16);
         const serializedMatrix = matrix.toString(matrixSerializer);
         const expectedOutput =
-`.=.|=.|.|=.|=|=.
+            `.=.|=.|.|=.|=|=.
 .|=|=|||..|.=...
 .==|....||=..|==
 =.|....|.==.|==.
@@ -172,29 +142,4 @@ describe("Node maze", () => {
         expectSameArrays(serializedMatrix.split("\n"), expectedOutput.split("\n"));
     });
 
-    // it("has same geo indexes as example", () => {
-    //     const matrix = buildMatrix(siteInput, 6);
-    //     fillMatrix(matrix, siteInput);
-
-    //     for (let x = 0; x < matrix.size.x; x++) {
-    //         for (let y = 0; y < matrix.size.y; y++) {
-    //             expect(matrix.get({x, y})!).to.equal(expectedErosions[y][x]);
-    //         }
-    //     }
-    // });
-
-//    it("is coherent with erosion map from online solution", async () => {
-//        const matrix = createErosionMatrixFromInput(myInput);
-//        const data = onlineMap.map((e) => ({coordinate: {x: e[0], y: e[1]}, tool: e[2] as ErosionLevel}));
-//        const lookup = new Map<string, ErosionLevel>();
-//        data.forEach((e) => lookup.set(`${e.coordinate.x},${e.coordinate.y}`, e.tool));
-//        let rightCells = 0;
-//        await matrix.onEveryCell((coordinate, cell) => {
-//            const matching = lookup.get(`${coordinate.x},${coordinate.y}`);
-//            if (matching !== undefined) {
-//                rightCells++;
-//                expect(cell).to.equal(matching, `Wrong erosion level for ${coordinate.x},${coordinate.y}, found after ${rightCells} right ones`);
-//            }
-//        });
-//    }).timeout(5000);
 });

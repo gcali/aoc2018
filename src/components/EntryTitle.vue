@@ -1,8 +1,10 @@
 <template lang="pug">
 .title
     .date {{ fullDate }}
+        a.link.small(:href="link", target="_blank")
+            font-awesome-icon(icon="link")
     .name {{ name }}
-        a.link(:href="link", target="_blank")
+        a.link.big(:href="link", target="_blank")
             font-awesome-icon(icon="link")
     hr
 </template>
@@ -35,13 +37,28 @@ export default class EntryTitle extends Vue {
     .name {
         line-height: 2;
         font-size: 30px;
-        .link {
-            margin-left: 0.5em;
-            color: lightgrey;
-            font-size: 80%;
-            &:hover {
-                color: $dark-color;
+    }
+    .link {
+        margin-left: 0.5em;
+        color: lightgrey;
+        font-size: 80%;
+        @include small-screen {
+            font-size: 100%;
+        }
+        display: inline-block;
+        &.small {
+            display: none;
+            @include small-screen {
+                display: inline-block;
             }
+        }
+        &.big {
+            @include small-screen {
+                display: none;
+            }
+        }
+        &:hover {
+            color: $dark-color;
         }
     }
     hr {

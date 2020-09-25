@@ -34,8 +34,13 @@ export class Instruction {
         });
         return instructions;
     }
-    constructor(public code: OpCode | number, public a: number, public b: number, public output: number, public lineNumber?: number) {
-    }
+    constructor(
+        public code: OpCode | number,
+        public a: number,
+        public b: number,
+        public output: number,
+        public lineNumber?: number
+    ) { }
 
     public setCode(code: OpCode): Instruction {
         return new Instruction(code, this.a, this.b, this.output);
