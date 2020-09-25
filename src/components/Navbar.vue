@@ -90,6 +90,7 @@ export default Vue.extend({
 
 <style lang="scss">
 #nav {
+    z-index: 1;
     @mixin nav-entry {
         font-weight: bold;
         text-decoration: none;
@@ -112,6 +113,7 @@ export default Vue.extend({
     flex-direction: column;
     color: $text-color;
     .links {
+        width: 15em;
         @include small-screen {
             background-color: $navbar-color;
             position: fixed;

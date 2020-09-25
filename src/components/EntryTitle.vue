@@ -1,8 +1,10 @@
 <template lang="pug">
-    .title
-        .date {{fullDate}}
-        .name {{name}}
-        hr
+.title
+    .date {{ fullDate }}
+    .name {{ name }}
+        a.link(:href="link", target="_blank")
+            font-awesome-icon(icon="link")
+    hr
 </template>
 
 <script lang="ts">
@@ -15,6 +17,10 @@ export default class EntryTitle extends Vue {
     @Prop() private year!: string;
     private get fullDate() {
         return `December ${ordinalOf(this.date)}, ${this.year}`;
+    }
+
+    private get link() {
+        return `https://adventofcode.com/${this.year}/day/${this.date}`;
     }
 }
 </script>
@@ -29,6 +35,14 @@ export default class EntryTitle extends Vue {
     .name {
         line-height: 2;
         font-size: 30px;
+        .link {
+            margin-left: 0.5em;
+            color: lightgrey;
+            font-size: 80%;
+            &:hover {
+                color: $dark-color;
+            }
+        }
     }
     hr {
         border-style: solid;
