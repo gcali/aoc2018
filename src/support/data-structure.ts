@@ -9,6 +9,20 @@ export class Queue<T> {
     return this.firstNode === undefined;
   }
 
+  public forEach(callback: (e: T) => undefined | boolean): void {
+    if (this.isEmpty) {
+      return;
+    }
+    let node = this.firstNode;
+    while (node) {
+      const res = callback(node.element);
+      if (res) {
+        return;
+      }
+      node = node.next;
+    }
+  }
+
   public add(element: T) {
     if (this.isEmpty) {
       this.firstNode = {

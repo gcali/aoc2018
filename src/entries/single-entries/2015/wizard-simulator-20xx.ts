@@ -137,6 +137,76 @@ const spells: Spell[] = [
     "shield"    
 ];
 
+const canLaunchSpell = (state: GameState, spell: Spell): boolean => {
+    if (spellCost(spell) > state.playerState.mana) {
+        return false;
+    }
+    switch (spell) {
+        case "missile":
+        case "drain":
+            return true;
+        case "poison":
+            return state.playerState.poison === 0;
+        case "recharge":
+            return state.playerState.recharge === 0;
+        case "shield":
+            return state.playerState.shield === 0;
+    }
+}
+
+const bfsPruned = (startGameState: GameState): GameState | null => {
+    const states = new Queue<GameState>();
+    states.add(startGameState);
+    let bestWinState: GameState | null = null;
+    let bestBossHitpoints: number = Number.POSITIVE_INFINITY;
+    const updateBestState = (state: GameState) => {
+        if (bestWinState === null || bestWinState.playerState.spentMana > state.playerState.spentMana) {
+            bestWinState = state;
+        }
+    }
+    while (!states.isEmpty) {
+        const current = states.get()!;
+        if (bestWinState !== null){
+            console.log("I was here");
+            const cast = bestWinState as GameState;
+            if (cast.playerState.spentMana < current.playerState.spentMana) {
+                continue;
+            }
+        }
+        spells.forEach(spell => {
+            const afterEffects = applyEffects(current);
+            if (afterEffects.bossState.hitPoints <= 0) {
+                updateBestState(afterEffects);
+            }
+            if (!canLaunchSpell(afterEffects, spell)) {
+                return;
+            }
+            const afterSpell = launchSpell(spell, afterEffects);
+            if (afterSpell.playerState.mana < 0) {
+                return;
+            }
+            if (afterSpell.bossState.hitPoints <= 0) {
+                updateBestState(afterSpell);
+            }
+            const afterSecondEffects = applyEffects(afterSpell);
+            if (afterSecondEffects.bossState.hitPoints <= 0) {
+                updateBestState(afterSecondEffects);
+            }
+            const afterBoss = bossDamageTurn(afterSecondEffects);
+            if (afterBoss.playerState.hitPoints <= 0) {
+                return;
+            }
+            if (bestBossHitpoints > afterBoss.bossState.hitPoints) {
+                bestBossHitpoints = afterBoss.bossState.hitPoints;
+                console.log(bestBossHitpoints);
+            }
+            states.add(afterBoss);
+        });
+
+    }
+    return bestWinState;
+}
+
 const exploreFight = (startGameState: GameState): GameState | null => {
     // const queue = new WizardPriorityQueue();
     const queue = new PairingHeap<{spell: Spell; gameState: GameState}>({
@@ -193,8 +263,8 @@ export const wizardSimulator20xx = entryForFile(
     async ({ lines, outputCallback }) => {
         const bossState = parseState(lines);
         // const bossState = {
-        //     hitPoints: 1,
-        //     damage: 0
+        //     hitPoints: 14,
+        //     damage: 8
         // };
         const playerState: PlayerState = {
             hitPoints: 50,
@@ -206,7 +276,9 @@ export const wizardSimulator20xx = entryForFile(
             spentMana: 0
         };
 
-        const winner = exploreFight({playerState, bossState});
+        console.log(bossState);
+
+        const winner = bfsPruned({playerState, bossState});
         if (winner === null) {
             await outputCallback("No winner state found");
         } else {
