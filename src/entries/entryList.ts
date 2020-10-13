@@ -92,6 +92,10 @@ import { scienceForHungryPeople } from './single-entries/2015/science-for-hungry
 import { auntSue } from './single-entries/2015/aunt-sue';
 import { noSuchThingAsTooMuch } from './single-entries/2015/no-such-thing-as-too-much';
 import { likeAGifForYourYard } from './single-entries/2015/like-a-gif-for-your-yard';
+import { medicineForRudolph } from './single-entries/2015/medicine-for-rudolph';
+import { infiniteElvesAndInfiniteHouses } from './single-entries/2015/infinite-elves-and-infinite-houses';
+import { rpgSimulator20xx } from './single-entries/2015/rpg-simulator-20xx';
+import { wizardSimulator20xx } from './single-entries/2015/wizard-simulator-20xx';
 
 export interface EntryRoute extends EntryRouteBase {
     date: number;
@@ -160,7 +164,11 @@ export const entryList: { [key: string]: EntryRoute[] } = {
         scienceForHungryPeople,
         auntSue,
         noSuchThingAsTooMuch,
-        likeAGifForYourYard
+        likeAGifForYourYard,
+        medicineForRudolph,
+        infiniteElvesAndInfiniteHouses,
+        rpgSimulator20xx,
+        wizardSimulator20xx
     ]),
     2017: enrichList([
         inverseCaptcha,

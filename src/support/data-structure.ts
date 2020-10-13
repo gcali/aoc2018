@@ -3,6 +3,7 @@ interface QueueNode<T> { element: T; next?: QueueNode<T>; }
 export class Queue<T> {
   private firstNode?: QueueNode<T>;
   private lastNode?: QueueNode<T>;
+  private _size: number = 0;
 
   public get isEmpty(): boolean {
     return this.firstNode === undefined;
@@ -20,16 +21,22 @@ export class Queue<T> {
       };
       this.lastNode = this.lastNode!.next;
     }
+    this._size++;
   }
 
   public get(): T | null {
     if (this.isEmpty) {
       return null;
     } else {
+      this._size--;
       const toReturn = this.firstNode;
       this.firstNode = this.firstNode!.next;
       return toReturn!.element;
     }
+  }
+
+  public get size(): number {
+    return this._size;
   }
 }
 
