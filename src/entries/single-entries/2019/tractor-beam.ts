@@ -3,7 +3,6 @@ import { parseMemory, execute, Memory } from "../../../support/intcode";
 import { FixedSizeMatrix } from "../../../support/matrix";
 import { UnknownSizeField } from "../../../support/field";
 import { Coordinate, CCoordinate, manhattanDistance } from "../../../support/geometry";
-import { exec } from "child_process";
 
 interface BeamOutput {
     field: UnknownSizeField<"#" | ".">;

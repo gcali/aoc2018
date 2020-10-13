@@ -1,6 +1,6 @@
 import { entryForFile } from "../../entry";
 
-type DetectionData = {[key: string]: number};
+interface DetectionData { [key: string]: number; }
 const ticket: DetectionData = {
     children: 3,
     cats: 7,
@@ -12,7 +12,7 @@ const ticket: DetectionData = {
     trees: 3,
     cars: 2,
     perfumes: 1
-}; 
+};
 
 interface Sue {
     id: number;
@@ -20,20 +20,20 @@ interface Sue {
 }
 
 const parseSues = (lines: string[]): Sue[] => {
-    return lines.map(line => {
+    return lines.map((line) => {
         const firstSeparator = line.indexOf(":");
         const left = line.slice(0, firstSeparator);
         const right = line.slice(firstSeparator + 2);
         const id = parseInt(left.split(" ")[1], 10);
-        const data = right.split(", ").map(e => {
+        const data = right.split(", ").map((e) => {
             const split = e.split(": ");
             return {
                 name: split[0],
-                value: parseInt(split[1])
+                value: parseInt(split[1], 10)
             };
         }).reduce((acc: DetectionData, next) => {
             acc[next.name] = next.value;
-            return acc
+            return acc;
         }, {});
         return {
             id,
@@ -42,27 +42,27 @@ const parseSues = (lines: string[]): Sue[] => {
     });
 };
 
-const checkSue = (sue: Sue, ticket: DetectionData): boolean => {
+const checkSue = (sue: Sue, argTicket: DetectionData): boolean => {
     for (const key of Object.keys(sue.data)) {
-        if (sue.data[key] !== ticket[key]) {
+        if (sue.data[key] !== argTicket[key]) {
             return false;
         }
     }
     return true;
 };
 
-const checkSueRanges = (sue: Sue, ticket: DetectionData): boolean => {
+const checkSueRanges = (sue: Sue, argTicket: DetectionData): boolean => {
     for (const key of Object.keys(sue.data)) {
         if (key === "cats" || key === "trees") {
-            if (sue.data[key] <= ticket[key]) {
+            if (sue.data[key] <= argTicket[key]) {
                 return false;
             }
         } else if (key === "pomeranians" || key === "goldfish") {
-            if (sue.data[key] >= ticket[key]) {
+            if (sue.data[key] >= argTicket[key]) {
                 return false;
             }
         } else {
-            if (sue.data[key] !== ticket[key]) {
+            if (sue.data[key] !== argTicket[key]) {
                 return false;
             }
         }
@@ -91,5 +91,5 @@ export const auntSue = entryForFile(
         }
         await outputCallback("Sue not found");
     },
-    { key: "aunt-sue", title: "Aunt Sue", stars: 2}
+    { key: "aunt-sue", title: "Aunt Sue", stars: 2 }
 );

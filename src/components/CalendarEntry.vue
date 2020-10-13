@@ -1,7 +1,17 @@
 <template lang="pug">
     router-link(:to="{name: name}").calendar-cell
-        .header {{ordinalDate}}
-        .title {{title}}
+        .header 
+            | {{ordinalDate}}
+            //- .icon.left
+            //-     font-awesome-icon(icon="sleigh")
+            .icon.right.rotated-right
+                font-awesome-icon(icon="gift")
+            //- .icon.left.rotated-left
+            //-     font-awesome-icon(icon="gift")
+            //- .icon.left
+            //-     font-awesome-icon(icon="snowflake")
+        .title 
+            | {{title}}
         .stars
             .star(v-for="star in starObjects" :key="star.key") 
                 span(:style="{visibility: star.isFull ? 'visible' : 'hidden'}") ⭐
@@ -48,6 +58,7 @@ export default Vue.extend({
     margin: 1em;
     overflow: hidden;
     text-decoration: none;
+    position: relative;
 }
 
 .calendar-cell .header {
@@ -56,8 +67,31 @@ export default Vue.extend({
     padding-bottom: 0.5em;
     background-color: #d21111;
     color: white;
-    width: 200%;
+    width: 100%;
     font-weight: bold;
+    position: relative;
+}
+
+.calendar-cell .icon {
+    position: absolute;
+    top: 50%;
+    /* top: 0.5em; */
+    color: rgba(252,208,50,0.5);
+    transform: translateY(-50%);
+    font-size: 150%;
+}
+
+.calendar-cell .icon.right {
+    right: 0.5em;
+}
+.calendar-cell .icon.left {
+    left: 0.5em;
+}
+.calendar-cell .icon.rotated-right {
+    transform: translateY(-50%) rotate(15deg) ;
+}
+.calendar-cell .icon.rotated-left {
+    transform: translateY(-50%) rotate(-15deg) ;
 }
 
 .calendar-cell .title {

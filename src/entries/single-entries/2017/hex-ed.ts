@@ -20,14 +20,18 @@ const directionMapper = (d: Direction): HexCubeCoordinate => {
     }
 };
 
-export const applyDirections = (start: HexCubeCoordinate, directions: Direction[], callback?: (currentPosition: HexCubeCoordinate) => void): HexCubeCoordinate => {
-        return directions.reduce((acc, next) => {
-            const result = sumHexCoordinates(acc, directionMapper(next));
-            if (callback) {
-                callback(result);
-            }
-            return result;
-        }, start);
+export const applyDirections = (
+    start: HexCubeCoordinate,
+    directions: Direction[],
+    callback?: (currentPosition: HexCubeCoordinate) => void
+): HexCubeCoordinate => {
+    return directions.reduce((acc, next) => {
+        const result = sumHexCoordinates(acc, directionMapper(next));
+        if (callback) {
+            callback(result);
+        }
+        return result;
+    }, start);
 };
 
 export const hexEd = entryForFile(

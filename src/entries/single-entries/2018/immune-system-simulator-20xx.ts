@@ -31,7 +31,7 @@ const fillWithTarget = (groups: Group[]): FightOrder[] => {
     const targetable = [...groups];
     return groups.map((group) => {
         const candidates = targetable
-            .map((g, index) => ({group: g, index}))
+            .map((g, index) => ({ group: g, index }))
             .filter((g) => g.group.army !== group.army)
             .map((g) => ({
                 group: g.group,
@@ -149,7 +149,7 @@ export const serialize = (armies: Army[]): string => {
         a.groups
             .map((g) => g.units)
             .map((u, i) => `Group ${i} contains ${u} units`)
-        ).join("\n")).join("\n");
+    ).join("\n")).join("\n");
 };
 
 export const boostArmy = (army: Army, amount: number) => {
@@ -157,7 +157,7 @@ export const boostArmy = (army: Army, amount: number) => {
 };
 
 const countUnits = (armies: Army[]): number => {
-    return armies.reduce((acc, next) => acc + next.groups.reduce((acc, next) => acc + next.units, 0), 0);
+    return armies.reduce((acc, next) => acc + next.groups.reduce((a, n) => a + n.units, 0), 0);
 };
 
 export const immuneSystemSimulator20XX = entryForFile(

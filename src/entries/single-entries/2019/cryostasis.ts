@@ -1,13 +1,12 @@
 import { entryForFile } from "../../entry";
 import { parseMemory, execute, stopExecution } from "../../../support/intcode";
-import { stringify } from "querystring";
 import { UnknownSizeField } from "../../../support/field";
 import { directions, CCoordinate, Coordinate, manhattanDistance } from "../../../support/geometry";
 import { Field } from "./oxygen-system";
 import { subsetGenerator } from "../../../support/sequences";
 
 export const cryostasis = entryForFile(
-    async ({ lines, outputCallback, additionalInputReader}) => {
+    async ({ lines, outputCallback, additionalInputReader }) => {
         if (!additionalInputReader) {
             await outputCallback("This puzzle requires input from the user, cannot run");
             return;
@@ -16,11 +15,11 @@ export const cryostasis = entryForFile(
         const inputBuffer: number[] = [];
         const outputBuffer: number[] = [];
         const exploration = {
-            exploringLocation: {x: 0, y: 0} as (Coordinate | null),
+            exploringLocation: { x: 0, y: 0 } as (Coordinate | null),
             exploreResult: null as (string | null),
             explored: new Set<string>(),
             field: new UnknownSizeField<string>(),
-            currentPosition: {x: 0, y: 0},
+            currentPosition: { x: 0, y: 0 },
             autoMovements: [] as string[]
         };
 
@@ -52,7 +51,7 @@ export const cryostasis = entryForFile(
             populating: false
         };
 
-        const movementMap: {[key: string]: CCoordinate} = {
+        const movementMap: { [key: string]: CCoordinate } = {
             north: directions.up,
             south: directions.down,
             east: directions.right,
@@ -77,7 +76,8 @@ export const cryostasis = entryForFile(
                     break;
                 case "hack":
                     if (inventory.elements.length === 0) {
-                        "Cannot hack without inventory";
+                        await outputCallback("Cannot hack without inventory");
+                        break;
                     }
                     autoTake.enable = false;
                     hacking.subsets = [...subsetGenerator(inventory.elements, 0)];
@@ -100,7 +100,7 @@ export const cryostasis = entryForFile(
                     break;
 
                 case "auto-start":
-                    if (manhattanDistance(exploration.currentPosition, {x: 0, y: 0}) !== 0) {
+                    if (manhattanDistance(exploration.currentPosition, { x: 0, y: 0 }) !== 0) {
                         await outputCallback("Can only explore automatically from the start");
                     } else {
                         exploration.autoMovements = [
@@ -156,7 +156,7 @@ export const cryostasis = entryForFile(
             await outputCallback("Command?");
         };
 
-        const executeCommand = async (line: string) =>  {
+        const executeCommand = async (line: string) => {
             line.split("").map((e) => e.charCodeAt(0)).forEach((e) => inputBuffer.push(e));
             inputBuffer.push("\n".charCodeAt(0));
             await outputCallback("Executing: " + line);
@@ -199,7 +199,7 @@ export const cryostasis = entryForFile(
                                     if (drop > 0) {
                                         await outputCallback(`~~~~~~~~~ Hooray! Dropped ${drop}`);
                                     }
-                                    await outputCallback("                                       Remaining: " + hacking.subsets.length);
+                                    await outputCallback("Remaining: " + hacking.subsets.length);
                                 } else if (hacking.isTooMuch === "heavy" && hacking.lastDrop !== null) {
                                     await outputCallback("----------------- Too heavy");
                                     const length = hacking.subsets.length;
@@ -215,7 +215,7 @@ export const cryostasis = entryForFile(
                                     if (drop > 0) {
                                         await outputCallback(`~~~~~~~~~ Hooray! Dropped ${drop}`);
                                     }
-                                    await outputCallback("                                       Remaining: " + hacking.subsets.length);
+                                    await outputCallback("Remaining: " + hacking.subsets.length);
                                 }
                                 hacking.dropping = hacking.subsets.shift()!;
                                 hacking.lastDrop = [...hacking.dropping];
@@ -251,79 +251,79 @@ export const cryostasis = entryForFile(
                 }
                 return inputBuffer.shift()!;
             },
-            output: async (n) => {
-                if ("\n".charCodeAt(0) === n) {
+            output: async (o) => {
+                if ("\n".charCodeAt(0) === o) {
                     const line = outputBuffer.map((n) => String.fromCharCode(n)).join("");
                     const trimmed = line.trim();
                     if (trimmed.length === 0) {
-                            possibleMovements.populating = false;
-                        }
+                        possibleMovements.populating = false;
+                    }
                     if (line.indexOf("Pressure-Sensitive Floor") >= 0) {
-                            hacking.isTooMuch = null;
-                        }
+                        hacking.isTooMuch = null;
+                    }
                     if (line.indexOf("loud, robotic voice says \"Alert!") >= 0) {
-                            if (line.indexOf("are heavier than the detected") >= 0) {
-                                hacking.isTooMuch = "light";
-                            } else {
-                                hacking.isTooMuch = "heavy";
-                            }
+                        if (line.indexOf("are heavier than the detected") >= 0) {
+                            hacking.isTooMuch = "light";
+                        } else {
+                            hacking.isTooMuch = "heavy";
                         }
+                    }
                     if (line === "Command?") {
-                            inventory.isPopulating = false;
-                            autoTake.populating = false;
-                            if (exploration.exploringLocation !== null && exploration.exploreResult !== null) {
-                                if (hacking.isHacking) {
-                                    hacking.isHacking = false;
-                                    hacking.dropping = null;
-                                    hacking.subsets = [];
-                                    hacking.toRecover = [];
-                                }
-                                exploration.field.set(exploration.exploringLocation, exploration.exploreResult);
-                                exploration.explored.add(exploration.exploreResult);
-                                exploration.currentPosition = exploration.exploringLocation;
-                                exploration.exploringLocation = null;
-                                exploration.exploreResult = null;
+                        inventory.isPopulating = false;
+                        autoTake.populating = false;
+                        if (exploration.exploringLocation !== null && exploration.exploreResult !== null) {
+                            if (hacking.isHacking) {
+                                hacking.isHacking = false;
+                                hacking.dropping = null;
+                                hacking.subsets = [];
+                                hacking.toRecover = [];
                             }
-                        } else if (possibleMovements.populating) {
-                            possibleMovements.movements.push(trimmed.slice(2));
-                        } else if (inventory.isPopulating && trimmed.length > 0) {
-                            inventory.elements.push(trimmed.slice(2));
-                        } else if (autoTake.populating && trimmed.length > 0) {
-                            const item = trimmed.slice(2);
-                            if ([
-                                "infinite loop",
-                                "giant electromagnet",
-                                "escape pod",
-                                "molten lava",
-                                "photons"
-                            ].indexOf(item) < 0) {
-                                autoTake.toTake.push(item);
-                            }
-                        } else if (trimmed.startsWith("==")) {
-                            if (exploration.exploringLocation !== null && exploration.exploreResult === null) {
-                                exploration.exploreResult = trimmed;
-                            } else if (exploration.exploreResult !== null) {
-                                exploration.exploreResult = null;
-                                exploration.exploringLocation = null;
-                                if (hacking.isHacking) {
-                                    // failed exploration
-                                    hacking.toRecover = [...inventory.elements];
-                                }
-                            }
-                        } else if (trimmed === "Items in your inventory:") {
-                            inventory.isPopulating = true;
-                            inventory.elements = [];
-                        } else if (trimmed === "Items here:" && autoTake.enable) {
-                            autoTake.populating = true;
-                            autoTake.toTake = [];
-                        } else if (trimmed === "Doors here lead:") {
-                            possibleMovements.populating = true;
-                            possibleMovements.movements = [];
+                            exploration.field.set(exploration.exploringLocation, exploration.exploreResult);
+                            exploration.explored.add(exploration.exploreResult);
+                            exploration.currentPosition = exploration.exploringLocation;
+                            exploration.exploringLocation = null;
+                            exploration.exploreResult = null;
                         }
+                    } else if (possibleMovements.populating) {
+                        possibleMovements.movements.push(trimmed.slice(2));
+                    } else if (inventory.isPopulating && trimmed.length > 0) {
+                        inventory.elements.push(trimmed.slice(2));
+                    } else if (autoTake.populating && trimmed.length > 0) {
+                        const item = trimmed.slice(2);
+                        if ([
+                            "infinite loop",
+                            "giant electromagnet",
+                            "escape pod",
+                            "molten lava",
+                            "photons"
+                        ].indexOf(item) < 0) {
+                            autoTake.toTake.push(item);
+                        }
+                    } else if (trimmed.startsWith("==")) {
+                        if (exploration.exploringLocation !== null && exploration.exploreResult === null) {
+                            exploration.exploreResult = trimmed;
+                        } else if (exploration.exploreResult !== null) {
+                            exploration.exploreResult = null;
+                            exploration.exploringLocation = null;
+                            if (hacking.isHacking) {
+                                // failed exploration
+                                hacking.toRecover = [...inventory.elements];
+                            }
+                        }
+                    } else if (trimmed === "Items in your inventory:") {
+                        inventory.isPopulating = true;
+                        inventory.elements = [];
+                    } else if (trimmed === "Items here:" && autoTake.enable) {
+                        autoTake.populating = true;
+                        autoTake.toTake = [];
+                    } else if (trimmed === "Doors here lead:") {
+                        possibleMovements.populating = true;
+                        possibleMovements.movements = [];
+                    }
                     await outputCallback(line);
                     outputBuffer.length = 0;
                 } else {
-                    outputBuffer.push(n);
+                    outputBuffer.push(o);
                 }
             }
         });
@@ -335,10 +335,19 @@ export const cryostasis = entryForFile(
     async ({ lines, outputCallback }) => {
         throw Error("Not implemented");
     },
-    { key: "cryostasis", title: "Cryostasis", stars: 1, hasAdditionalInput: true}
+    { key: "cryostasis", title: "Cryostasis", stars: 1, hasAdditionalInput: true }
 );
 
-function createMap(exploration: { exploringLocation: Coordinate | null; exploreResult: string | null; explored: Set<string>; field: UnknownSizeField<string>; currentPosition: { x: number; y: number; }; autoMovements: string[]; }) {
+function createMap(
+    exploration: {
+        exploringLocation: Coordinate | null;
+        exploreResult: string | null;
+        explored: Set<string>;
+        field: UnknownSizeField<string>;
+        currentPosition: { x: number; y: number; };
+        autoMovements: string[];
+    }
+) {
     const maxLength = [...exploration.explored.values()].reduce((acc, next) => Math.max(acc, next.length), 0);
     const matrix = exploration.field.toMatrix();
     const output = matrix.toString((e) => {

@@ -1,25 +1,25 @@
 import { entryForFile, simpleOutputCallbackFactory } from "../../entry";
 import { modInverse, pow } from "../../../support/algebra";
 
-type Coefficients = {
-    a: bigint,
-    b: bigint,
-};
+interface Coefficients {
+    a: bigint;
+    b: bigint;
+}
 
 export class CoefficientCalculator {
     public coefficients: Coefficients;
     constructor(
         private size: bigint,
-        coefficients?: Coefficients 
+        coefficients?: Coefficients
     ) {
         if (!coefficients) {
             this.coefficients = {
                 a: 1n,
-                b: 0n 
+                b: 0n
             };
         } else {
             this.coefficients = coefficients;
-        } 
+        }
     }
     public deal(): CoefficientCalculator {
         const newCoefficients = {
@@ -34,12 +34,12 @@ export class CoefficientCalculator {
         const newCoefficients = {
             a: this.coefficients.a,
             b: (this.size + this.coefficients.b - n) % this.size
-        }
+        };
         this.coefficients = newCoefficients;
         return this;
     }
 
-    public increment(n : bigint): CoefficientCalculator {
+    public increment(n: bigint): CoefficientCalculator {
         const newCoefficients = {
             a: (this.coefficients.a * n) % this.size,
             b: (this.coefficients.b * n) % this.size
@@ -55,7 +55,7 @@ export class CoefficientCalculator {
     public pow(n: bigint): CoefficientCalculator {
         const factor = this.coefficients;
         const an = pow(factor.a, n, this.size);
-        const b = factor.a === 1n ? (factor.b * n) : (factor.b * ((an - 1n) / (factor.a -1n)));
+        const b = factor.a === 1n ? (factor.b * n) : (factor.b * ((an - 1n) / (factor.a - 1n)));
         this.coefficients = {
             a: an,
             b: b % this.size
@@ -68,12 +68,16 @@ export class CoefficientCalculator {
         this.coefficients = {
             a: aInverted,
             b: -(aInverted * this.coefficients.b)
-        }
+        };
         return this;
     }
 }
 
-export const getCoefficients = (lines: string[], size: bigint, startCoefficients?: Coefficients): CoefficientCalculator => {
+export const getCoefficients = (
+    lines: string[],
+    size: bigint,
+    startCoefficients?: Coefficients
+): CoefficientCalculator => {
     const coefficientCalculator = new CoefficientCalculator(size, startCoefficients);
     lines.forEach((line) => {
         if (line.indexOf("deal into new stack") >= 0) {
@@ -91,7 +95,7 @@ export const getCoefficients = (lines: string[], size: bigint, startCoefficients
         }
     });
     return coefficientCalculator;
-}
+};
 
 
 export class Deck {
@@ -141,11 +145,11 @@ export class Deck {
         return this;
     }
 
-    public sort(): Array<{card: (number | bigint), index: (number | bigint)}> {
+    public sort(): Array<{ card: (number | bigint), index: (number | bigint) }> {
         return this.positions
-            .map((e, i) => ({e, i}))
+            .map((e, i) => ({ e, i }))
             .sort((a, b) => Number(a.e - b.e))
-            .map((e) => ({card: e.i, index: e.e}));
+            .map((e) => ({ card: e.i, index: e.e }));
     }
 
 }
@@ -217,16 +221,16 @@ export const slamShuffle = entryForFile(
         const size = 119315717514047n;
         const times = 101741582076661n;
 
-    const coeff = getCoefficients(lines, size);
-    coeff.pow(times);
-    coeff.invert();
-    const value = coeff.applyTo(2020n);
-    await outputCallback(value);
+        const coeff = getCoefficients(lines, size);
+        coeff.pow(times);
+        coeff.invert();
+        const value = coeff.applyTo(2020n);
+        await outputCallback(value);
 
-    const checkCoeff = getCoefficients(lines, size);
-    checkCoeff.pow(times);
-    const inv = checkCoeff.applyTo(value)
-    await outputCallback(inv);
+        const checkCoeff = getCoefficients(lines, size);
+        checkCoeff.pow(times);
+        const inv = checkCoeff.applyTo(value);
+        await outputCallback(inv);
     },
-    { key: "slam-shuffle", title: "Slam Shuffle", stars: 1}
+    { key: "slam-shuffle", title: "Slam Shuffle", stars: 1 }
 );

@@ -57,7 +57,7 @@ const findUnbalancedIndex = (weights: number[]): number | null => {
     if (min === max) {
         return null;
     }
-    const isMinUnbalanced = weights.filter((w) => w === min).length == 1;
+    const isMinUnbalanced = weights.filter((w) => w === min).length === 1;
     const target = isMinUnbalanced ? min : max;
     return weights.indexOf(target);
 };

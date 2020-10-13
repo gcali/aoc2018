@@ -1,5 +1,5 @@
 <template lang="pug">
-    .wrapper
+    .entries-wrapper
         ul.entries
                 li(v-for="entry in entries" :key="entry.name")
                     CalendarEntry(
@@ -41,6 +41,7 @@ export default class Entries extends Vue {
 
 <style lang="scss">
 .entries {
+    max-width: 60em;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;

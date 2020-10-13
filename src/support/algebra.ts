@@ -8,7 +8,7 @@ export const modInverse = (n: bigint, mod: bigint): bigint => {
 
 export const pow = (n: bigint, exp: bigint, mod: bigint): bigint => {
     return bigintCryptoUtils.modPow(n, exp, mod);
-}
+};
 
 const calculateExtended = (aP: number, bP: number, m: number): {
     a: number,

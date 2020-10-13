@@ -60,8 +60,7 @@ export function* subsetGenerator<T>(array: T[], start: number): Iterable<T[]> {
 export function* permutationGenerator<T>(array: T[]): Iterable<T[]> {
     if (array.length === 1) {
         yield [array[0]];
-    }
-    else {
+    } else {
         for (let i = 0; i < array.length; i++) {
             const startElement = array[i];
             const otherElements = [...array];
@@ -78,4 +77,4 @@ export function* buildGroups<T>(data: T[], size: number, step: number = 1): Iter
     for (let i = 0; i <= data.length - size; i += step) {
         yield data.slice(i, i + size);
     }
-};
+}

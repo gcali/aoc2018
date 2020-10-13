@@ -2,12 +2,12 @@ import { entryForFile } from "../../entry";
 
 export const notQuiteLisp = entryForFile(
     async ({ lines, outputCallback }) => {
-        var line = lines[0];
-        var count = line.split("").reduce((acc, next) => acc + (next === "(" ? 1 : -1), 0);
+        const line = lines[0];
+        const count = line.split("").reduce((acc, next) => acc + (next === "(" ? 1 : -1), 0);
         await outputCallback(count);
     },
     async ({ lines, outputCallback }) => {
-        var line = lines[0];
+        const line = lines[0];
 
         let position = 0;
         for (let i = 0; i < line.length; i++) {
@@ -20,5 +20,5 @@ export const notQuiteLisp = entryForFile(
 
         await outputCallback("Never gone to the basement");
     },
-    { key: "not-quite-lisp", title: "Not Quite Lisp", stars: 2}
+    { key: "not-quite-lisp", title: "Not Quite Lisp", stars: 2 }
 );

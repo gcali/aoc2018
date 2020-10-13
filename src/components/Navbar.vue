@@ -13,7 +13,7 @@
       .nav-entry
         router-link(:to="{name: 'entries'}", v-if="shouldTruncateList") (...)
         router-link(:to="{name: entry.name}", v-for=("entry in entryList"), :key="entry.name") {{entry.title}}
-      router-link(:to="{name: lastEntryName}") Last Entry
+      router-link.last-entry(:to="{name: lastEntryName}") Last Entry
     
 </template>
 
@@ -90,6 +90,7 @@ export default Vue.extend({
 
 <style lang="scss">
 #nav {
+    z-index: 1;
     @mixin nav-entry {
         font-weight: bold;
         text-decoration: none;
@@ -112,6 +113,7 @@ export default Vue.extend({
     flex-direction: column;
     color: $text-color;
     .links {
+        width: 15em;
         @include small-screen {
             background-color: $navbar-color;
             position: fixed;
@@ -199,6 +201,12 @@ export default Vue.extend({
             margin-left: 2em;
             font-size: 90%;
             font-weight: normal;
+        }
+    }
+    .last-entry {
+        display: none;
+        @include small-screen {
+            display: block;
         }
     }
 }

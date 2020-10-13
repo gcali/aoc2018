@@ -1,5 +1,4 @@
 import { entryForFile } from "../../entry";
-import { parse } from 'path';
 
 type State = Map<string, number>;
 
@@ -25,15 +24,15 @@ type Operation = {
 } | {
     operator: "VALUE",
     amount: number | string
-}
+};
 
-type InputLine = {
+interface InputLine {
     destination: string;
     operation: Operation;
 }
 
 const parseInput = (lines: string[]): InputLine[] => {
-    const parsed: InputLine[] = lines.map(line => {
+    const parsed: InputLine[] = lines.map((line) => {
         const [left, destination] = line.split(" -> ");
         const tokens = left.split(" ");
         if (tokens[0] === "NOT") {
@@ -54,7 +53,7 @@ const parseInput = (lines: string[]): InputLine[] => {
                         a: tokens[0],
                         b: tokens[2]
                     }
-                }
+                };
             case "AND":
                 return {
                     destination,
@@ -63,7 +62,7 @@ const parseInput = (lines: string[]): InputLine[] => {
                         a: parseNumberOrString(tokens[0]),
                         b: tokens[2]
                     }
-                }
+                };
             case "RSHIFT":
                 return {
                     destination,
@@ -99,7 +98,7 @@ const parseNumberOrString = (s: string): number | string => {
     const parsed = parseInt(s, 10);
     const isNumber = parsed.toString() === s;
     return isNumber ? parsed : s;
-}
+};
 
 const calculate = (wire: string | number, state: State, input: InputLine[]): number => {
     if (typeof(wire) !== "string") {
@@ -108,7 +107,7 @@ const calculate = (wire: string | number, state: State, input: InputLine[]): num
     if (state.has(wire)) {
         return state.get(wire)!;
     }
-    const [rule] = input.filter(line => line.destination === wire);
+    const [rule] = input.filter((line) => line.destination === wire);
     if (!rule) {
         throw new Error("Cannot parse rule for: " + wire);
     }
@@ -119,47 +118,41 @@ const calculate = (wire: string | number, state: State, input: InputLine[]): num
     state.set(wire, value);
     return value;
 
-}
+};
 
 const handleOperation = (rule: InputLine, state: State, input: InputLine[]): number => {
     switch (rule.operation.operator) {
-        case "VALUE":
-            {
+        case "VALUE": {
                 if (typeof(rule.operation.amount) === "string") {
                     return calculate(rule.operation.amount, state, input);
                 } else {
                     return rule.operation.amount;
                 }
             }
-        case "AND":
-            {
+        case "AND": {
                 const a = calculate(rule.operation.a, state, input);
                 const b = calculate(rule.operation.b, state, input);
                 return a & b;
             }
-        case "OR":
-            {
+        case "OR": {
                 const a = calculate(rule.operation.a, state, input);
                 const b = calculate(rule.operation.b, state, input);
                 return a | b;
             }
-        case "LSHIFT":
-            {
+        case "LSHIFT": {
                 const i = calculate(rule.operation.input, state, input);
                 return i << calculate(rule.operation.amount, state, input);
             }
-        case "RSHIFT":
-            {
+        case "RSHIFT": {
                 const i = calculate(rule.operation.input, state, input);
                 return i >>> calculate(rule.operation.amount, state, input);
             }
-        case "NOT":
-            {
+        case "NOT": {
                 const i = calculate(rule.operation.input, state, input);
                 return ~i;
             }
     }
-}
+};
 
 export const someAssemblyRequired = entryForFile(
     async ({ lines, outputCallback }) => {
@@ -172,7 +165,7 @@ export const someAssemblyRequired = entryForFile(
         const state = new Map<string, number>();
         const input = parseInput(lines);
         const value = calculate("a", state, input);
-        const newInput: InputLine[] = input.map(line => line.destination === "b" ? {
+        const newInput: InputLine[] = input.map((line) => line.destination === "b" ? {
             ...line,
             operation: {
                 operator: "VALUE",

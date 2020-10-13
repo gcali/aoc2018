@@ -43,7 +43,6 @@ export const categorySix = entryForFile(
 
         let sentPackets = 0;
         let receivedPackets = 0;
-        let realOutput: null | ((n: number) => void);
         const iteration = 0;
         let shouldClose = false;
         const emptyPromise = async () => {
@@ -130,7 +129,7 @@ export const categorySix = entryForFile(
             await Promise.all(promises);
         } catch (e) {
             if ((e as ClosingDown).FLAG) {
-
+                // do nothing
             } else {
                 throw e;
             }
@@ -254,11 +253,11 @@ export const categorySix = entryForFile(
             await Promise.all(promises);
         } catch (e) {
             if ((e as ClosingDown).FLAG) {
-
+                // do nothing
             } else {
                 throw e;
             }
         }
     },
-    { key: "category-six", title: "Category Six", stars: 2}
+    { key: "category-six", title: "Category Six", stars: 2 }
 );

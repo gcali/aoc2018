@@ -1,5 +1,5 @@
 import { entryForFile } from "../../entry";
-import { buildGroups } from '../../../support/sequences';
+import { buildGroups } from "../../../support/sequences";
 
 interface Ingredient {
     name: string;
@@ -11,17 +11,17 @@ interface Ingredient {
 }
 
 const parseIngredients = (lines: string[]): Ingredient[] => {
-    return lines.map(line => {
-        const tokens = line.split(" ").map(e => e.endsWith(":") || e.endsWith(",") ?
+    return lines.map((line) => {
+        const tokens = line.split(" ").map((e) => e.endsWith(":") || e.endsWith(",") ?
             e.slice(0, -1) : e);
         const name = tokens[0];
-        const values = [...buildGroups(tokens.slice(1), 2, 2)].map(e => {
+        const values = [...buildGroups(tokens.slice(1), 2, 2)].map((e) => {
             return {
                 type: e[0],
-                value: parseInt(e[1])
+                value: parseInt(e[1], 10)
             };
         });
-        let ingredient: Ingredient = {
+        const ingredient: Ingredient = {
             name,
             capacity: 0,
             durability: 0,
@@ -34,8 +34,8 @@ const parseIngredients = (lines: string[]): Ingredient[] => {
         }
         return ingredient;
 
-    })
-}
+    });
+};
 
 function* generateRecipes(ingredients: Ingredient[], total: number): Iterable<Recipe[]> {
     if (ingredients.length === 0) {
@@ -54,7 +54,7 @@ function* generateRecipes(ingredients: Ingredient[], total: number): Iterable<Re
     const [ingredient] = ingredients;
     const otherIngredients = ingredients.slice(1);
     for (let i = 1; i <= total - (ingredients.length - 1); i++) {
-        for (const permutation of generateRecipes(otherIngredients,total - i)) {
+        for (const permutation of generateRecipes(otherIngredients, total - i)) {
             yield [{
                 ingredient,
                 amount: i
@@ -63,30 +63,30 @@ function* generateRecipes(ingredients: Ingredient[], total: number): Iterable<Re
     }
 }
 
-const calculateSingleTotal = (single: Array<{characteristic: number, amount: number}>): number => {
+const calculateSingleTotal = (single: Array<{ characteristic: number, amount: number }>): number => {
     return Math.max(0, single.reduce((acc, next) => acc + (next.characteristic * next.amount), 0));
-}
+};
 
-type Recipe = {ingredient: Ingredient, amount: number};
+interface Recipe { ingredient: Ingredient; amount: number; }
 
 const calculateScore = (recipe: Recipe[]): number => {
     if (recipe.reduce((acc, next) => acc + next.amount, 0) !== 100) {
         throw new Error("Invalid amount");
     }
     const totals = [
-        calculateSingleTotal(recipe.map(e => ({
+        calculateSingleTotal(recipe.map((e) => ({
             characteristic: e.ingredient.capacity,
             amount: e.amount
         }))),
-        calculateSingleTotal(recipe.map(e => ({
+        calculateSingleTotal(recipe.map((e) => ({
             characteristic: e.ingredient.durability,
             amount: e.amount
         }))),
-        calculateSingleTotal(recipe.map(e => ({
+        calculateSingleTotal(recipe.map((e) => ({
             characteristic: e.ingredient.flavor,
             amount: e.amount
         }))),
-        calculateSingleTotal(recipe.map(e => ({
+        calculateSingleTotal(recipe.map((e) => ({
             characteristic: e.ingredient.texture,
             amount: e.amount
         })))
@@ -97,7 +97,7 @@ const calculateScore = (recipe: Recipe[]): number => {
 
 const calculateCalories = (recipe: Recipe[]): number => {
     return recipe.reduce((acc, next) => acc + (next.ingredient.calories * next.amount), 0);
-}
+};
 
 export const scienceForHungryPeople = entryForFile(
     async ({ lines, outputCallback }) => {
@@ -121,5 +121,5 @@ export const scienceForHungryPeople = entryForFile(
         }
         await outputCallback(bestResult);
     },
-    { key: "science-for-hungry-people", title: "Science for Hungry People", stars: 2}
+    { key: "science-for-hungry-people", title: "Science for Hungry People", stars: 2 }
 );

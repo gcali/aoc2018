@@ -26,11 +26,10 @@ export const chronalConversion = entryForFile(
             throw new Error("Sorry, this solution is hardcoded on my input");
         }
         while (machine.isExecutable(instructions.length)) {
-            // await outputCallback(`${machine.nextInstructionAddress.toString().padStart(2, " ")} ${[0,1,2,3,4,5].map(i => machine.registers[i].toString().padStart(10, " ")).join(" ")}`);
             const instruction = instructions[machine.nextInstructionAddress];
             if (instruction.lineNumber === 28) {
                 if (++iterations % 10 === 0) {
-                    await outputCallback(`New comparison, ${iterations.toString().padStart(6, " ")}` );
+                    await outputCallback(`New comparison, ${iterations.toString().padStart(6, " ")}`);
                 }
                 const fourValue = machine.registers[4];
                 if (uniques.has(fourValue)) {

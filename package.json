@@ -15,6 +15,9 @@
     "console-r": "ts-node src/console.ts"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.30",
+    "@fortawesome/free-solid-svg-icons": "^5.14.0",
+    "@fortawesome/vue-fontawesome": "^2.0.0",
     "big-integer": "^1.6.48",
     "bigint-crypto-utils": "^3.0.1",
     "js-combinatorics": "^0.5.5",
@@ -36,7 +39,7 @@
     "@types/mathjs": "^6.0.5",
     "@types/minimist": "^1.2.0",
     "@types/mocha": "^5.2.7",
-    "@types/node": "^10.17.18",
+    "@types/node": "^10.17.29",
     "@types/node-dijkstra": "^2.5.0",
     "@types/wu": "^2.1.41",
     "@vue/cli-plugin-babel": "^3.12.1",

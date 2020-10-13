@@ -149,7 +149,7 @@ describe("Slam Shuffle", () => {
 
     it("should calculate right coefficients for pow 1", () => {
         const size = 10n;
-        let iterative = getCoefficients(baseInput, size);
+        const iterative = getCoefficients(baseInput, size);
 
         const calculated = getCoefficients(baseInput, size);
         calculated.pow(1n);
@@ -191,7 +191,7 @@ describe("Slam Shuffle", () => {
         const calculated = getCoefficients(baseInput, size);
         calculated.pow(p);
 
-        const deck = new Deck(size, [3n]); 
+        const deck = new Deck(size, [3n]);
         for (let i = 0; i < size; i++) {
             shuffleDeck(baseInput, deck);
         }
@@ -202,7 +202,7 @@ describe("Slam Shuffle", () => {
 
         expect(calculatedValue).to.equal(manualValue);
 
-        
+
     });
 
 });
