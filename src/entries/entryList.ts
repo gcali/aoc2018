@@ -97,6 +97,8 @@ import { medicineForRudolph } from './single-entries/2015/medicine-for-rudolph';
 import { infiniteElvesAndInfiniteHouses } from './single-entries/2015/infinite-elves-and-infinite-houses';
 import { rpgSimulator20xx } from './single-entries/2015/rpg-simulator-20xx';
 import { wizardSimulator20xx } from './single-entries/2015/wizard-simulator-20xx';
+import { itHangsInTheBalance } from './single-entries/2015/it-hangs-in-the-balance';
+import { letItSnow } from './single-entries/2015/let-it-snow';
 
 export interface EntryRoute extends EntryRouteBase {
     date: number;
@@ -170,7 +172,9 @@ export const entryList: { [key: string]: EntryRoute[] } = {
         infiniteElvesAndInfiniteHouses,
         rpgSimulator20xx,
         wizardSimulator20xx,
-        turingLock
+        turingLock,
+        itHangsInTheBalance,
+        letItSnow
     ]),
     2017: enrichList([
         inverseCaptcha,
