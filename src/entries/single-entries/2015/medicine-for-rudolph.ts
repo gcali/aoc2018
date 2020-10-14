@@ -1,7 +1,6 @@
 import { entryForFile } from "../../entry";
 import { Queue } from '../../../support/data-structure';
 import { parse } from 'path';
-import PriorityQueue from "priorityqueue";
 import { isProbablyPrime } from 'bigint-crypto-utils';
 import { setTimeoutAsync } from '../../../support/async';
 
@@ -17,8 +16,8 @@ const serializeRule = (rule: Rule): string => {
 
 const parseRules = (lines: string[]): Rule[] => {
     return lines.map(line => {
-        const [from,to] = line.split(" => ");
-        return {from, to: parseMolecule(to), flatTo: to};
+        const [from, to] = line.split(" => ");
+        return { from, to: parseMolecule(to), flatTo: to };
     });
 };
 
@@ -40,7 +39,7 @@ const parseMolecule = (line: string): string[] => {
     return result;
 };
 
-const parseLines = (lines: string[]): {rules: Rule[], molecule: string[]} => {
+const parseLines = (lines: string[]): { rules: Rule[], molecule: string[] } => {
     const separator = lines.findIndex(e => e.length === 0);
     const rules = parseRules(lines.slice(0, separator));
     const molecule = parseMolecule(lines[separator + 1]);
@@ -98,14 +97,14 @@ export const medicineForRudolph = entryForFile(
         //here I started noticing a pattern for Rn, Y and Ar; unfortunately I wasn't smart enough to figure all out, but thanks to askaski for his analysis and this:
         const target = parsed.molecule;
 
-        const result = target.length - target.filter(t => t === "Ar" || t === "Rn").length - 2*target.filter(t => t === "Y").length - 1;
+        const result = target.length - target.filter(t => t === "Ar" || t === "Rn").length - 2 * target.filter(t => t === "Y").length - 1;
 
         await outputCallback(result);
         await outputCallback("Thanks askalski :)")
         await outputCallback("See https://www.reddit.com/r/adventofcode/comments/3xflz8/day_19_solutions/cy4etju")
 
     },
-    { key: "medicine-for-rudolph", title: "Medicine for Rudolph", stars: 1}
+    { key: "medicine-for-rudolph", title: "Medicine for Rudolph", stars: 1 }
 );
 
 function* createCandidates(rules: Rule[], molecule: string[]): Iterable<string[]> {
@@ -113,7 +112,7 @@ function* createCandidates(rules: Rule[], molecule: string[]): Iterable<string[]
         for (let i = 0; i < molecule.length; i++) {
             if (molecule[i] === rule.from) {
                 const result = molecule.slice(0, i).concat(rule.to).concat(molecule.slice(i + 1));
-                yield  result;
+                yield result;
             }
         }
     }
