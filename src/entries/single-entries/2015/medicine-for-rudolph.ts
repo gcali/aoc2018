@@ -104,7 +104,7 @@ export const medicineForRudolph = entryForFile(
         await outputCallback("See https://www.reddit.com/r/adventofcode/comments/3xflz8/day_19_solutions/cy4etju")
 
     },
-    { key: "medicine-for-rudolph", title: "Medicine for Rudolph", stars: 1 }
+    { key: "medicine-for-rudolph", title: "Medicine for Rudolph", stars: 2 }
 );
 
 function* createCandidates(rules: Rule[], molecule: string[]): Iterable<string[]> {

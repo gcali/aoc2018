@@ -14,7 +14,7 @@ type Timers = {
     recharge: number;
 }
 
-type PlayerState = State & Timers & {mana: number, spentMana: number};
+type PlayerState = State & Timers & { mana: number, spentMana: number };
 
 type Spell = "missile" | "drain" | "shield" | "poison" | "recharge";
 
@@ -47,13 +47,13 @@ const paySpell = (spell: Spell, state: PlayerState): PlayerState => {
     };
 };
 
-const launchSpell = (spell: Spell, {playerState, bossState}: GameState): GameState => {
+const launchSpell = (spell: Spell, { playerState, bossState }: GameState): GameState => {
     playerState = paySpell(spell, playerState);
     switch (spell) {
         case "drain":
             return {
                 playerState: {
-                    ...playerState, 
+                    ...playerState,
                     hitPoints: playerState.hitPoints + 2
                 },
                 bossState: {
@@ -98,12 +98,12 @@ const launchSpell = (spell: Spell, {playerState, bossState}: GameState): GameSta
 
 const parseState = (lines: string[]): State => {
     const [hitPoints, damage] = lines.map(l => parseInt(l.split(": ")[1], 10));
-    return {hitPoints, damage};
+    return { hitPoints, damage };
 }
 
-const applyEffects = ({playerState, bossState}: GameState): GameState => {
-    const newPlayerState = {...playerState};
-    const newBossState = {...bossState};
+const applyEffects = ({ playerState, bossState }: GameState): GameState => {
+    const newPlayerState = { ...playerState };
+    const newBossState = { ...bossState };
     if (newPlayerState.poison > 0) {
         newPlayerState.poison--;
         newBossState.hitPoints -= 3;
@@ -115,12 +115,12 @@ const applyEffects = ({playerState, bossState}: GameState): GameState => {
         newPlayerState.mana += 101;
         newPlayerState.recharge--;
     }
-    return {playerState: newPlayerState, bossState: newBossState};
+    return { playerState: newPlayerState, bossState: newBossState };
 }
 
-const bossDamageTurn = ({playerState, bossState}: GameState): GameState => {
+const bossDamageTurn = ({ playerState, bossState }: GameState): GameState => {
     const damage = Math.max(bossState.damage - (playerState.shield > 0 ? 7 : 0), 1);
-    return hurtPlayer({playerState, bossState}, damage);
+    return hurtPlayer({ playerState, bossState }, damage);
     // return {
     //     playerState: {
     //         ...playerState,
@@ -130,7 +130,7 @@ const bossDamageTurn = ({playerState, bossState}: GameState): GameState => {
     // };
 };
 
-const hurtPlayer = ({playerState, bossState}: GameState, damage: number): GameState => {
+const hurtPlayer = ({ playerState, bossState }: GameState, damage: number): GameState => {
     return {
         playerState: {
             ...playerState,
@@ -145,7 +145,7 @@ const spells: Spell[] = [
     "missile",
     "poison",
     "recharge",
-    "shield"    
+    "shield"
 ];
 
 const canLaunchSpell = (state: GameState, spell: Spell): boolean => {
@@ -179,34 +179,34 @@ type TurnResult = {
 };
 
 const playTurn = (spell: Spell, state: GameState, playerHpLoss: number = 0): TurnResult => {
-            const current = state;
-            const afterStart = playerHpLoss === 0 ? current : hurtPlayer(current, playerHpLoss);
-            if (afterStart.playerState.hitPoints <= 0) {
-                return {hasWon: false, hasLost: true, state: afterStart};
-            }
-            const afterEffects = applyEffects(afterStart);
-            if (afterEffects.bossState.hitPoints <= 0) {
-                return { hasWon: true, state: afterEffects};
-            }
-            if (!canLaunchSpell(afterEffects, spell)) {
-                return {hasWon: false, hasLost: true, state: afterEffects};
-            }
-            const afterSpell = launchSpell(spell, afterEffects);
-            if (afterSpell.playerState.mana < 0) {
-                return {hasWon: false, hasLost: true, state: afterSpell};
-            }
-            if (afterSpell.bossState.hitPoints <= 0) {
-                return { hasWon: true, state: afterSpell};
-            }
-            const afterSecondEffects = applyEffects(afterSpell);
-            if (afterSecondEffects.bossState.hitPoints <= 0) {
-                return { hasWon: true, state: afterSecondEffects};
-            }
-            const afterBoss = bossDamageTurn(afterSecondEffects);
-            if (afterBoss.playerState.hitPoints <= 0) {
-                return {hasWon: false, hasLost: true, state: afterBoss};
-            }
-            return {hasWon: false, hasLost: false, state: afterBoss};
+    const current = state;
+    const afterStart = playerHpLoss === 0 ? current : hurtPlayer(current, playerHpLoss);
+    if (afterStart.playerState.hitPoints <= 0) {
+        return { hasWon: false, hasLost: true, state: afterStart };
+    }
+    const afterEffects = applyEffects(afterStart);
+    if (afterEffects.bossState.hitPoints <= 0) {
+        return { hasWon: true, state: afterEffects };
+    }
+    if (!canLaunchSpell(afterEffects, spell)) {
+        return { hasWon: false, hasLost: true, state: afterEffects };
+    }
+    const afterSpell = launchSpell(spell, afterEffects);
+    if (afterSpell.playerState.mana < 0) {
+        return { hasWon: false, hasLost: true, state: afterSpell };
+    }
+    if (afterSpell.bossState.hitPoints <= 0) {
+        return { hasWon: true, state: afterSpell };
+    }
+    const afterSecondEffects = applyEffects(afterSpell);
+    if (afterSecondEffects.bossState.hitPoints <= 0) {
+        return { hasWon: true, state: afterSecondEffects };
+    }
+    const afterBoss = bossDamageTurn(afterSecondEffects);
+    if (afterBoss.playerState.hitPoints <= 0) {
+        return { hasWon: false, hasLost: true, state: afterBoss };
+    }
+    return { hasWon: false, hasLost: false, state: afterBoss };
 }
 
 const bfsPruned = (startGameState: GameState, hardMode: boolean): GameState | null => {
@@ -220,7 +220,7 @@ const bfsPruned = (startGameState: GameState, hardMode: boolean): GameState | nu
     }
     while (!states.isEmpty) {
         const current = states.get()!;
-        if (bestWinState !== null){
+        if (bestWinState !== null) {
             const cast = bestWinState as GameState;
             if (cast.playerState.spentMana < current.playerState.spentMana) {
                 continue;
@@ -270,14 +270,14 @@ const bfsPruned = (startGameState: GameState, hardMode: boolean): GameState | nu
 
 const exploreFight = (startGameState: GameState): GameState | null => {
     // const queue = new WizardPriorityQueue();
-    const queue = new PairingHeap<{spell: Spell; gameState: GameState}>({
-        comparator: 
-            (a, b) => 
-            spellCost(b.spell) + b.gameState.playerState.spentMana -
-            (spellCost(a.spell) + a.gameState.playerState.spentMana)
+    const queue = new PairingHeap<{ spell: Spell; gameState: GameState }>({
+        comparator:
+            (a, b) =>
+                spellCost(b.spell) + b.gameState.playerState.spentMana -
+                (spellCost(a.spell) + a.gameState.playerState.spentMana)
     });
     spells.forEach(spell => {
-        queue.push({spell, gameState: startGameState});
+        queue.push({ spell, gameState: startGameState });
     });
     while (!queue.isEmpty()) {
         const round = queue.pop();
@@ -314,7 +314,7 @@ const exploreFight = (startGameState: GameState): GameState | null => {
             spellCandidates.push("poison");
         }
         spellCandidates.forEach(spell => {
-            queue.push({spell, gameState: afterBoss});
+            queue.push({ spell, gameState: afterBoss });
         });
     }
     return null;
@@ -331,7 +331,7 @@ const initGameState = (lines: string[]): GameState => {
         shield: 0,
         spentMana: 0
     };
-    return {bossState, playerState};
+    return { bossState, playerState };
 
 }
 
@@ -354,5 +354,5 @@ export const wizardSimulator20xx = entryForFile(
             await outputCallback(winner);
         }
     },
-    { key: "wizard-simulator-20xx", title: "Wizard Simulator 20XX"}
+    { key: "wizard-simulator-20xx", title: "Wizard Simulator 20XX", stars: 2 }
 );

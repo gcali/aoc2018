@@ -6,7 +6,7 @@ import { getSurrounding, manhattanDistance, getFullSurrounding } from "../../../
 type Field = FixedSizeMatrix<"#" | ".">;
 
 const parseField = (lines: string[]): Field => {
-    const size = {x: lines[0].length, y: lines.length};
+    const size = { x: lines[0].length, y: lines.length };
     const field = new FixedSizeMatrix<"#" | ".">(size);
     field.setFlatData(lines.flatMap((l) => l.split("").map((e) => e as "#" | ".")));
     return field;
@@ -16,10 +16,10 @@ const iterateGame = (field: Field, leaveCornersOn: boolean = false): Field => {
     const newField = field.copy();
     field.onEveryCell((coordinate, cell) => {
         if (leaveCornersOn &&
-            (manhattanDistance(coordinate, {x: 0, y: 0}) === 0
-            || manhattanDistance(coordinate, {x: 0, y: field.size.y - 1}) === 0
-            || manhattanDistance(coordinate, {x: field.size.x - 1, y: 0}) === 0
-            || manhattanDistance(coordinate, {x: field.size.x - 1, y: field.size.y - 1}) === 0)
+            (manhattanDistance(coordinate, { x: 0, y: 0 }) === 0
+                || manhattanDistance(coordinate, { x: 0, y: field.size.y - 1 }) === 0
+                || manhattanDistance(coordinate, { x: field.size.x - 1, y: 0 }) === 0
+                || manhattanDistance(coordinate, { x: field.size.x - 1, y: field.size.y - 1 }) === 0)
         ) {
             return;
         }
@@ -65,5 +65,5 @@ export const likeAGifForYourYard = entryForFile(
             0
         ));
     },
-    { key: "like-a-gif-for-your-yard", title: "Like a GIF For Your Yard"}
+    { key: "like-a-gif-for-your-yard", title: "Like a GIF For Your Yard", stars: 2 }
 );
