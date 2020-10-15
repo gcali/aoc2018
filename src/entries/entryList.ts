@@ -99,6 +99,11 @@ import { rpgSimulator20xx } from './single-entries/2015/rpg-simulator-20xx';
 import { wizardSimulator20xx } from './single-entries/2015/wizard-simulator-20xx';
 import { itHangsInTheBalance } from './single-entries/2015/it-hangs-in-the-balance';
 import { letItSnow } from './single-entries/2015/let-it-snow';
+import { noTimeForATaxicab } from './single-entries/2016/no-time-for-a-taxicab';
+import { bathroomSecurity } from './single-entries/2016/bathroom-security';
+import { squaresWithThreeSides } from './single-entries/2016/squares-with-three-sides';
+import { securityThroughObscurity } from './single-entries/2016/security-through-obscurity';
+import { howAboutANiceGameOfChess } from './single-entries/2016/how-about-a-nice-game-of-chess';
 
 export interface EntryRoute extends EntryRouteBase {
     date: number;
@@ -175,6 +180,13 @@ export const entryList: { [key: string]: EntryRoute[] } = {
         turingLock,
         itHangsInTheBalance,
         letItSnow
+    ]),
+    2016: enrichList([
+        noTimeForATaxicab,
+        bathroomSecurity,
+        squaresWithThreeSides,
+        securityThroughObscurity,
+        howAboutANiceGameOfChess
     ]),
     2017: enrichList([
         inverseCaptcha,

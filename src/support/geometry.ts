@@ -62,6 +62,11 @@ export class CCoordinate implements Coordinate {
     public toString(): string {
         return `(${this.x},${this.y})`;
     }
+
+    public times = (t: number): CCoordinate => {
+        const result = scalarCoordinates(this, t);
+        return new CCoordinate(result.x, result.y);
+    }
 }
 
 export const directions = {

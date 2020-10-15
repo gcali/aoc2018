@@ -11,7 +11,7 @@
       router-link(to="/") Home
       router-link(:to="{name: 'entries'}") Entries
       .nav-entry
-        router-link(:to="{name: 'entries'}", v-if="shouldTruncateList") (...)
+        router-link(:to="{name: 'entries' }", class="shortened", v-if="shouldTruncateList") (...)
         router-link(:to="{name: entry.name}", v-for=("entry in entryList"), :key="entry.name") {{entry.title}}
       router-link.last-entry(:to="{name: lastEntryName}") Last Entry
     
@@ -133,6 +133,9 @@ export default Vue.extend({
             @include nav-entry;
             &.router-link-exact-active {
                 color: $highlight-color;
+            }
+            &.shortened {
+                color: $text-color;
             }
         }
         .years {
