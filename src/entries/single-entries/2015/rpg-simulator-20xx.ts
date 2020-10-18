@@ -1,12 +1,12 @@
 import { entryForFile } from "../../entry";
-import { subsetGenerator } from '../../../support/sequences';
+import { subsetGenerator } from "../../../support/sequences";
 
-type Item = {
+interface Item {
     name: string;
     cost: number;
     damage: number;
     armor: number;
-};
+}
 
 type ShopKey = "weapons" | "armor" | "rings";
 
@@ -40,14 +40,14 @@ const shop: {
     ]
 };
 
-type State = {
+interface State {
     hitPoints: number;
     damage: number;
     armor: number;
 }
 
 const parseState = (lines: string[]): State => {
-    const [hitPoints, damage, armor] = lines.map(l => parseInt(l.split(": ")[1], 10));
+    const [hitPoints, damage, armor] = lines.map((l) => parseInt(l.split(": ")[1], 10));
     return {
         hitPoints,
         damage,
@@ -68,7 +68,7 @@ const fight = (player: State, monster: State): boolean => {
             return false;
         }
     }
-}
+};
 
 export const rpgSimulator20xx = entryForFile(
     async ({ lines, outputCallback }) => {
@@ -78,7 +78,10 @@ export const rpgSimulator20xx = entryForFile(
             for (const armor of shop.armor) {
                 for (const chosenRings of subsetGenerator(shop.rings, 0)) {
                     if (chosenRings.length <= 2) {
-                        const expense = weapon.cost + armor.cost + chosenRings.reduce((acc, next) => acc + next.cost, 0);
+                        const expense =
+                            weapon.cost
+                            + armor.cost
+                            + chosenRings.reduce((acc, next) => acc + next.cost, 0);
                         if (expense < minExpense) {
                             const hasWon = fight({
                                 hitPoints: 100,
@@ -103,7 +106,10 @@ export const rpgSimulator20xx = entryForFile(
             for (const armor of shop.armor) {
                 for (const chosenRings of subsetGenerator(shop.rings, 0)) {
                     if (chosenRings.length <= 2) {
-                        const expense = weapon.cost + armor.cost + chosenRings.reduce((acc, next) => acc + next.cost, 0);
+                        const expense =
+                            weapon.cost
+                            + armor.cost
+                            + chosenRings.reduce((acc, next) => acc + next.cost, 0);
                         if (expense > maxExpense) {
                             const hasWon = fight({
                                 hitPoints: 100,

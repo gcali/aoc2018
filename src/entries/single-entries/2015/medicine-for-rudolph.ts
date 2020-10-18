@@ -1,37 +1,37 @@
 import { entryForFile } from "../../entry";
-import { Queue } from '../../../support/data-structure';
-import { parse } from 'path';
-import { isProbablyPrime } from 'bigint-crypto-utils';
-import { setTimeoutAsync } from '../../../support/async';
+import { Queue } from "../../../support/data-structure";
+import { parse } from "path";
+import { isProbablyPrime } from "bigint-crypto-utils";
+import { setTimeoutAsync } from "../../../support/async";
 
-type Rule = {
+interface Rule {
     from: string;
     to: string[];
     flatTo: string;
-};
+}
 
 const serializeRule = (rule: Rule): string => {
     return `${rule.from} => ${rule.to.join("")}`;
-}
+};
 
 const parseRules = (lines: string[]): Rule[] => {
-    return lines.map(line => {
+    return lines.map((line) => {
         const [from, to] = line.split(" => ");
         return { from, to: parseMolecule(to), flatTo: to };
     });
 };
 
 const parseMolecule = (line: string): string[] => {
-    let current: string[] = [];
+    const current: string[] = [];
     const result: string[] = [];
-    for (let i = 0; i < line.length; i++) {
-        if (line[i].toUpperCase() === line[i]) {
+    for (const c of line) {
+        if (c.toUpperCase() === c) {
             if (current.length > 0) {
                 result.push(current.join(""));
                 current.length = 0;
             }
         }
-        current.push(line[i]);
+        current.push(c);
     }
     if (current.length > 0) {
         result.push(current.join(""));
@@ -40,14 +40,14 @@ const parseMolecule = (line: string): string[] => {
 };
 
 const parseLines = (lines: string[]): { rules: Rule[], molecule: string[] } => {
-    const separator = lines.findIndex(e => e.length === 0);
+    const separator = lines.findIndex((e) => e.length === 0);
     const rules = parseRules(lines.slice(0, separator));
     const molecule = parseMolecule(lines[separator + 1]);
     return {
         rules,
         molecule
     };
-}
+};
 
 export const medicineForRudolph = entryForFile(
     async ({ lines, outputCallback }) => {
@@ -69,39 +69,44 @@ export const medicineForRudolph = entryForFile(
         const bottomRules: Rule[] = [];
         const noFromAtoms: Set<string> = new Set<string>();
 
-        parsed.rules.forEach(rule => {
-            var tos = new Set<string>();
-            rule.to.forEach(r => tos.add(r));
-            tos.forEach(target => {
-                if (appearsInHowManyRules.has(target)) {
-                    appearsInHowManyRules.set(target, appearsInHowManyRules.get(target)! + 1);
+        parsed.rules.forEach((rule) => {
+            const tos = new Set<string>();
+            rule.to.forEach((r) => tos.add(r));
+            tos.forEach((t) => {
+                if (appearsInHowManyRules.has(t)) {
+                    appearsInHowManyRules.set(t, appearsInHowManyRules.get(t)! + 1);
                 } else {
-                    appearsInHowManyRules.set(target, 1);
+                    appearsInHowManyRules.set(t, 1);
                 }
             });
 
-            const noFrom = rule.to.filter(to => parsed.rules.filter(r => r.from === to).length === 0)
+            const noFrom = rule.to.filter((to) => parsed.rules.filter((r) => r.from === to).length === 0);
             const isBottom = noFrom.length > 0;
             if (isBottom) {
-                noFrom.forEach(f => noFromAtoms.add(f));
+                noFrom.forEach((f) => noFromAtoms.add(f));
                 bottomRules.push(rule);
             }
         });
-        const unique = [...appearsInHowManyRules.keys()].filter(key => appearsInHowManyRules.get(key)! === 1);
+        const unique = [...appearsInHowManyRules.keys()].filter((key) => appearsInHowManyRules.get(key)! === 1);
         await outputCallback("Unique: ");
         await outputCallback(unique);
         await outputCallback(appearsInHowManyRules);
         await outputCallback(bottomRules.map(serializeRule));
         await outputCallback(noFromAtoms);
 
-        //here I started noticing a pattern for Rn, Y and Ar; unfortunately I wasn't smart enough to figure all out, but thanks to askaski for his analysis and this:
+        // here I started noticing a pattern for Rn, Y and Ar;
+        // unfortunately I wasn't smart enough to figure all out,
+        // but thanks to askaski for his analysis and this:
         const target = parsed.molecule;
 
-        const result = target.length - target.filter(t => t === "Ar" || t === "Rn").length - 2 * target.filter(t => t === "Y").length - 1;
+        const result =
+            target.length
+            - target.filter((t) => t === "Ar" || t === "Rn").length
+            - 2 * target.filter((t) => t === "Y").length - 1;
 
         await outputCallback(result);
-        await outputCallback("Thanks askalski :)")
-        await outputCallback("See https://www.reddit.com/r/adventofcode/comments/3xflz8/day_19_solutions/cy4etju")
+        await outputCallback("Thanks askalski :)");
+        await outputCallback("See https://www.reddit.com/r/adventofcode/comments/3xflz8/day_19_solutions/cy4etju");
 
     },
     { key: "medicine-for-rudolph", title: "Medicine for Rudolph", stars: 2 }

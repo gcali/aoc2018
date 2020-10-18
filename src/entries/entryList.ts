@@ -92,18 +92,23 @@ import { scienceForHungryPeople } from "./single-entries/2015/science-for-hungry
 import { auntSue } from "./single-entries/2015/aunt-sue";
 import { noSuchThingAsTooMuch } from "./single-entries/2015/no-such-thing-as-too-much";
 import { likeAGifForYourYard } from "./single-entries/2015/like-a-gif-for-your-yard";
-import { turingLock } from './single-entries/2015/turing-lock';
-import { medicineForRudolph } from './single-entries/2015/medicine-for-rudolph';
-import { infiniteElvesAndInfiniteHouses } from './single-entries/2015/infinite-elves-and-infinite-houses';
-import { rpgSimulator20xx } from './single-entries/2015/rpg-simulator-20xx';
-import { wizardSimulator20xx } from './single-entries/2015/wizard-simulator-20xx';
-import { itHangsInTheBalance } from './single-entries/2015/it-hangs-in-the-balance';
-import { letItSnow } from './single-entries/2015/let-it-snow';
-import { noTimeForATaxicab } from './single-entries/2016/no-time-for-a-taxicab';
-import { bathroomSecurity } from './single-entries/2016/bathroom-security';
-import { squaresWithThreeSides } from './single-entries/2016/squares-with-three-sides';
-import { securityThroughObscurity } from './single-entries/2016/security-through-obscurity';
-import { howAboutANiceGameOfChess } from './single-entries/2016/how-about-a-nice-game-of-chess';
+import { turingLock } from "./single-entries/2015/turing-lock";
+import { medicineForRudolph } from "./single-entries/2015/medicine-for-rudolph";
+import { infiniteElvesAndInfiniteHouses } from "./single-entries/2015/infinite-elves-and-infinite-houses";
+import { rpgSimulator20xx } from "./single-entries/2015/rpg-simulator-20xx";
+import { wizardSimulator20xx } from "./single-entries/2015/wizard-simulator-20xx";
+import { itHangsInTheBalance } from "./single-entries/2015/it-hangs-in-the-balance";
+import { letItSnow } from "./single-entries/2015/let-it-snow";
+import { noTimeForATaxicab } from "./single-entries/2016/no-time-for-a-taxicab";
+import { bathroomSecurity } from "./single-entries/2016/bathroom-security";
+import { squaresWithThreeSides } from "./single-entries/2016/squares-with-three-sides";
+import { securityThroughObscurity } from "./single-entries/2016/security-through-obscurity";
+import { howAboutANiceGameOfChess } from "./single-entries/2016/how-about-a-nice-game-of-chess";
+import { signalsAndNoise } from "./single-entries/2016/signals-and-noise";
+import { internetProtocolVersion7 } from "./single-entries/2016/internet-protocol-version-7";
+import { twoFactorAuthentication } from './single-entries/2016/two-factor-authentication';
+import { explosivesInCyberspace } from './single-entries/2016/explosives-in-cyberspace';
+import { balanceBots } from './single-entries/2016/balance-bots';
 
 export interface EntryRoute extends EntryRouteBase {
     date: number;
@@ -186,7 +191,12 @@ export const entryList: { [key: string]: EntryRoute[] } = {
         bathroomSecurity,
         squaresWithThreeSides,
         securityThroughObscurity,
-        howAboutANiceGameOfChess
+        howAboutANiceGameOfChess,
+        signalsAndNoise,
+        internetProtocolVersion7,
+        twoFactorAuthentication,
+        explosivesInCyberspace,
+        balanceBots
     ]),
     2017: enrichList([
         inverseCaptcha,

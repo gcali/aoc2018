@@ -1,5 +1,5 @@
 import { entryForFile } from "../../entry";
-import { exec } from 'child_process';
+import { exec } from "child_process";
 
 type Register = "a" | "b";
 
@@ -11,7 +11,7 @@ type TuringInstruction =
     { instruction: "jie", args: [Register, number] } |
     { instruction: "jio", args: [Register, number] };
 
-type State = {
+interface State {
     a: number;
     b: number;
     ir: number;
@@ -25,17 +25,17 @@ const createStartState = (): State => {
         b: 0,
         ir: 0
     };
-}
+};
 
 const parse = (lines: string[]): Program => {
     return lines
-        .map(l => l.trim())
-        .filter(l => l.length > 0)
-        .map(l => ({
+        .map((l) => l.trim())
+        .filter((l) => l.length > 0)
+        .map((l) => ({
             instr: l.slice(0, 3),
             args: l.slice(4).split(", ")
         }))
-        .map(e => {
+        .map((e) => {
             if (
                 e.instr === "hlf" ||
                 e.instr === "tpl" ||
@@ -57,12 +57,12 @@ const parse = (lines: string[]): Program => {
                         e.args[0] as Register,
                         parseInt(e.args[1], 10)
                     ]
-                } as TuringInstruction
+                } as TuringInstruction;
             } else {
                 throw new RangeError("Invalid instruction " + e.instr);
             }
         });
-}
+};
 
 const executeInstruction = (instruction: TuringInstruction, state: State) => {
     let newIr = state.ir + 1;
@@ -91,13 +91,13 @@ const executeInstruction = (instruction: TuringInstruction, state: State) => {
             break;
     }
     state.ir = newIr;
-}
+};
 
 const execute = (program: Program, state: State) => {
     while (state.ir >= 0 && state.ir < program.length) {
         executeInstruction(program[state.ir], state);
     }
-}
+};
 
 export const turingLock = entryForFile(
     async ({ lines, outputCallback }) => {

@@ -1,14 +1,14 @@
 import { entryForFile } from "../../entry";
-import { Queue } from '../../../support/data-structure';
-import { PriorityQueue } from 'priorityqueue/lib/cjs/PriorityQueue';
-import { PairingHeap } from 'priorityqueue/lib/cjs';
+import { Queue } from "../../../support/data-structure";
+import { PriorityQueue } from "priorityqueue/lib/cjs/PriorityQueue";
+import { PairingHeap } from "priorityqueue/lib/cjs";
 
-type State = {
+interface State {
     hitPoints: number;
     damage: number;
 }
 
-type Timers = {
+interface Timers {
     shield: number;
     poison: number;
     recharge: number;
@@ -18,10 +18,10 @@ type PlayerState = State & Timers & { mana: number, spentMana: number };
 
 type Spell = "missile" | "drain" | "shield" | "poison" | "recharge";
 
-type GameState = {
+interface GameState {
     playerState: PlayerState;
     bossState: State;
-};
+}
 
 const spellCost = (spell: Spell): number => {
     switch (spell) {
@@ -36,7 +36,7 @@ const spellCost = (spell: Spell): number => {
         case "shield":
             return 113;
     }
-}
+};
 
 const paySpell = (spell: Spell, state: PlayerState): PlayerState => {
     const cost = spellCost(spell);
@@ -76,7 +76,7 @@ const launchSpell = (spell: Spell, { playerState, bossState }: GameState): GameS
                     poison: 6
                 },
                 bossState
-            }
+            };
         case "recharge":
             return {
                 playerState: {
@@ -94,12 +94,12 @@ const launchSpell = (spell: Spell, { playerState, bossState }: GameState): GameS
                 bossState
             };
     }
-}
+};
 
 const parseState = (lines: string[]): State => {
-    const [hitPoints, damage] = lines.map(l => parseInt(l.split(": ")[1], 10));
+    const [hitPoints, damage] = lines.map((l) => parseInt(l.split(": ")[1], 10));
     return { hitPoints, damage };
-}
+};
 
 const applyEffects = ({ playerState, bossState }: GameState): GameState => {
     const newPlayerState = { ...playerState };
@@ -116,7 +116,7 @@ const applyEffects = ({ playerState, bossState }: GameState): GameState => {
         newPlayerState.recharge--;
     }
     return { playerState: newPlayerState, bossState: newBossState };
-}
+};
 
 const bossDamageTurn = ({ playerState, bossState }: GameState): GameState => {
     const damage = Math.max(bossState.damage - (playerState.shield > 0 ? 7 : 0), 1);
@@ -138,7 +138,7 @@ const hurtPlayer = ({ playerState, bossState }: GameState, damage: number): Game
         },
         bossState
     };
-}
+};
 
 const spells: Spell[] = [
     "drain",
@@ -163,7 +163,7 @@ const canLaunchSpell = (state: GameState, spell: Spell): boolean => {
         case "shield":
             return state.playerState.shield === 0;
     }
-}
+};
 
 type TurnResult = {
     hasWon: true,
@@ -207,7 +207,7 @@ const playTurn = (spell: Spell, state: GameState, playerHpLoss: number = 0): Tur
         return { hasWon: false, hasLost: true, state: afterBoss };
     }
     return { hasWon: false, hasLost: false, state: afterBoss };
-}
+};
 
 const bfsPruned = (startGameState: GameState, hardMode: boolean): GameState | null => {
     const states = new Queue<GameState>();
@@ -217,7 +217,7 @@ const bfsPruned = (startGameState: GameState, hardMode: boolean): GameState | nu
         if (bestWinState === null || bestWinState.playerState.spentMana > state.playerState.spentMana) {
             bestWinState = state;
         }
-    }
+    };
     while (!states.isEmpty) {
         const current = states.get()!;
         if (bestWinState !== null) {
@@ -226,7 +226,7 @@ const bfsPruned = (startGameState: GameState, hardMode: boolean): GameState | nu
                 continue;
             }
         }
-        spells.forEach(spell => {
+        spells.forEach((spell) => {
             const result = playTurn(spell, current, hardMode ? 1 : 0);
             if (result.hasWon) {
                 updateBestState(result.state);
@@ -266,7 +266,7 @@ const bfsPruned = (startGameState: GameState, hardMode: boolean): GameState | nu
 
     }
     return bestWinState;
-}
+};
 
 const exploreFight = (startGameState: GameState): GameState | null => {
     // const queue = new WizardPriorityQueue();
@@ -276,7 +276,7 @@ const exploreFight = (startGameState: GameState): GameState | null => {
                 spellCost(b.spell) + b.gameState.playerState.spentMana -
                 (spellCost(a.spell) + a.gameState.playerState.spentMana)
     });
-    spells.forEach(spell => {
+    spells.forEach((spell) => {
         queue.push({ spell, gameState: startGameState });
     });
     while (!queue.isEmpty()) {
@@ -313,12 +313,12 @@ const exploreFight = (startGameState: GameState): GameState | null => {
         if (afterBoss.playerState.poison === 0) {
             spellCandidates.push("poison");
         }
-        spellCandidates.forEach(spell => {
+        spellCandidates.forEach((spell) => {
             queue.push({ spell, gameState: afterBoss });
         });
     }
     return null;
-}
+};
 
 const initGameState = (lines: string[]): GameState => {
     const bossState = parseState(lines);
@@ -333,7 +333,7 @@ const initGameState = (lines: string[]): GameState => {
     };
     return { bossState, playerState };
 
-}
+};
 
 export const wizardSimulator20xx = entryForFile(
     async ({ lines, outputCallback }) => {

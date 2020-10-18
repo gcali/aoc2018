@@ -1,5 +1,5 @@
 import { entryForFile } from "../../entry";
-import { isProbablyPrime } from 'bigint-crypto-utils';
+import { isProbablyPrime } from "bigint-crypto-utils";
 
 const findExponent = (n: number, divisor: number): number => {
     let i = 0;
@@ -10,11 +10,11 @@ const findExponent = (n: number, divisor: number): number => {
     return i;
 };
 
-const primeFactors = async (n: number): Promise<{ prime: number, exponent: number }[]> => {
+const primeFactors = async (n: number): Promise<Array<{ prime: number, exponent: number }>> => {
     if (n === 0) {
         throw new Error("Zero is out of range");
     }
-    const primeWithEsponents: { prime: number, exponent: number }[] = [];
+    const primeWithEsponents: Array<{ prime: number, exponent: number }> = [];
     if (n % 2 === 0) {
         const exponent = findExponent(n, 2);
         primeWithEsponents.push({
@@ -53,11 +53,11 @@ const divisorSum = async (n: number): Promise<number> => {
     const factors = await primeFactors(n);
     return factors
         .reduce((acc, next) => acc * geometric(next.prime, next.exponent), 1);
-}
+};
 
 const geometric = (r: number, exponent: number): number => {
     return (r ** (exponent + 1) - 1) / (r - 1);
-}
+};
 
 export const infiniteElvesAndInfiniteHouses = entryForFile(
     async ({ lines, outputCallback }) => {

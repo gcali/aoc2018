@@ -1,11 +1,11 @@
-import { Bounds, CCoordinate, Coordinate, directions, isInBounds, manhattanDistance } from '../../../support/geometry';
+import { Bounds, CCoordinate, Coordinate, directions, isInBounds, manhattanDistance } from "../../../support/geometry";
 import { entryForFile } from "../../entry";
 
 type Dir = "U" | "L" | "R" | "D";
 
 const parseLines = (lines: string[]): Dir[][] => {
-    return lines.map(line => line.trim().split("").map(e => e as Dir));
-}
+    return lines.map((line) => line.trim().split("").map((e) => e as Dir));
+};
 
 const dirMap = (d: Dir): CCoordinate => {
     switch (d) {
@@ -20,19 +20,19 @@ const dirMap = (d: Dir): CCoordinate => {
         default:
             throw new Error("Unknown direction");
     }
-}
+};
 
 const coordinateToNumber = (c: Coordinate): number => {
-    return c.x+1 + ((c.y)*3);
+    return c.x + 1 + ((c.y) * 3);
 };
 
 const coordinateToStrange = (c: Coordinate): string => {
     const output = [
-        [' ',' ','1'],
-        [' ','2','3','4'],
-        ['5','6','7','8','9'],
-        [' ','A','B','C'],
-        [' ',' ','D']
+        [" ", " ", "1"],
+        [" ", "2", "3", "4"],
+        ["5", "6", "7", "8", "9"],
+        [" ", "A", "B", "C"],
+        [" ", " ", "D"]
     ];
     return output[c.y][c.x];
 };
@@ -49,8 +49,8 @@ export const bathroomSecurity = entryForFile(
 
         const input = parseLines(lines);
 
-        const result = input.map(line => {
-            line.forEach(instruction => {
+        const result = input.map((line) => {
+            line.forEach((instruction) => {
                 const candidate = dirMap(instruction).sum(currentPosition);
                 if (isInBounds(candidate, bounds)) {
                     currentPosition = candidate;
@@ -67,8 +67,8 @@ export const bathroomSecurity = entryForFile(
 
         const input = parseLines(lines);
 
-        const result = input.map(line => {
-            line.forEach(instruction => {
+        const result = input.map((line) => {
+            line.forEach((instruction) => {
                 const candidate = dirMap(instruction).sum(currentPosition);
                 if (manhattanDistance(candidate, {x: 2, y: 2}) <= 2) {
                     currentPosition = candidate;

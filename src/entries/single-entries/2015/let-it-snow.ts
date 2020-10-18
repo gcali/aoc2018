@@ -1,8 +1,8 @@
-import { pow } from '../../../support/algebra';
+import { pow } from "../../../support/algebra";
 import { entryForFile } from "../../entry";
 
 const fromRowColumn = (row: number, column: number) => {
-    let start = 1;
+    const start = 1;
     const firstOfRow = (row - 1) * row / 2 + 1;
     const increments = column - 1;
     const rightDelta = (increments + row) * (increments + row + 1) / 2 - (row * (row + 1) / 2);
@@ -16,8 +16,8 @@ const parseLines = (lines: string[]): { row: number, column: number } => {
     return {
         row: parseInt(words[rowIndex].slice(0, -1), 10),
         column: parseInt(words[columnIndex].slice(0, -1), 10)
-    }
-}
+    };
+};
 
 export const letItSnow = entryForFile(
     async ({ lines, outputCallback }) => {
