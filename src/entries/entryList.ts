@@ -109,6 +109,10 @@ import { internetProtocolVersion7 } from "./single-entries/2016/internet-protoco
 import { twoFactorAuthentication } from './single-entries/2016/two-factor-authentication';
 import { explosivesInCyberspace } from './single-entries/2016/explosives-in-cyberspace';
 import { balanceBots } from './single-entries/2016/balance-bots';
+import { radioisotopeThermoelectricGenerators } from './single-entries/2016/radioisotope-thermoelectric-generators';
+import { leonardosMonorail } from './single-entries/2016/leonardos-monorail';
+import { aMazeOfTwistyLittleCubicles } from './single-entries/2016/a-maze-of-twisty-little-cubicles';
+import { oneTimePad } from './single-entries/2016/one-time-pad';
 
 export interface EntryRoute extends EntryRouteBase {
     date: number;
@@ -196,7 +200,11 @@ export const entryList: { [key: string]: EntryRoute[] } = {
         internetProtocolVersion7,
         twoFactorAuthentication,
         explosivesInCyberspace,
-        balanceBots
+        balanceBots,
+        radioisotopeThermoelectricGenerators,
+        leonardosMonorail,
+        aMazeOfTwistyLittleCubicles,
+        oneTimePad
     ]),
     2017: enrichList([
         inverseCaptcha,

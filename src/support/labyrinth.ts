@@ -21,7 +21,8 @@ export function calculateDistancesGenericCoordinates<TValue, TCoordinate>(
     distanceCalculator: DistanceCalculator<TValue, TCoordinate>,
     getSurrounding: (c: TCoordinate) => TCoordinate[],
     start: TCoordinate,
-    serializer: (c: TCoordinate) => string
+    serializer: (c: TCoordinate) => string,
+    stopAt: ((c: CellWithDistance<TValue, TCoordinate>) => boolean) | null = null
 ): DistanceGetter<TValue, TCoordinate> {
     const distanceMap: { [key: string]: CellWithDistance<TValue, TCoordinate> } = {};
 
@@ -40,10 +41,11 @@ export function calculateDistancesGenericCoordinates<TValue, TCoordinate>(
     distanceMap[serializer(startNode.coordinate)] = startNode;
     visitQueue.add(startNode);
 
+    let forceStop = false;
     while (!visitQueue.isEmpty) {
         const node = visitQueue.get()!;
         const surrounding = getSurrounding(node.coordinate);
-        surrounding.forEach((s) => {
+        for (const s of surrounding) {
             const withDistance = distanceMap[serializer(s)];
             if (!withDistance) {
                 const cell = fieldGetter(s);
@@ -56,11 +58,18 @@ export function calculateDistancesGenericCoordinates<TValue, TCoordinate>(
                             distance
                         };
                         distanceMap[serializer(s)] = sWithDistance;
+                        if (stopAt && stopAt(sWithDistance))  {
+                            forceStop = true;
+                            break;
+                        }
                         visitQueue.add(sWithDistance);
                     }
                 }
             }
-        });
+        }
+        if (forceStop) {
+            break;
+        }
     }
 
     return {
@@ -80,14 +89,16 @@ export function calculateDistances<T>(
     fieldGetter: FieldGetter<T, Coordinate>,
     distanceCalculator: DistanceCalculator<T, Coordinate>,
     getSurrounding: (c: Coordinate) => Coordinate[],
-    start: Coordinate
+    start: Coordinate,
+    stopAt: ((c: CellWithDistance<T, Coordinate>) => boolean) | null = null
 ): DistanceGetter<T, Coordinate> {
     return calculateDistancesGenericCoordinates(
         fieldGetter,
         distanceCalculator,
         getSurrounding,
         start,
-        serialization.serialize
+        serialization.serialize,
+        stopAt
     );
     // const distanceMap: { [key: string]: CellWithDistance<T, Coordinate> } = {};
 

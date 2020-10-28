@@ -33,5 +33,5 @@ export const letItSnow = entryForFile(
     async ({ lines, outputCallback }) => {
         throw Error("Not implemented");
     },
-    { key: "let-it-snow", title: "Let It Snow" }
+    { key: "let-it-snow", title: "Let It Snow", stars: 1 }
 );
