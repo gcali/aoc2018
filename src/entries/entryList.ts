@@ -113,6 +113,12 @@ import { radioisotopeThermoelectricGenerators } from './single-entries/2016/radi
 import { leonardosMonorail } from './single-entries/2016/leonardos-monorail';
 import { aMazeOfTwistyLittleCubicles } from './single-entries/2016/a-maze-of-twisty-little-cubicles';
 import { oneTimePad } from './single-entries/2016/one-time-pad';
+import { timingIsEverything } from './single-entries/2016/timing-is-everything';
+import { dragonChecksum } from './single-entries/2016/dragon-checksum';
+import { twoStepsForward } from './single-entries/2016/two-steps-forward';
+import { likeARogue } from './single-entries/2016/like-a-rogue';
+import { anElephantNamedJoseph } from './single-entries/2016/an-elephant-named-joseph';
+import { firewallRules } from './single-entries/2016/firewall-rules';
 
 export interface EntryRoute extends EntryRouteBase {
     date: number;
@@ -204,7 +210,13 @@ export const entryList: { [key: string]: EntryRoute[] } = {
         radioisotopeThermoelectricGenerators,
         leonardosMonorail,
         aMazeOfTwistyLittleCubicles,
-        oneTimePad
+        oneTimePad,
+        timingIsEverything,
+        dragonChecksum,
+        twoStepsForward,
+        likeARogue,
+        anElephantNamedJoseph,
+        firewallRules
     ]),
     2017: enrichList([
         inverseCaptcha,

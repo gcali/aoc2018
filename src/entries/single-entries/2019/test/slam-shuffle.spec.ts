@@ -16,6 +16,7 @@ const baseInput: string[] = [
     "cut -1"
 ];
 
+/*
 describe("Slam Shuffle", () => {
     it("should shuffle dek correctly", () => {
         const deck = new Deck(10);
@@ -309,3 +310,4 @@ const input = [
     "cut 7244",
     "deal with increment 23"
 ];
+*/

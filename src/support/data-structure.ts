@@ -1,5 +1,25 @@
 interface QueueNode<T> { element: T; next?: QueueNode<T>; }
 
+export class Lifo<T> {
+  private _elements: T[] = [];
+
+  public add(element: T) {
+    this._elements.push(element);
+  }
+
+  public get(): T | undefined {
+    return this._elements.pop();
+  }
+
+  public get isEmpty(): boolean {
+    return this._elements.length === 0;
+  }
+
+  public get size(): number {
+    return this._elements.length;
+  }
+}
+
 export class Queue<T> {
   private firstNode?: QueueNode<T>;
   private lastNode?: QueueNode<T>;
@@ -36,6 +56,19 @@ export class Queue<T> {
       this.lastNode = this.lastNode!.next;
     }
     this._size++;
+  }
+
+  public prepend(element: T) {
+    if (this.isEmpty) {
+      this.add(element);
+    } else {
+      const newFirst = {
+        element,
+        next: this.firstNode!
+      };
+      this.firstNode = newFirst;
+      this._size++;
+    }
   }
 
   public get(): T | null {

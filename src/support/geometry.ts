@@ -49,6 +49,10 @@ export class CCoordinate implements Coordinate {
         }
     }
 
+    public is = (other: Coordinate) => {
+        return manhattanDistance(this, other) === 0;
+    }
+
     public sum = (other: Coordinate) => {
         const result = sumCoordinate(this, other);
         return new CCoordinate(result.x, result.y);
