@@ -1,8 +1,8 @@
 import { entryForFile } from "../../entry";
 
 const parseLines = (lines: string[]): string => {
-    return lines.map(e => e.trim()).join("");
-}
+    return lines.map((e) => e.trim()).join("");
+};
 
 const countExpandedLength = (line: string): number => {
     let count = 0;
@@ -10,10 +10,10 @@ const countExpandedLength = (line: string): number => {
     while (i < line.length) {
         if (line[i] === "(") {
             const markerEnd = line.indexOf(")", i);
-            const marker = line.slice(i+1, markerEnd);
-            const [size,repeat] = marker.split("x").map(e => parseInt(e, 10));
-            const toRepeat = line.slice(markerEnd+1, markerEnd+1+size);
-            i = markerEnd+1+size;
+            const marker = line.slice(i + 1, markerEnd);
+            const [size, repeat] = marker.split("x").map((e) => parseInt(e, 10));
+            const toRepeat = line.slice(markerEnd + 1, markerEnd + 1 + size);
+            i = markerEnd + 1 + size;
             const nestedLength = countExpandedLength(toRepeat);
             count += (nestedLength * repeat);
         } else {
@@ -22,7 +22,7 @@ const countExpandedLength = (line: string): number => {
         }
     }
     return count;
-}
+};
 
 const expand = (line: string): string => {
     const result: string[] = [];
@@ -30,13 +30,13 @@ const expand = (line: string): string => {
     while (i < line.length) {
         if (line[i] === "(") {
             const markerEnd = line.indexOf(")", i);
-            const marker = line.slice(i+1, markerEnd);
-            const [size,repeat] = marker.split("x").map(e => parseInt(e, 10));
-            const toRepeat = line.slice(markerEnd+1, markerEnd+1+size);
+            const marker = line.slice(i + 1, markerEnd);
+            const [size, repeat] = marker.split("x").map((e) => parseInt(e, 10));
+            const toRepeat = line.slice(markerEnd + 1, markerEnd + 1 + size);
             for (let x = 0; x < repeat; x++) {
                 result.push(toRepeat);
             }
-            i = markerEnd+1+size;
+            i = markerEnd + 1 + size;
         } else {
             result.push(line[i]);
             i++;

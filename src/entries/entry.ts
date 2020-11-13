@@ -28,6 +28,7 @@ interface EntryMetadata {
     stars?: 1 | 2;
     title: string;
     hasAdditionalInput?: boolean;
+    hasCustomComponent?: boolean;
 }
 
 export interface Entry {
@@ -105,12 +106,17 @@ export async function executeEntry({
     } else {
         callback = entry.second;
     }
-    await callback({
-        lines,
-        outputCallback,
-        pause: pause || (() => new Promise<void>((resolve) => setTimeout(resolve, 0))),
-        isCancelled,
-        statusCallback,
-        additionalInputReader
-    });
+    try {
+        await callback({
+            lines,
+            outputCallback,
+            pause: pause || (() => new Promise<void>((resolve) => setTimeout(resolve, 0))),
+            isCancelled,
+            statusCallback,
+            additionalInputReader
+        });
+    } catch (e) {
+        await outputCallback("ERROR: " + (e as Error).message);
+        console.error(e);
+    }
 }

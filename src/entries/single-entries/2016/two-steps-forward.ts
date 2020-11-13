@@ -1,13 +1,13 @@
-import { sum } from 'mathjs';
-import { Md5 } from 'ts-md5';
-import { Lifo, Queue } from '../../../support/data-structure';
-import { CCoordinate, Coordinate, directionList, directions, manhattanDistance, serialization } from '../../../support/geometry';
-import { calculateDistancesGenericCoordinates } from '../../../support/labyrinth';
+import { sum } from "mathjs";
+import { Md5 } from "ts-md5";
+import { Lifo, Queue } from "../../../support/data-structure";
+import { CCoordinate, Coordinate, directionList, directions, manhattanDistance, serialization } from "../../../support/geometry";
+import { calculateDistancesGenericCoordinates } from "../../../support/labyrinth";
 import { entryForFile } from "../../entry";
 
 type Hash = (steps: string[] | string) => string;
 
-type CoordinateWithSteps = {
+interface CoordinateWithSteps {
     coordinate: Coordinate;
     steps: string;
     hash: string;
@@ -16,19 +16,19 @@ type CoordinateWithSteps = {
 const serialize = (coordinate: CoordinateWithSteps): string => {
     const base = serialization.serialize(coordinate.coordinate);
     return `${coordinate.steps}~${base}`;
-}
+};
 
 const isString = (s: string[] | string): s is string => {
     return (typeof s) === "string";
-}
+};
 
 const hashFactory = (secret: string): Hash => {
     return (steps: string[] | string) => {
         return Md5.hashAsciiStr(secret + (isString(steps) ? steps : steps.join(""))) as string;
-    }
-}
+    };
+};
 
-const isValidCharacter = (c: string): boolean => ["b","c","d","e","f"].includes(c);
+const isValidCharacter = (c: string): boolean => ["b", "c", "d", "e", "f"].includes(c);
 
 const isDirectionAvailable = (size: Coordinate, c: CoordinateWithSteps, direction: CCoordinate) => {
     const candidate = direction.sum(c.coordinate);
@@ -46,7 +46,7 @@ const isDirectionAvailable = (size: Coordinate, c: CoordinateWithSteps, directio
     } else {
         throw new Error("Invalid direction");
     }
-}
+};
 
 const serializeDirection = (direction: CCoordinate): string => {
     if (direction.is(directions.up)) {
@@ -60,37 +60,37 @@ const serializeDirection = (direction: CCoordinate): string => {
     } else {
         throw new Error("Invalid direction");
     }
-}
+};
 
 export const twoStepsForward = entryForFile(
     async ({ lines, outputCallback }) => {
         const secret = lines[0];
         const hash = hashFactory(secret);
         const size = {x: 4, y: 4};
-        const target = {x: 3, y:3};
+        const target = {x: 3, y: 3};
         const map = calculateDistancesGenericCoordinates<"x", CoordinateWithSteps>(
-            (c => "x"),
+            ((c) => "x"),
             (start, end) => manhattanDistance(start.coordinate.coordinate, end.coordinate) + (start.distance || 0),
             (c) => [
                 directions.up,
                 directions.left,
                 directions.down,
                 directions.right
-            ].filter(e => isDirectionAvailable(size, c, e)).map(d => ({
+            ].filter((e) => isDirectionAvailable(size, c, e)).map((d) => ({
                 coordinate: d.sum(c.coordinate),
                 steps: c.steps + serializeDirection(d)
-            })).map(e => ({
+            })).map((e) => ({
                 ...e,
                 hash: hash(e.steps)
             })),
-            {coordinate: {x:0,y:0}, steps: "", hash: hash([])},
+            {coordinate: {x: 0, y: 0}, steps: "", hash: hash([])},
             serialize,
-            e => manhattanDistance(e.coordinate.coordinate, target) === 0
+            (e) => manhattanDistance(e.coordinate.coordinate, target) === 0
         );
-        await outputCallback(map.list.filter(e => manhattanDistance(e.coordinate.coordinate, target) === 0).map(e => e.coordinate.steps));
+        await outputCallback(map.list.filter((e) => manhattanDistance(e.coordinate.coordinate, target) === 0).map((e) => e.coordinate.steps));
     },
     async ({ lines, outputCallback }) => {
-        const target = {x: 3, y:3};
+        const target = {x: 3, y: 3};
         const secret = lines[0];
         const hash = hashFactory(secret);
         const size = {x: 4, y: 4};
@@ -98,9 +98,9 @@ export const twoStepsForward = entryForFile(
         queue.push({coordinate: {x: 0, y: 0}, steps: "", hash: hash([])});
 
         let bestResult: number = Number.MIN_VALUE;
-        
+
         let iteration = 1;
-        let spreads: number[] = [];
+        const spreads: number[] = [];
         while (queue.length > 0) {
             const current = queue.pop()!;
             const surrounding = [
@@ -108,13 +108,13 @@ export const twoStepsForward = entryForFile(
                 directions.left,
                 directions.down,
                 directions.right
-            ].filter(e => isDirectionAvailable(size, current, e)).map(d => ({
+            ].filter((e) => isDirectionAvailable(size, current, e)).map((d) => ({
                 coordinate: d.sum(current.coordinate),
                 steps: current.steps + serializeDirection(d),
-            })).map(e => ({...e, hash: hash(e.steps)}));
+            })).map((e) => ({...e, hash: hash(e.steps)}));
             spreads.push(surrounding.length);
             if (spreads.length > 10000) {
-                await outputCallback(sum(spreads)/spreads.length);
+                await outputCallback(sum(spreads) / spreads.length);
                 spreads.length = 0;
             }
 
@@ -126,7 +126,7 @@ export const twoStepsForward = entryForFile(
                 }
             }
             if ((++iteration) % 10000 === 0) {
-                await outputCallback("Iteration: " + (iteration/1000) + "k");
+                await outputCallback("Iteration: " + (iteration / 1000) + "k");
                 await outputCallback(`Size: ${queue.length}`);
             }
         }

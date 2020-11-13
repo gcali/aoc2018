@@ -2,14 +2,15 @@
     EntryTemplate(:title="title", :id="id", :year="year", @file-loaded="readFile", :disabled="disabled")
         .output
             EntrySimpleOutput(:key="$route.path", :lines="output")
-        .input(v-if="showAdditionalInput")
+        .input(v-if="showAdditionalInput" )
             input(
                 type="text" 
                 v-model="inputLine"
                 v-on:keyup.enter="sendInput"
+                :disabled="!disabled"
             )
-            button(@click="sendInput") Send
-            button(@click="sendClose") Close
+            button(@click="sendInput" :disabled="!disabled") Send
+            button(@click="sendClose" :disabled="!disabled") Close
 </template>
 
 <script lang="ts">

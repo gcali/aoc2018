@@ -1,4 +1,4 @@
-import { Md5 } from 'ts-md5';
+import { Md5 } from "ts-md5";
 import { entryForFile } from "../../entry";
 
 type Hash = (n: number) => string;
@@ -16,8 +16,8 @@ const stretchHashGenerator = (salt: string): Hash => {
             current = Md5.hashAsciiStr(current) as string;
         }
         return current;
-    }
-}
+    };
+};
 
 const incrementHashes = (hash: Hash, current: string[], howManyToAdd: number) => {
     let nextIndex = current.length;
@@ -28,17 +28,17 @@ const incrementHashes = (hash: Hash, current: string[], howManyToAdd: number) =>
         nextIndex++;
     }
     console.log("New length: " + newLength);
-}
+};
 
 const findTriplet = (s: string): number | null => {
     const tokens = s.split("");
     for (let i = 0; i < tokens.length - 2; i++) {
-        if (tokens[i] === tokens[i+1] && tokens[i+1] === tokens[i+2]) {
+        if (tokens[i] === tokens[i + 1] && tokens[i + 1] === tokens[i + 2]) {
             return i;
         }
     }
     return null;
-}
+};
 
 const hasQuintuplet = (s: string, c: string): boolean => {
     const rawTarget: string[] = [];
@@ -47,7 +47,7 @@ const hasQuintuplet = (s: string, c: string): boolean => {
     }
     const target = rawTarget.join("");
     return s.includes(target);
-}
+};
 
 const isValid = (s: string, hashes: string[], hash: Hash, index: number): boolean => {
     const triplet = findTriplet(s);
@@ -64,14 +64,14 @@ const isValid = (s: string, hashes: string[], hash: Hash, index: number): boolea
         }
     }
     return false;
-}
+};
 
 export const oneTimePad = entryForFile(
     async ({ lines, outputCallback }) => {
         const hashCalculator = baseHashGenerator(lines[0]);
         let howMany = 64;
         const hashes: string[] = [];
-        const keys: [string,number][] = [];
+        const keys: Array<[string, number]> = [];
         let currentIndex = 0;
         while (howMany > 0) {
             if (currentIndex >= hashes.length) {
@@ -83,13 +83,13 @@ export const oneTimePad = entryForFile(
             }
             currentIndex++;
         }
-        await outputCallback(keys[keys.length-1][1]);
+        await outputCallback(keys[keys.length - 1][1]);
     },
     async ({ lines, outputCallback }) => {
         const hashCalculator = stretchHashGenerator(lines[0]);
         let howMany = 64;
         const hashes: string[] = [];
-        const keys: [string,number][] = [];
+        const keys: Array<[string, number]> = [];
         let currentIndex = 0;
         while (howMany > 0) {
             if (currentIndex >= hashes.length) {
@@ -101,7 +101,7 @@ export const oneTimePad = entryForFile(
             }
             currentIndex++;
         }
-        await outputCallback(keys[keys.length-1][1]);
+        await outputCallback(keys[keys.length - 1][1]);
     },
     { key: "one-time-pad", title: "One-Time Pad", stars: 2}
 );

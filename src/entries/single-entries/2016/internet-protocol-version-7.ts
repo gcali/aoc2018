@@ -67,11 +67,11 @@ const supportsTLS = (ip: IP): boolean => {
 };
 
 const supportsSSL = (ip: IP): boolean => {
-    let babs: string[] = [];
+    const babs: string[] = [];
     for (const section of ip.sections) {
         for (let i = 0; i < section.length - 2; i++) {
-            if (section[i] !== section[i+1] && section[i] === section[i+2]) {
-                babs.push(`${section[i+1]}${section[i]}${section[i+1]}`);
+            if (section[i] !== section[i + 1] && section[i] === section[i + 2]) {
+                babs.push(`${section[i + 1]}${section[i]}${section[i + 1]}`);
             }
         }
     }

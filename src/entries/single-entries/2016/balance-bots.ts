@@ -11,28 +11,28 @@ type Instruction = {
     bot: number;
 };
 
-type BotState = {
+interface BotState {
     id: number;
     chips: number[];
 }
 
-type Out = {
+interface Out {
         type: "output" | "bot";
         value: number;
 }
 
 const parseLines = (lines: string[]): Instruction[] => {
-    return lines.map(line => {
+    return lines.map((line) => {
         const tokens = line.split(" ");
         if (line.includes("goes")) {
-            //line is value
+            // line is value
             return {
                 type: "value",
                 value: parseInt(tokens[1], 10),
                 bot: parseInt(tokens[5], 10)
             };
         } else {
-            //line is give
+            // line is give
             return {
                 type: "give",
                 bot: parseInt(tokens[1], 10),
@@ -47,13 +47,13 @@ const parseLines = (lines: string[]): Instruction[] => {
             };
         }
     });
-}
+};
 
 class Machine {
     private callback?: (instruction: Instruction, botState: BotState) => void;
     private toExecute: Instruction[] = [];
     private botState: Map<number, BotState> = new Map<number, BotState>();
-    private outputState: Map<number,number[]> = new Map<number, number[]>();
+    private outputState: Map<number, number[]> = new Map<number, number[]>();
 
     private stop: boolean = false;
 
@@ -64,10 +64,18 @@ class Machine {
         } else {
             this.toExecute.push(instruction);
         }
-    }  
+    }
 
     public getOutput(id: number): number[] {
         return this.outputState.get(id) || [];
+    }
+
+    public stopNextPending(): void {
+        this.stop = true;
+    }
+
+    public executeBeforeEveryInstruction(callback: (instruction: Instruction, botState: BotState) => void): void {
+        this.callback = callback;
     }
 
     private canExecute(instruction: Instruction): boolean {
@@ -103,7 +111,7 @@ class Machine {
             const state = this.getState(value);
             state.chips.push(chip);
         } else {
-            this.output(value,chip);
+            this.output(value, chip);
         }
     }
 
@@ -140,14 +148,6 @@ class Machine {
             }
         }
     }
-
-    public stopNextPending(): void {
-        this.stop = true;
-    }
-
-    public executeBeforeEveryInstruction(callback: (instruction: Instruction, botState: BotState) => void): void {
-        this.callback = callback;
-    }
 }
 
 export const balanceBots = entryForFile(
@@ -157,7 +157,7 @@ export const balanceBots = entryForFile(
         let target: number | null = null;
         machine.executeBeforeEveryInstruction((instruction, botState) => {
             if (botState.chips.length === 2) {
-                const [low,high] = [Math.min(...botState.chips),Math.max(...botState.chips)];
+                const [low, high] = [Math.min(...botState.chips), Math.max(...botState.chips)];
                 if (low === 17 && high === 61) {
                     target = botState.id;
                 }

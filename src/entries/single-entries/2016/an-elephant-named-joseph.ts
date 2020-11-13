@@ -1,6 +1,6 @@
 import { entryForFile } from "../../entry";
 
-type Elf = {
+interface Elf {
     index: number;
     presents: number;
 }
@@ -15,8 +15,8 @@ const integerLogarithm = (x: number, base: number): {value: number, isLower: boo
     if (current === x) {
         return {value: result, isLower: false};
     }
-    return {value: result -1, isLower: true};
-}
+    return {value: result - 1, isLower: true};
+};
 
 export const anElephantNamedJoseph = entryForFile(
     async ({ lines, outputCallback }) => {
@@ -24,7 +24,7 @@ export const anElephantNamedJoseph = entryForFile(
         let elves: Elf[] = [];
         for (let i = 0; i < howManyElves; i++) {
             elves.push({
-                index: i+1,
+                index: i + 1,
                 presents: 1
             });
         }
@@ -33,11 +33,11 @@ export const anElephantNamedJoseph = entryForFile(
                 if (elves[i].presents === 0) {
                     continue;
                 }
-                const stealFrom = (i+1)%elves.length;
+                const stealFrom = (i + 1) % elves.length;
                 elves[i].presents += elves[stealFrom].presents;
                 elves[stealFrom].presents = 0;
             }
-            elves = elves.filter(e => e.presents > 0);
+            elves = elves.filter((e) => e.presents > 0);
             if (elves.length === 1) {
                 await outputCallback("Found it!");
                 await outputCallback(elves[0].index);
@@ -48,7 +48,7 @@ export const anElephantNamedJoseph = entryForFile(
     async ({ lines, outputCallback }) => {
         const calculator = (howManyElves: number) => {
             const logarithm = integerLogarithm(howManyElves, 3);
-            if ([81,27,3].includes(howManyElves)) {
+            if ([81, 27, 3].includes(howManyElves)) {
                 console.log(logarithm);
             }
             if (!logarithm.isLower) {
@@ -58,21 +58,21 @@ export const anElephantNamedJoseph = entryForFile(
             if (howManyElves <= delta * 2) {
                 return howManyElves - delta;
             } else {
-                return 2*howManyElves - 3*delta;
+                return 2 * howManyElves - 3 * delta;
             }
 
-        }
+        };
         await outputCallback("Starting pattern calculations...");
         for (let howManyElves = 1; howManyElves < 100; howManyElves++) {
-            let elves: Elf[] = [];
+            const elves: Elf[] = [];
             for (let i = 0; i < howManyElves; i++) {
                 elves.push({
-                    index: i+1,
+                    index: i + 1,
                     presents: 1
                 });
             }
             let nextIndex = 0;
-            let lastSteal: null | number = null;
+            const lastSteal: null | number = null;
             while (elves.length > 1) {
                 if (elves.length % 10000 === 0) {
                     await outputCallback(elves.length);
@@ -98,7 +98,7 @@ export const anElephantNamedJoseph = entryForFile(
             }
             await outputCallback(`${howManyElves}:${elves[0].index}:${calculator(howManyElves)}`);
         }
-        await outputCallback("Final calculation:")
+        await outputCallback("Final calculation:");
         const howManyElves = parseInt(lines[0], 10);
         await outputCallback(calculator(howManyElves));
     },

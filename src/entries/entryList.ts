@@ -106,19 +106,22 @@ import { securityThroughObscurity } from "./single-entries/2016/security-through
 import { howAboutANiceGameOfChess } from "./single-entries/2016/how-about-a-nice-game-of-chess";
 import { signalsAndNoise } from "./single-entries/2016/signals-and-noise";
 import { internetProtocolVersion7 } from "./single-entries/2016/internet-protocol-version-7";
-import { twoFactorAuthentication } from './single-entries/2016/two-factor-authentication';
-import { explosivesInCyberspace } from './single-entries/2016/explosives-in-cyberspace';
-import { balanceBots } from './single-entries/2016/balance-bots';
-import { radioisotopeThermoelectricGenerators } from './single-entries/2016/radioisotope-thermoelectric-generators';
-import { leonardosMonorail } from './single-entries/2016/leonardos-monorail';
-import { aMazeOfTwistyLittleCubicles } from './single-entries/2016/a-maze-of-twisty-little-cubicles';
-import { oneTimePad } from './single-entries/2016/one-time-pad';
-import { timingIsEverything } from './single-entries/2016/timing-is-everything';
-import { dragonChecksum } from './single-entries/2016/dragon-checksum';
-import { twoStepsForward } from './single-entries/2016/two-steps-forward';
-import { likeARogue } from './single-entries/2016/like-a-rogue';
-import { anElephantNamedJoseph } from './single-entries/2016/an-elephant-named-joseph';
-import { firewallRules } from './single-entries/2016/firewall-rules';
+import { twoFactorAuthentication } from "./single-entries/2016/two-factor-authentication";
+import { explosivesInCyberspace } from "./single-entries/2016/explosives-in-cyberspace";
+import { balanceBots } from "./single-entries/2016/balance-bots";
+import { radioisotopeThermoelectricGenerators } from "./single-entries/2016/radioisotope-thermoelectric-generators";
+import { leonardosMonorail } from "./single-entries/2016/leonardos-monorail";
+import { aMazeOfTwistyLittleCubicles } from "./single-entries/2016/a-maze-of-twisty-little-cubicles";
+import { oneTimePad } from "./single-entries/2016/one-time-pad";
+import { timingIsEverything } from "./single-entries/2016/timing-is-everything";
+import { dragonChecksum } from "./single-entries/2016/dragon-checksum";
+import { twoStepsForward } from "./single-entries/2016/two-steps-forward";
+import { likeARogue } from "./single-entries/2016/like-a-rogue";
+import { anElephantNamedJoseph } from "./single-entries/2016/an-elephant-named-joseph";
+import { firewallRules } from "./single-entries/2016/firewall-rules";
+import { scrambledLettersAndHash } from "./single-entries/2016/scrambled-letters-and-hash";
+import { gridComputing } from "./single-entries/2016/grid-computing";
+import { safeCracking } from './single-entries/2016/safe-cracking';
 
 export interface EntryRoute extends EntryRouteBase {
     date: number;
@@ -151,9 +154,12 @@ function enrichList(entries: Array<EntryRouteBase | Entry | EntryRouteCustom>): 
             return { ...e, date: index + 1 };
         } else {
             const entry = isEntryRouteCustom(e) ? e.entry : e;
-            const hasCustomComponent = isEntryRouteCustom(e) && e.hasCustomComponent;
             if (entry.metadata === undefined) {
                 throw new Error("Entry must have metadata if not specified in here");
+            }
+            const hasCustomComponent = entry.metadata.hasCustomComponent || (isEntryRouteCustom(e) && e.hasCustomComponent);
+            if (hasCustomComponent) {
+                console.log(entry.metadata.key);
             }
             return {
                 name: entry.metadata.key,
@@ -216,7 +222,10 @@ export const entryList: { [key: string]: EntryRoute[] } = {
         twoStepsForward,
         likeARogue,
         anElephantNamedJoseph,
-        firewallRules
+        firewallRules,
+        scrambledLettersAndHash,
+        gridComputing,
+        safeCracking
     ]),
     2017: enrichList([
         inverseCaptcha,

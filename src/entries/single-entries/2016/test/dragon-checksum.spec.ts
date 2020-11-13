@@ -1,6 +1,6 @@
-import { expect } from 'chai';
+import { expect } from "chai";
 import "mocha";
-import { checksum, dragonEverything, dragonStep } from '../dragon-checksum';
+import { checksum, dragonEverything, dragonStep } from "../dragon-checksum";
 
 describe("Dragon Checksum", () => {
     it("Should apply dragon step to 1", () => {

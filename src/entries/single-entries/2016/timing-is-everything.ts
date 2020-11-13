@@ -1,25 +1,25 @@
 import { entryForFile } from "../../entry";
 
-type Disc = {
+interface Disc {
     size: number;
     position: number;
     level: number;
 }
 
-type Ball = {
+interface Ball {
     launchedAt: number;
     level: number;
     debug: string[];
 }
 
 const parseLines = (lines: string[]): Disc[] => {
-    return lines.map(line => {
-        const tokens = line.replace(/[.,;=#]/g, " ").split(" ").filter(e => e);
+    return lines.map((line) => {
+        const tokens = line.replace(/[.,;=#]/g, " ").split(" ").filter((e) => e);
         return {
             level: parseInt(tokens[1], 10),
             size: parseInt(tokens[3], 10),
-            position: parseInt(tokens[tokens.length-1], 10)
-        }
+            position: parseInt(tokens[tokens.length - 1], 10)
+        };
     });
 };
 
@@ -28,13 +28,13 @@ const moveDisc = (disc: Disc): Disc => {
         ...disc,
         position: (disc.position + 1) % disc.size
     };
-}
+};
 
 class GameState {
-    private _time: number = 0;
     public get time(): number {
         return this._time;
     }
+    private _time: number = 0;
 
     private balls: Ball[] = [];
     constructor(private discs: Disc[]) {
@@ -55,14 +55,14 @@ class GameState {
         return null;
     }
 
-    private debug() {
-        this.balls.forEach(ball => {
-            ball.debug.push(`${this.toString()}!${ball.level}`);
-        })
+    public toString(): string {
+        return `${this.time}|${this.discs.map((d) => `${d.level}~${d.position}`).join("-")}`;
     }
 
-    public toString(): string {
-        return `${this.time}|${this.discs.map(d => `${d.level}~${d.position}`).join("-")}`;
+    private debug() {
+        this.balls.forEach((ball) => {
+            ball.debug.push(`${this.toString()}!${ball.level}`);
+        });
     }
 
     private addNewBall() {
@@ -74,11 +74,11 @@ class GameState {
     }
 
     private moveBalls() {
-        this.balls.forEach(b => b.level++);
+        this.balls.forEach((b) => b.level++);
     }
 
     private findWinner(): Ball | null {
-        const winner = this.balls.find(ball => ball.level > this.discs.length);
+        const winner = this.balls.find((ball) => ball.level > this.discs.length);
         if (winner) {
             return winner;
         }
@@ -86,7 +86,7 @@ class GameState {
     }
 
     private removeInvalidBalls() {
-        this.balls = this.balls.filter(ball => {
+        this.balls = this.balls.filter((ball) => {
             const matchingDisc = this.discs[ball.level - 1];
             if (!matchingDisc) {
                 throw new Error("What happened here?");

@@ -1,8 +1,8 @@
-import { groupBy } from '../../../support/sequences';
+import { groupBy } from "../../../support/sequences";
 import { entryForFile } from "../../entry";
 
 export const dragonStep = (data: string): string => {
-    const tokens = data.split("").reverse().map(e => e === "0" ? "1" : "0");
+    const tokens = data.split("").reverse().map((e) => e === "0" ? "1" : "0");
     return [data, "0"].concat(tokens).join("");
 };
 
@@ -11,15 +11,15 @@ const fillDisk = (data: string, length: number): string => {
         data = dragonStep(data);
     }
     return data.length === length ? data : data.slice(0, length);
-}
+};
 
 export const checksum = (data: string): string => {
     if (data.length % 2 === 1) {
         return data;
     }
     const result: string[] = [];
-    for (let i = 0; i < data.length; i+=2) {
-        result.push(data[i] === data[i+1] ? "1" : "0");
+    for (let i = 0; i < data.length; i += 2) {
+        result.push(data[i] === data[i + 1] ? "1" : "0");
     }
     return checksum(result.join(""));
 };

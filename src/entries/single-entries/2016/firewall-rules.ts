@@ -1,6 +1,6 @@
 import { entryForFile } from "../../entry";
 
-type Range = {
+interface Range {
     start: number;
     end: number;
 }
@@ -8,7 +8,7 @@ type Range = {
 class Ranges {
     private _ranges: Range[] = [];
     public addRange(start: number, end: number): Ranges {
-        this._ranges.push({start,end});
+        this._ranges.push({start, end});
         this.mergeRanges();
         return this;
     }
@@ -20,19 +20,19 @@ class Ranges {
     }
 
     private mergeRanges() {
-        this._ranges.sort((a,b) => a.start - b.start);
+        this._ranges.sort((a, b) => a.start - b.start);
         for (let i = 0; i < this._ranges.length - 1; i++) {
-            if (this._ranges[i].end >= this._ranges[i+1].start-1) {
-                this._ranges[i+1].start = Math.min(this._ranges[i].start, this._ranges[i+1].start);
-                this._ranges[i+1].end = Math.max(this._ranges[i].end, this._ranges[i+1].end);
+            if (this._ranges[i].end >= this._ranges[i + 1].start - 1) {
+                this._ranges[i + 1].start = Math.min(this._ranges[i].start, this._ranges[i + 1].start);
+                this._ranges[i + 1].end = Math.max(this._ranges[i].end, this._ranges[i + 1].end);
                 this._ranges[i].start = -1;
             }
         }
-        this._ranges = this._ranges.filter(e => e.start >= 0);
+        this._ranges = this._ranges.filter((e) => e.start >= 0);
     }
 
     public get ranges() {
-        return this._ranges.map(e => ({...e}));
+        return this._ranges.map((e) => ({...e}));
     }
 
     public get length() {
@@ -41,11 +41,11 @@ class Ranges {
 }
 
 const parseLines = (lines: string[]): Ranges => {
-    return new Ranges().addRanges(lines.map(line => {
-        const [a,b] = line.split("-").map(e => parseInt(e, 10));
+    return new Ranges().addRanges(lines.map((line) => {
+        const [a, b] = line.split("-").map((e) => parseInt(e, 10));
         return {start: a, end: b};
-    }))
-}
+    }));
+};
 
 export const firewallRules = entryForFile(
     async ({ lines, outputCallback }) => {
@@ -57,13 +57,13 @@ export const firewallRules = entryForFile(
         if (firstRange.start !== 0) {
             await outputCallback(0);
         } else {
-            await outputCallback(firstRange.end+1);
+            await outputCallback(firstRange.end + 1);
         }
     },
     async ({ lines, outputCallback }) => {
         const ranges = parseLines(lines);
         const minValue = 0;
-        const maxValue = 2**32 - 1;
+        const maxValue = 2 ** 32 - 1;
 
         let nextCandidate = minValue;
         let result = 0;

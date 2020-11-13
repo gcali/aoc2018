@@ -90,6 +90,17 @@ export class FixedSizeMatrix<T> {
         }
     }
 
+    public onEveryCellSync<U>(callback: (c: Coordinate, e: T | undefined) => void | U): void | U {
+        for (let x = 0; x < this.size.x; x++) {
+            for (let y = 0; y < this.size.y; y++) {
+                const res = callback(this._delta.sum({ x, y }), this.get(this._delta.sum({ x, y })));
+                if (res !== undefined) {
+                    return res;
+                }
+            }
+        }
+    }
+
     public set(c: Coordinate, value: T | undefined) {
         c = this._delta.opposite.sum(c);
         const index = this.indexCalculator(c);

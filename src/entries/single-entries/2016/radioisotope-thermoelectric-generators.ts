@@ -1,12 +1,12 @@
-import { Queue } from '../../../support/data-structure';
-import { subsetGenerator } from '../../../support/sequences';
+import { Queue } from "../../../support/data-structure";
+import { subsetGenerator } from "../../../support/sequences";
 import { entryForFile } from "../../entry";
-import { balanceBots } from './balance-bots';
+import { balanceBots } from "./balance-bots";
 
-type Item = {
+interface Item {
     element: string;
-    type: "generator" | "chip"
-};
+    type: "generator" | "chip";
+}
 
 function match(a: Item, b: Item): boolean {
     return a.element === b.element && a.type === b.type;
@@ -15,9 +15,9 @@ function match(a: Item, b: Item): boolean {
 type Direction = "up" | "down";
 
 class Building {
-    private _state: Item[][];
 
     public currentFloor: number = 0;
+    private _state: Item[][];
 
     constructor() {
         const floors = 4;
@@ -27,7 +27,7 @@ class Building {
         }
     }
 
-    public setFloors(floors: {floorId: number, items: Item[]}[]): void {
+    public setFloors(floors: Array<{floorId: number, items: Item[]}>): void {
         for (const floor of floors) {
             if (floor.floorId < 0 || floor.floorId >= this._state.length) {
                 throw new Error("Invalid floor ID: " + floor.floorId);
@@ -44,9 +44,9 @@ class Building {
     }
 
     public move(items: Item[], direction: Direction): Building | null {
-        const [floor] = this._state.map((e,i) => ({e,i})).filter(e => {
+        const [floor] = this._state.map((e, i) => ({e, i})).filter((e) => {
             for (const item of items) {
-                if (e.e.filter(x => match(x, item)).length === 0) {
+                if (e.e.filter((x) => match(x, item)).length === 0) {
                     return false;
                 }
             }
@@ -57,12 +57,12 @@ class Building {
         }
         const newFloorIndex = floor.i + (direction === "up" ? 1 : -1);
         const newFloor = this._state[newFloorIndex];
-        if (!newFloor){
+        if (!newFloor) {
             return null;
         }
 
         const newBuilding = this.clone();
-        newBuilding._state[floor.i] = floor.e.filter(e => items.filter(x => match(x,e)).length === 0);
+        newBuilding._state[floor.i] = floor.e.filter((e) => items.filter((x) => match(x, e)).length === 0);
         newBuilding._state[newFloorIndex] = newFloor.concat(items);
         newBuilding.currentFloor = newFloorIndex;
 
@@ -74,7 +74,7 @@ class Building {
     }
 
     public isAllOnLastFloor(): boolean {
-        for (let i = 0; i < this._state.length-1; i++) {
+        for (let i = 0; i < this._state.length - 1; i++) {
             if (this._state[i].length > 0) {
                 return false;
             }
@@ -84,13 +84,13 @@ class Building {
 
     public isSubsetValid(items: Item[]) {
         const floor = items;
-        const generators = floor.filter(e => e.type === "generator");
+        const generators = floor.filter((e) => e.type === "generator");
         if (generators.length === 0) {
             return true;
         }
-        const chips = floor.filter(e => e.type === "chip");
+        const chips = floor.filter((e) => e.type === "chip");
         for (const chip of chips) {
-            if (generators.filter(e => e.element === chip.element).length == 0) {
+            if (generators.filter((e) => e.element === chip.element).length == 0) {
                 return false;
             }
         }
@@ -112,7 +112,7 @@ class Building {
 
     public clone(): Building {
         const newBuilding = new Building();
-        newBuilding._state = this._state.map(e => [...e]);
+        newBuilding._state = this._state.map((e) => [...e]);
         newBuilding.currentFloor = this.currentFloor;
         return newBuilding;
     }
@@ -121,20 +121,20 @@ class Building {
         const res: string[] = [`${this.currentFloor}|`];
         for (let i = 0; i < this._state.length; i++) {
             res.push(i.toString());
-            const sorted = this._state[i].map(e => toColumn(e)).sort();
-            sorted.forEach(e => res.push(e));
+            const sorted = this._state[i].map((e) => toColumn(e)).sort();
+            sorted.forEach((e) => res.push(e));
         }
         return res.join("");
     }
 
     public serializeToEquivalent(): string {
-        const elementMap = new Map<string,number>();
+        const elementMap = new Map<string, number>();
 
         const res: string[] = [`${this.currentFloor}|`];
 
         let nextMapped = 0;
 
-        for (let i = 0; i< this._state.length; i++) {
+        for (let i = 0; i < this._state.length; i++) {
             res.push(i.toString() + "~");
             for (const item of this._state[i])  {
                 if (!elementMap.has(item.element)) {
@@ -161,7 +161,7 @@ class Building {
                 columns.push(toColumn(item));
             }
         }
-        for (let i = this._state.length-1; i>= 0; i--) {
+        for (let i = this._state.length - 1; i >= 0; i--) {
             const serializedFloor: string[] = [`F${i}`];
             for (const column of columns) {
                 if (column === "E ") {
@@ -171,7 +171,7 @@ class Building {
                         serializedFloor.push(". ");
                     }
                 } else {
-                    if (this._state[i].filter(e => toColumn(e) === column).length > 0) {
+                    if (this._state[i].filter((e) => toColumn(e) === column).length > 0) {
                         serializedFloor.push(column);
                     } else {
                         serializedFloor.push(". ");
@@ -187,13 +187,13 @@ class Building {
 
 
 const parseLines = (lines: string[]): Building => {
-    const floors = lines.map(line => {
-        const cleaned = line.replace(/[,.]/g, '').replace(/-[^ ]*/g, '').trim();
+    const floors = lines.map((line) => {
+        const cleaned = line.replace(/[,.]/g, "").replace(/-[^ ]*/g, "").trim();
         const tokens = cleaned.split(" ");
         const floorOrdinal = tokens[1];
         const floorId: number = parseOrdinal(floorOrdinal);
-        const generatorIndexes = tokens.map((e,i) => ({e,i})).filter(x => x.e === "generator").map(x => x.i-1);
-        const microchipIndexes = tokens.map((e,i) => ({e,i})).filter(x => x.e === "microchip").map(x => x.i-1);
+        const generatorIndexes = tokens.map((e, i) => ({e, i})).filter((x) => x.e === "generator").map((x) => x.i - 1);
+        const microchipIndexes = tokens.map((e, i) => ({e, i})).filter((x) => x.e === "microchip").map((x) => x.i - 1);
         const items: Item[] = [];
         for (const generatorIndex of generatorIndexes) {
             const x = {
@@ -211,12 +211,12 @@ const parseLines = (lines: string[]): Building => {
             items.push(x);
         }
 
-        return {items,floorId};
+        return {items, floorId};
     });
     const building = new Building();
     building.setFloors(floors);
     return building;
-}
+};
 
 const parseOrdinal = (ordinal: string): number => {
     const valid = ["first", "second", "third", "fourth"];
@@ -227,11 +227,11 @@ const parseOrdinal = (ordinal: string): number => {
     throw new Error("Invalid ordinal: " + ordinal);
 };
 
-const toColumn = (item: Omit<Item,'column'>): string => {
+const toColumn = (item: Omit<Item, "column">): string => {
     const element = item.element === "promethium" ? "K" : item.element[0].toUpperCase();
     const type = item.type[0].toUpperCase();
     return `${element}${type}`;
-}
+};
 
 const bringEverythingToFourth = (building: Building): number | null => {
     const queue = new Queue<{building: Building, steps: number}>();
@@ -251,7 +251,7 @@ const bringEverythingToFourth = (building: Building): number | null => {
                 continue;
             }
             if (node.building.isSubsetValid(candidate)) {
-                for (const direction of ["up", "down"] as ["up","down"]) {
+                for (const direction of ["up", "down"] as ["up", "down"]) {
                     const moved = node.building.move(candidate, direction);
                     const newSteps = node.steps + 1;
                     if (moved) {
@@ -266,7 +266,7 @@ const bringEverythingToFourth = (building: Building): number | null => {
         }
     }
     return null;
-}
+};
 
 export const radioisotopeThermoelectricGenerators = entryForFile(
     async ({ lines, outputCallback }) => {
@@ -278,8 +278,8 @@ export const radioisotopeThermoelectricGenerators = entryForFile(
     async ({ lines, outputCallback }) => {
         const building = parseLines(lines);
         const additionalElements: string[] = ["elerium", "dilithium"];
-        const types: ("chip" | "generator")[] = ["chip", "generator"];
-        building.addToFloor(0, additionalElements.flatMap(e => types.map(t => ({
+        const types: Array<"chip" | "generator"> = ["chip", "generator"];
+        building.addToFloor(0, additionalElements.flatMap((e) => types.map((t) => ({
             element: e,
             type: t
         }))));
