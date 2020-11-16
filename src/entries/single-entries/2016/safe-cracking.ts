@@ -9,12 +9,13 @@ export const safeCracking = entryForFile(
         state.registers["a"] = 7;
         await execute(program, state, async (program, state) => {
             await outputCallback(null);
-            await outputCallback(prettyPrint(state));
-            await setTimeoutAsync(100);
+            await outputCallback(prettyPrint(state, program));
+            // await setTimeoutAsync(100);
             await pause();
             if (isCancelled && isCancelled()) {
-                return;
+                return false;
             }
+            return true;
         });
         // await outputCallback(prettyPrint(state));
         await outputCallback(state.registers["a"]);

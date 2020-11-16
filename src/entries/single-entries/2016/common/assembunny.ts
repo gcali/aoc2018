@@ -32,7 +32,22 @@ const isRegister = (e: any): e is RegisterKey => {
 };
 
 const isSingleArgument = (i: Instruction): i is SingleArgumentInstruction => {
-    return (i.args as [Argument,Argument]).length !== undefined;
+    return (i.args as [Argument,Argument]).pop === undefined;
+}
+
+const parseArgument = (s: string): Argument => {
+    if (isRegister(s)) {
+        return s;
+    } else {
+        return parseInt(s, 10);
+    }
+}
+
+const argumentToValue = (a: Argument, state: State): number => {
+    if (isRegister(a)) {
+        return state.registers[a];
+    }
+    return a;
 }
 
 
@@ -44,7 +59,7 @@ const executeInstruction = (instruction: Instruction, state: State, instructions
             if (!isRegister(instruction.args[1])) {
                 break;
             }
-            const value = isRegister(instruction.args[0]) ? state.registers[instruction.args[0]] : instruction.args[0];
+            const value = argumentToValue(instruction.args[0], state);//isRegister(instruction.args[0]) ? state.registers[instruction.args[0]] : instruction.args[0];
             state.registers[instruction.args[1]] = value;
             break;
         case "inc":
@@ -60,15 +75,17 @@ const executeInstruction = (instruction: Instruction, state: State, instructions
             state.registers[instruction.args]--;
             break;
         case "jnz":
-            if (!isRegister(instruction.args[0])) {
-                break;
-            }
-            if (isRegister(instruction.args[1])) {
-                break;
-            }
-            if (state.registers[instruction.args[0]] !== 0) {
+            // if (!isRegister(instruction.args[0])) {
+            //     break;
+            // }
+            // if (isRegister(instruction.args[1])) {
+            //     break;
+            // }
+            const a = argumentToValue(instruction.args[0], state);
+            if (a !== 0) {
                 shouldIncreaseCurrentInstruction = false;
-                state.currentInstruction += instruction.args[1];
+                state.currentInstruction += argumentToValue(instruction.args[1], state);
+                    // isRegister(instruction.args[1]) ? state.registers[instruction.args[1]] : instruction.args[1];
             }
             break;
         case "tgl":
@@ -97,7 +114,7 @@ const executeInstruction = (instruction: Instruction, state: State, instructions
     }
 };
 
-export const prettyPrint = (state: State): string => {
+export const prettyPrint = (state: State, program: Instruction[]): string => {
     const output: [string, string][] = [];
     output.push(["I", state.currentInstruction.toString().padStart(5)]);
     for (const register of ["a","b","c","d"] as RegisterKey[]) {
@@ -116,10 +133,17 @@ export const prettyPrint = (state: State): string => {
         result.push(simpleLine);
     }
 
+    for (let i = 0; i < program.length; i++) {
+        result.push(
+            (i !== state.currentInstruction ? "   " : "-> ")
+             + `${program[i].type} ${JSON.stringify(program[i].args)}`
+        );
+    }
+
     return result.join("\n");
 };
 
-export const execute = async (program: Instruction[], state: State, executionCallback?: (program: Instruction[], state: State) => Promise<void>): Promise<void> => {
+export const execute = async (program: Instruction[], state: State, executionCallback?: (program: Instruction[], state: State) => Promise<boolean>): Promise<void> => {
     const programExecution = program.map(instruction => ({...instruction}));
     let i = 0;
     while (true) {
@@ -129,7 +153,10 @@ export const execute = async (program: Instruction[], state: State, executionCal
         }
         executeInstruction(currentInstruction, state, programExecution);
         if (executionCallback) {
-            await executionCallback(programExecution, state);
+            const result = await executionCallback(programExecution, state);
+            if (!result) {
+                return;
+            }
         }
         // console.log(state);
         // await setTimeoutAsync(1000);
@@ -140,15 +167,10 @@ export const parseProgram = (lines: string[]): Instruction[] => {
     return lines.map((line) => {
         const tokens = line.split(" ");
         const instruction = tokens[0];
-        if (instruction === "cpy") {
+        if (instruction === "cpy" || instruction === "jnz") {
             return {
                 type: instruction,
-                args: [isRegister(tokens[1]) ? tokens[1] : parseInt(tokens[1], 10), tokens[2] as RegisterKey]
-            };
-        } else if (instruction === "jnz") {
-            return {
-                type: instruction,
-                args: [tokens[1] as RegisterKey, parseInt(tokens[2], 10)]
+                args: [parseArgument(tokens[1]), parseArgument(tokens[2])]
             };
         } else if (instruction === "inc" || instruction === "dec" || instruction === "tgl") {
             return {

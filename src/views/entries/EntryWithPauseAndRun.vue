@@ -1,9 +1,10 @@
 <template lang="pug">
     EntryTemplate(:title="title", :id="id", @file-loaded="readFile", :disabled="executing", :year="year")
-        .input
+        .input(:class="{hidden:!executing}")
             button(@click="nextState", :class="{hidden: !executing}") Next
             button(@click="stop", :class="{hidden: !executing}") Stop
             button(@click="run", :class="{hidden: !executing}") Toggle Run
+            input(v-model="timeout" type="number")
         .output
             EntrySimpleOutput(:key="$route.path", :lines="output")
 </template>
@@ -42,7 +43,7 @@ export default class EntryWithPauseAndRun extends Vue {
         this.shouldStop = false;
         this.executing = true;
         this.output = [];
-        this.timeout = 100;
+        // this.timeout = 100;
         const that = this;
         try {
             await executeEntry(
@@ -55,7 +56,11 @@ export default class EntryWithPauseAndRun extends Vue {
                     pause: () => {
                         const promise = new Promise<void>((resolve, reject) => {
                             if (this.shouldRun) {
-                                setTimeout(resolve, this.timeout);
+                                if (this.timeout > 0) {
+                                    setTimeout(resolve, this.timeout);
+                                } else {
+                                    resolve();
+                                }
                             } else {
                                 this.resolver = resolve;
                             }
