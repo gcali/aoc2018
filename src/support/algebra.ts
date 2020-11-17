@@ -16,7 +16,7 @@ export const factorial = (n: number): number => {
         res *= n;
     }
     return res;
-}
+};
 
 const calculateExtended = (aP: number, bP: number, m: number): {
     a: number,

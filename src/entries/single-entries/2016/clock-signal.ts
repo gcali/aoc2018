@@ -5,7 +5,7 @@ export const clockSignal = entryForFile(
         const getValue = (ln: number): number => {
             const v = parseInt(lines[ln].split(" ")[1], 10);
             return v;
-        }
+        };
         const addition = getValue(2) * getValue(1);
         const check = async (a: number): Promise<boolean> => {
             if (a % 2 === 1) {
@@ -19,10 +19,10 @@ export const clockSignal = entryForFile(
                     return false;
                 }
                 last = out;
-                a = Math.floor(a/2);
+                a = Math.floor(a / 2);
             }
             return true;
-        }
+        };
         let x = 1;
         while (x < addition || x % 2 === 1) {
             if (x % 2 === 0) {
@@ -33,8 +33,8 @@ export const clockSignal = entryForFile(
             }
         }
         await outputCallback("I'm not sure if it works for every input");
-        await outputCallback(await check(x-addition));
-        await outputCallback(x-addition);
+        await outputCallback(await check(x - addition));
+        await outputCallback(x - addition);
 
     },
     async ({ lines, outputCallback }) => {

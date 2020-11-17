@@ -1,4 +1,4 @@
-import { setTimeoutAsync } from '../../../../support/async';
+import { setTimeoutAsync } from "../../../../support/async";
 
 interface Registers {
     a: number;
@@ -15,15 +15,15 @@ interface State {
 
 type Argument = RegisterKey | number;
 
-type DoubleArgumentInstruction = {
-    type: "cpy" | "jnz",
-    args: [Argument, Argument]
-};
+interface DoubleArgumentInstruction {
+    type: "cpy" | "jnz";
+    args: [Argument, Argument];
+}
 
-type SingleArgumentInstruction = {
-    type: "inc" | "dec" | "tgl",
-    args: Argument
-};
+interface SingleArgumentInstruction {
+    type: "inc" | "dec" | "tgl";
+    args: Argument;
+}
 
 type Instruction = SingleArgumentInstruction | DoubleArgumentInstruction;
 
@@ -32,8 +32,8 @@ const isRegister = (e: any): e is RegisterKey => {
 };
 
 const isSingleArgument = (i: Instruction): i is SingleArgumentInstruction => {
-    return (i.args as [Argument,Argument]).pop === undefined;
-}
+    return (i.args as [Argument, Argument]).pop === undefined;
+};
 
 const parseArgument = (s: string): Argument => {
     if (isRegister(s)) {
@@ -41,14 +41,14 @@ const parseArgument = (s: string): Argument => {
     } else {
         return parseInt(s, 10);
     }
-}
+};
 
 const argumentToValue = (a: Argument, state: State): number => {
     if (isRegister(a)) {
         return state.registers[a];
     }
     return a;
-}
+};
 
 
 
@@ -59,7 +59,7 @@ const executeInstruction = (instruction: Instruction, state: State, instructions
             if (!isRegister(instruction.args[1])) {
                 break;
             }
-            const value = argumentToValue(instruction.args[0], state);//isRegister(instruction.args[0]) ? state.registers[instruction.args[0]] : instruction.args[0];
+            const value = argumentToValue(instruction.args[0], state); // isRegister(instruction.args[0]) ? state.registers[instruction.args[0]] : instruction.args[0];
             state.registers[instruction.args[1]] = value;
             break;
         case "inc":
@@ -115,13 +115,13 @@ const executeInstruction = (instruction: Instruction, state: State, instructions
 };
 
 export const prettyPrint = (state: State, program: Instruction[]): string => {
-    const output: [string, string][] = [];
+    const output: Array<[string, string]> = [];
     output.push(["I", state.currentInstruction.toString().padStart(5)]);
     for (const register of ["a", "b", "c", "d"] as RegisterKey[]) {
         output.push([register, state.registers[register].toString().padStart(5)]);
     }
 
-    const maxOutLength = output.map(e => e[1].length).reduce((acc, next) => Math.max(acc, next));
+    const maxOutLength = output.map((e) => e[1].length).reduce((acc, next) => Math.max(acc, next));
 
     const result: string[] = [];
 
@@ -144,8 +144,8 @@ export const prettyPrint = (state: State, program: Instruction[]): string => {
 };
 
 export const execute = async (program: Instruction[], state: State, executionCallback?: (program: Instruction[], state: State) => Promise<boolean>): Promise<void> => {
-    const programExecution = program.map(instruction => ({...instruction}));
-    let i = 0;
+    const programExecution = program.map((instruction) => ({...instruction}));
+    const i = 0;
     while (true) {
         const currentInstruction = programExecution[state.currentInstruction];
         if (!currentInstruction) {
@@ -164,7 +164,11 @@ export const execute = async (program: Instruction[], state: State, executionCal
 };
 
 export const parseProgram = (lines: string[]): Instruction[] => {
-    return lines.map((line) => {
+    return lines
+    .map((line) => line.trim())
+    .filter((line) => line)
+    .filter((line) => !line.startsWith("#"))
+    .map((line) => {
         const tokens = line.split(" ");
         const instruction = tokens[0];
         if (instruction === "cpy" || instruction === "jnz") {

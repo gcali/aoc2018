@@ -1,13 +1,13 @@
-import { factorial } from '../../../support/algebra';
-import { setTimeoutAsync } from '../../../support/async';
+import { factorial } from "../../../support/algebra";
+import { setTimeoutAsync } from "../../../support/async";
 import { entryForFile } from "../../entry";
-import { emptyState, execute, parseProgram, prettyPrint } from './common/assembunny';
+import { emptyState, execute, parseProgram, prettyPrint } from "./common/assembunny";
 
 export const safeCracking = entryForFile(
     async ({ lines, outputCallback, pause, isCancelled  }) => {
         const program = parseProgram(lines);
         const state = emptyState();
-        state.registers["a"] = 7;
+        state.registers.a = 7;
         await execute(program, state, async (program, state) => {
             await outputCallback(null);
             await outputCallback(prettyPrint(state, program));
@@ -18,13 +18,13 @@ export const safeCracking = entryForFile(
             }
             return true;
         });
-        await outputCallback(state.registers["a"]);
+        await outputCallback(state.registers.a);
     },
     async ({ lines, outputCallback }) => {
         const getValue = (ln: number): number => {
             const v = parseInt(lines[ln].split(" ")[1], 10);
             return v;
-        }
+        };
         const result = factorial(12) + getValue(19) * getValue(20);
         await outputCallback("I'm not sure whether the solution is universal; it does work on my input");
         await outputCallback(result);

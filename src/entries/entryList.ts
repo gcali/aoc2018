@@ -121,10 +121,10 @@ import { anElephantNamedJoseph } from "./single-entries/2016/an-elephant-named-j
 import { firewallRules } from "./single-entries/2016/firewall-rules";
 import { scrambledLettersAndHash } from "./single-entries/2016/scrambled-letters-and-hash";
 import { gridComputing } from "./single-entries/2016/grid-computing";
-import { safeCracking } from './single-entries/2016/safe-cracking';
-import { airDuctSpelunking } from './single-entries/2016/air-duct-spelunking';
-import { clockSignal } from './single-entries/2016/clock-signal';
-import { entry } from './single-entries/2020/entry';
+import { safeCracking } from "./single-entries/2016/safe-cracking";
+import { airDuctSpelunking } from "./single-entries/2016/air-duct-spelunking";
+import { clockSignal } from "./single-entries/2016/clock-signal";
+import { entry } from "./single-entries/2020/entry";
 
 export interface EntryRoute extends EntryRouteBase {
     date: number;

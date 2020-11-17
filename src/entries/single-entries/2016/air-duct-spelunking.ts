@@ -1,9 +1,9 @@
-import { Queue } from '../../../support/data-structure';
-import { Coordinate, getSurrounding, manhattanDistance } from '../../../support/geometry';
-import { FixedSizeMatrix } from '../../../support/matrix';
+import { Queue } from "../../../support/data-structure";
+import { Coordinate, getSurrounding, manhattanDistance } from "../../../support/geometry";
+import { FixedSizeMatrix } from "../../../support/matrix";
 import { entryForFile } from "../../entry";
 
-type Target = {
+interface Target {
     type: string;
     position: Coordinate;
 }
@@ -17,13 +17,13 @@ const parseLines = (lines: string[]): { field: FixedSizeMatrix<"#" | ".">; start
         for (let y = 0; y < size.y; y++) {
             const cell = lines[y][x];
             if (cell === "." || cell === "#") {
-                field.set({x,y}, cell);
+                field.set({x, y}, cell);
             } else if (cell === "0") {
-                startPosition = {x,y};
-                field.set({x,y}, ".");
+                startPosition = {x, y};
+                field.set({x, y}, ".");
             } else {
-                targets.push({type: cell, position: {x,y}});
-                field.set({x,y}, ".");
+                targets.push({type: cell, position: {x, y}});
+                field.set({x, y}, ".");
             }
         }
     }
@@ -31,9 +31,9 @@ const parseLines = (lines: string[]): { field: FixedSizeMatrix<"#" | ".">; start
         throw new Error("Start position not found");
     }
     return {field, startPosition, targets};
-}
+};
 
-type QueueElement = {currentPosition: Coordinate, reachedTargets: string[], steps: number};
+interface QueueElement {currentPosition: Coordinate; reachedTargets: string[]; steps: number; }
 
 const serializeState = (state: QueueElement) => `${state.currentPosition.x}.${state.currentPosition.y}|${state.reachedTargets.join(".")}`;
 
@@ -65,7 +65,7 @@ export const airDuctSpelunking = entryForFile(
                 }
                 const newSteps = current.steps + 1;
                 const newReached = [...current.reachedTargets];
-                const matchingTarget = targets.find(e => manhattanDistance(e.position, candidate) === 0);
+                const matchingTarget = targets.find((e) => manhattanDistance(e.position, candidate) === 0);
                 if (matchingTarget && !newReached.includes(matchingTarget.type)) {
                     newReached.push(matchingTarget.type);
                     if (newReached.length === targets.length) {
@@ -116,7 +116,7 @@ export const airDuctSpelunking = entryForFile(
                 }
                 const newSteps = current.steps + 1;
                 const newReached = [...current.reachedTargets];
-                const matchingTarget = targets.find(e => manhattanDistance(e.position, candidate) === 0);
+                const matchingTarget = targets.find((e) => manhattanDistance(e.position, candidate) === 0);
                 if (matchingTarget && !newReached.includes(matchingTarget.type)) {
                     newReached.push(matchingTarget.type);
                     newReached.sort();
