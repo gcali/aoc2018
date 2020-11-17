@@ -124,6 +124,7 @@ import { gridComputing } from "./single-entries/2016/grid-computing";
 import { safeCracking } from './single-entries/2016/safe-cracking';
 import { airDuctSpelunking } from './single-entries/2016/air-duct-spelunking';
 import { clockSignal } from './single-entries/2016/clock-signal';
+import { entry } from './single-entries/2020/entry';
 
 export interface EntryRoute extends EntryRouteBase {
     date: number;
@@ -317,6 +318,9 @@ export const entryList: { [key: string]: EntryRoute[] } = {
         categorySix,
         planetOfDiscord,
         cryostasis
+    ]),
+    2020: enrichList([
+        entry
     ])
 };
 

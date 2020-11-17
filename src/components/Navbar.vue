@@ -141,13 +141,18 @@ export default Vue.extend({
         .years {
             display: flex;
             flex-direction: row;
+            flex-wrap: wrap;
             justify-content: space-around;
             align-items: center;
             a {
                 cursor: pointer;
                 border-bottom: 1px solid $text-color;
                 margin-top: 0em !important;
+                margin-right: 0.3em;
+                margin-bottom: 0.3em;
             }
+            margin-right: -0.3em;
+            margin-bottom: -0.3em;
             @include small-screen {
                 margin-bottom: 2em;
             }
