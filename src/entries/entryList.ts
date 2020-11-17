@@ -122,6 +122,8 @@ import { firewallRules } from "./single-entries/2016/firewall-rules";
 import { scrambledLettersAndHash } from "./single-entries/2016/scrambled-letters-and-hash";
 import { gridComputing } from "./single-entries/2016/grid-computing";
 import { safeCracking } from './single-entries/2016/safe-cracking';
+import { airDuctSpelunking } from './single-entries/2016/air-duct-spelunking';
+import { clockSignal } from './single-entries/2016/clock-signal';
 
 export interface EntryRoute extends EntryRouteBase {
     date: number;
@@ -158,9 +160,6 @@ function enrichList(entries: Array<EntryRouteBase | Entry | EntryRouteCustom>): 
                 throw new Error("Entry must have metadata if not specified in here");
             }
             const hasCustomComponent = entry.metadata.hasCustomComponent || (isEntryRouteCustom(e) && e.hasCustomComponent);
-            if (hasCustomComponent) {
-                console.log(entry.metadata.key);
-            }
             return {
                 name: entry.metadata.key,
                 title: entry.metadata.title,
@@ -225,7 +224,9 @@ export const entryList: { [key: string]: EntryRoute[] } = {
         firewallRules,
         scrambledLettersAndHash,
         gridComputing,
-        safeCracking
+        safeCracking,
+        airDuctSpelunking,
+        clockSignal
     ]),
     2017: enrichList([
         inverseCaptcha,

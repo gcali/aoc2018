@@ -19,5 +19,5 @@ export const leonardosMonorail = entryForFile(
 
         await outputCallback(state.registers.a);
     },
-    { key: "leonardos-monorail", title: "Leonardo's Monorail"}
+    { key: "leonardos-monorail", title: "Leonardo's Monorail", stars: 2}
 );

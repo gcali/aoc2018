@@ -10,6 +10,14 @@ export const pow = (n: bigint, exp: bigint, mod: bigint): bigint => {
     return bigintCryptoUtils.modPow(n, exp, mod);
 };
 
+export const factorial = (n: number): number => {
+    let res = n;
+    while (n-- > 1) {
+        res *= n;
+    }
+    return res;
+}
+
 const calculateExtended = (aP: number, bP: number, m: number): {
     a: number,
     b: number

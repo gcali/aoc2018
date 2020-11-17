@@ -20,7 +20,7 @@ type DoubleArgumentInstruction = {
     args: [Argument, Argument]
 };
 
-type SingleArgumentInstruction  = {
+type SingleArgumentInstruction = {
     type: "inc" | "dec" | "tgl",
     args: Argument
 };
@@ -117,11 +117,11 @@ const executeInstruction = (instruction: Instruction, state: State, instructions
 export const prettyPrint = (state: State, program: Instruction[]): string => {
     const output: [string, string][] = [];
     output.push(["I", state.currentInstruction.toString().padStart(5)]);
-    for (const register of ["a","b","c","d"] as RegisterKey[]) {
+    for (const register of ["a", "b", "c", "d"] as RegisterKey[]) {
         output.push([register, state.registers[register].toString().padStart(5)]);
     }
 
-    const maxOutLength = output.map(e => e[1].length).reduce((acc,next) => Math.max(acc, next));
+    const maxOutLength = output.map(e => e[1].length).reduce((acc, next) => Math.max(acc, next));
 
     const result: string[] = [];
 
