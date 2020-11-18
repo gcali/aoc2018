@@ -4,7 +4,6 @@ import { groupBy } from "../../../support/sequences";
 import { Coordinate, getBoundaries, diffCoordinate, sumCoordinate } from "../../../support/geometry";
 import { FixedSizeMatrix } from "../../../support/matrix";
 import wu from "wu";
-import { setTimeoutAsync } from "../../../support/async";
 
 type Tile = "empty" | "wall" | "block" | "paddle" | "ball";
 
@@ -77,8 +76,9 @@ export const carePackage = entryForFile(
                 if (tiles.length > 0) {
                     ({ currentPaddleX, currentBallX } =
                         await updateTileFeedback(
-                            tiles, currentPaddleX, currentBallX, score, outputCallback
+                            tiles, currentPaddleX, currentBallX, score, outputCallback, pause
                         )
+
                     );
                 }
                 const res = Math.sign(currentBallX - currentPaddleX);
@@ -91,7 +91,7 @@ export const carePackage = entryForFile(
                         if (tiles.length > 0) {
                             ({ currentPaddleX, currentBallX } =
                                 await updateTileFeedback(
-                                    tiles, currentPaddleX, currentBallX, score, outputCallback
+                                    tiles, currentPaddleX, currentBallX, score, outputCallback, pause
                                 )
                             );
                         }
@@ -114,7 +114,7 @@ export const carePackage = entryForFile(
         });
         await outputCallback(score);
     },
-    { key: "care-package", title: "Care Package", stars: 2, }
+    { key: "care-package", title: "Care Package", stars: 2, hasCustomComponent: true}
 );
 
 async function updateTileFeedback(
@@ -122,14 +122,16 @@ async function updateTileFeedback(
     currentPaddleX: number,
     currentBallX: number,
     score: number,
-    outputCallback: (outputLine: any, shouldClear?: boolean | undefined) => Promise<void>
+    outputCallback: (outputLine: any, shouldClear?: boolean | undefined) => Promise<void>,
+    pause: () => Promise<void>
 ) {
     const visualization = visualizeTiles(tiles) + `\n\nScore: ${score}`;
     currentPaddleX = tiles.filter((t) => t.tile === "paddle")[0].coordinates.x;
     currentBallX = tiles.filter((t) => t.tile === "ball")[0].coordinates.x;
     await outputCallback(null);
     await outputCallback(visualization);
-    await setTimeoutAsync(5);
+    // await setTimeoutAsync(5);
+    await pause();
     return { currentPaddleX, currentBallX };
 }
 

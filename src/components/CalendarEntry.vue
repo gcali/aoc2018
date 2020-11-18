@@ -53,12 +53,13 @@ export default Vue.extend({
     display: flex;
     flex-direction: column;
     align-items: center;
-    border: 1px solid black;
+    /* border: 1px solid black; */
     border-radius: 3px;
     margin: 1em;
     overflow: hidden;
     text-decoration: none;
     position: relative;
+    background-color: white;
 }
 
 .calendar-cell .header {

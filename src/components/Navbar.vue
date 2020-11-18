@@ -1,9 +1,9 @@
 <template lang="pug">
   #nav
     .header
+      Hamburger.hamburger(:size="25", @click="toggleNavbar")
       .title Advent of Code
       .author gicali
-      Hamburger.hamburger(:size="25", @click="toggleNavbar")
     hr
     .links(:style="navbarStyle")
       .years
@@ -103,12 +103,19 @@ export default Vue.extend({
 
     $header-height: 100px;
 
-    padding: 20px 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-right: 1px inset $text-color;
+
+    padding: 10px 20px;
     @include small-screen {
         padding: 0;
+        margin: 0 10px;
+        border-right: none;
+        // padding-bottom: 1em;
+        border-bottom: 1px inset $text-color;
     }
     flex: 0 0 auto;
-    background-color: $dark-color;
     display: flex;
     flex-direction: column;
     color: $text-color;
@@ -119,11 +126,14 @@ export default Vue.extend({
             position: fixed;
             width: 60vw;
             margin: 0;
+            margin-top: 1px;
             top: $header-height;
             height: calc(100vh - #{$header-height});
             padding: 2em 1em;
             box-sizing: border-box;
             transition: 0.5s;
+            // border-top: 1px solid $text-color;
+            border-right: 1px solid $text-color;
         }
         display: flex;
         flex-direction: column;
@@ -142,8 +152,10 @@ export default Vue.extend({
             display: flex;
             flex-direction: row;
             flex-wrap: wrap;
-            justify-content: space-around;
+            justify-content: space-evenly;
             align-items: center;
+            align-self: center;
+            max-width: 10em;
             a {
                 cursor: pointer;
                 border-bottom: 1px solid $text-color;
@@ -169,6 +181,7 @@ export default Vue.extend({
         margin-top: 2em;
         position: relative;
         .title {
+            z-index: 1;
             font-weight: bold;
             font-size: 30px;
         }
@@ -179,10 +192,10 @@ export default Vue.extend({
         .hamburger {
             display: none;
             @include small-screen {
-                display: block;
-                position: absolute;
-                bottom: 0.2em;
-                left: 1em;
+                display: inline-block;
+                // position: absolute;
+                // bottom: 0.2em;
+                // left: 1em;
             }
         }
         @include small-screen {

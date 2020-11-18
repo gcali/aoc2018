@@ -87,7 +87,10 @@ const applyRule = (input: string, rule: Rule): string => {
         case "swap-letter":
             return applyRule(input, {type: "swap-position", a: input.indexOf(rule.a), b: input.indexOf(rule.b)});
         case "rotate":
-            const rotate = (index: number) => (index + (rule.direction === "right" ? -rule.steps : rule.steps) + 100 * tokenized.length) % tokenized.length;
+            const rotate = (rindex: number) => {
+                const steps = (rule.direction === "right" ? -rule.steps : rule.steps);
+                return (rindex + steps + 100 * tokenized.length) % tokenized.length;
+            };
             return tokenized.map((e, i) => tokenized[rotate(i)]).join("");
         case "rotate-on":
             const index = input.indexOf(rule.letter);
@@ -99,8 +102,8 @@ const applyRule = (input: string, rule: Rule): string => {
                 if (i < rule.from || i > rule.to) {
                     return e;
                 }
-                const index = rule.from + (rule.to - i);
-                return tokenized[index];
+                const reverseIndex = rule.from + (rule.to - i);
+                return tokenized[reverseIndex];
             }).join("");
         case "move":
             return tokenized.map((e, i) => {

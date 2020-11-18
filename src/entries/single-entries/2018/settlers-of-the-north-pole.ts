@@ -131,13 +131,14 @@ class World {
 
 
 export const entry = entryForFile(
-    async ({ lines, outputCallback, isCancelled }) => {
+    async ({ lines, outputCallback, isCancelled, pause }) => {
         let world = World.fromLines(lines);
         await outputCallback(["Initial state", world.toString()]);
         let iteration = 1;
         while (!isCancelled!()) {
             world = world.takeTurns(1);
             await outputCallback([`Minute ${iteration++}`, world.toString(), world.resourceValue], true);
+            await pause();
         }
     },
     async ({ lines, outputCallback, pause, isCancelled }) => {

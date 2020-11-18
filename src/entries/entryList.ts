@@ -124,7 +124,7 @@ import { gridComputing } from "./single-entries/2016/grid-computing";
 import { safeCracking } from "./single-entries/2016/safe-cracking";
 import { airDuctSpelunking } from "./single-entries/2016/air-duct-spelunking";
 import { clockSignal } from "./single-entries/2016/clock-signal";
-import { entry } from "./single-entries/2020/entry";
+import { placeholder } from "./single-entries/2020/entry";
 
 export interface EntryRoute extends EntryRouteBase {
     date: number;
@@ -160,7 +160,8 @@ function enrichList(entries: Array<EntryRouteBase | Entry | EntryRouteCustom>): 
             if (entry.metadata === undefined) {
                 throw new Error("Entry must have metadata if not specified in here");
             }
-            const hasCustomComponent = entry.metadata.hasCustomComponent || (isEntryRouteCustom(e) && e.hasCustomComponent);
+            const hasCustomComponent = entry.metadata.hasCustomComponent
+                || (isEntryRouteCustom(e) && e.hasCustomComponent);
             return {
                 name: entry.metadata.key,
                 title: entry.metadata.title,
@@ -320,7 +321,7 @@ export const entryList: { [key: string]: EntryRoute[] } = {
         cryostasis
     ]),
     2020: enrichList([
-        entry
+        placeholder
     ])
 };
 

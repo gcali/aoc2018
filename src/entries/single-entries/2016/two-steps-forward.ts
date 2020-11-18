@@ -87,7 +87,11 @@ export const twoStepsForward = entryForFile(
             serialize,
             (e) => manhattanDistance(e.coordinate.coordinate, target) === 0
         );
-        await outputCallback(map.list.filter((e) => manhattanDistance(e.coordinate.coordinate, target) === 0).map((e) => e.coordinate.steps));
+        await outputCallback(
+            map.list
+                .filter((e) => manhattanDistance(e.coordinate.coordinate, target) === 0)
+                .map((e) => e.coordinate.steps)
+            );
     },
     async ({ lines, outputCallback }) => {
         const target = {x: 3, y: 3};

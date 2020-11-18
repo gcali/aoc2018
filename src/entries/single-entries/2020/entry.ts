@@ -1,6 +1,6 @@
 import { entryForFile } from "../../entry";
 
-export const entry = entryForFile(
+export const placeholder = entryForFile(
     async ({ lines, outputCallback }) => {
         throw Error("Not implemented");
     },

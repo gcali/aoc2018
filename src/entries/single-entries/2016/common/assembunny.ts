@@ -59,7 +59,7 @@ const executeInstruction = (instruction: Instruction, state: State, instructions
             if (!isRegister(instruction.args[1])) {
                 break;
             }
-            const value = argumentToValue(instruction.args[0], state); // isRegister(instruction.args[0]) ? state.registers[instruction.args[0]] : instruction.args[0];
+            const value = argumentToValue(instruction.args[0], state);
             state.registers[instruction.args[1]] = value;
             break;
         case "inc":
@@ -143,7 +143,11 @@ export const prettyPrint = (state: State, program: Instruction[]): string => {
     return result.join("\n");
 };
 
-export const execute = async (program: Instruction[], state: State, executionCallback?: (program: Instruction[], state: State) => Promise<boolean>): Promise<void> => {
+export const execute = async (
+    program: Instruction[],
+    state: State,
+    executionCallback?: (program: Instruction[], state: State
+) => Promise<boolean>): Promise<void> => {
     const programExecution = program.map((instruction) => ({...instruction}));
     const i = 0;
     while (true) {

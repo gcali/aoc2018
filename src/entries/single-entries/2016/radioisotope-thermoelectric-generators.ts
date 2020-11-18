@@ -90,7 +90,7 @@ class Building {
         }
         const chips = floor.filter((e) => e.type === "chip");
         for (const chip of chips) {
-            if (generators.filter((e) => e.element === chip.element).length == 0) {
+            if (generators.filter((e) => e.element === chip.element).length === 0) {
                 return false;
             }
         }

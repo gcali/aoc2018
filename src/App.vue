@@ -40,24 +40,26 @@ button {
 }
 body {
     margin: 0;
+    background-color: $dark-color;
+    color: $text-color;
     #app {
         display: flex;
         flex-direction: row;
         font-family: "Avenir", Helvetica, Arial, sans-serif;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
-        color: $dark-color;
+        // color: $dark-color;
         min-height: 100vh;
         @include small-screen {
             flex-direction: column;
-            min-height: unset;
+            // min-height: unset;
         }
     }
     #content {
         flex: 1 1 auto;
         padding: 2em;
         max-height: 100%;
-        color: $dark-color;
+        // color: $dark-color;
         display: flex;
         flex-direction: column;
     }

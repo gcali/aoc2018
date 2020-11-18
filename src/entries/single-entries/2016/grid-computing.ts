@@ -80,7 +80,9 @@ const getValidMoves = (fullField: FullField): Array<{from: Coordinate; to: Coord
             if (node.used === 0) {
                 return;
             }
-            const neighbours = getSurrounding(c).map((c) => fullField.field.get(c)).filter((e) => e) as Node[];
+            const neighbours = getSurrounding(c)
+                .map((coords) => fullField.field.get(coords))
+                .filter((e) => e) as Node[];
             for (const neighbour of neighbours) {
                 if (isViable(node, neighbour)) {
                     result.push({from: node.c, to: neighbour.c});
@@ -96,18 +98,19 @@ const isViable = (from: Node, to: Node): boolean => {
 };
 
 const serializer = (fullField: FullField): string => {
-    return fullField.field.toString((e) => {
-        if (!e) {
+    return fullField.field.toString((cell) => {
+        if (!cell) {
             throw new Error("Invalid node");
         }
-        const neighbours = getSurrounding(e.c);
-        if (e.used === 0) {
+        const neighbours = getSurrounding(cell.c);
+        if (cell.used === 0) {
             return "_";
         }
         const canMove = neighbours
             .map((e) => fullField.field.get(e))
-            .filter((e) => e).reduce((acc, next) => acc || isViable(e, next!), false);
-        const isTarget = manhattanDistance(e.c, fullField.target) === 0;
+            .filter((e) => e)
+            .reduce((acc, next) => acc || isViable(cell, next!), false);
+        const isTarget = manhattanDistance(cell.c, fullField.target) === 0;
         if (canMove) {
             return isTarget ? "G" : ".";
         }
@@ -132,8 +135,12 @@ class FieldPQ extends BinaryHeap<FullField> {
             if (targetDistance !== 0) {
                 return targetDistance;
             }
-            const movablesA = getValidMoves(a).map((e) => ({move: e, distance: manhattanDistance(e.from, a.target)})).sort((a, b) => a.distance - b.distance)[0];
-            const movablesB = getValidMoves(b).map((e) => ({move: e, distance: manhattanDistance(e.from, b.target)})).sort((a, b) => a.distance - b.distance)[0];
+            const movablesA = getValidMoves(a)
+                .map((e) => ({move: e, distance: manhattanDistance(e.from, a.target)}))
+                .sort((x, y) => x.distance - y.distance)[0];
+            const movablesB = getValidMoves(b)
+                .map((e) => ({move: e, distance: manhattanDistance(e.from, b.target)}))
+                .sort((x, y) => x.distance - y.distance)[0];
             if (!movablesA && !movablesB) {
                 return 0;
             }
@@ -252,45 +259,6 @@ export const gridComputing = entryForFile(
             fullField = {...move(fullField, from, currentPosition), steps: fullField.steps + 1};
             currentPosition = from;
         }
-        // const empty = fullField.field.get({x: 35, y: 21})!;
-        // const full = fullField.field.get({x: matrix.size.x-2, y: 0})!;
-        // fullField.field.set({x: 35, y:21}, full);
-        // fullField.field.set({x: matrix.size.x-2, y: 0}, empty);
-        // await outputCallback(serializer(fullField));
-        // await outputCallback(await getValidMoves(fullField));
-
-        // const visited: Set<String> = new Set<String>();
-
-        // const queue = new FieldPQ(myPosition);//<{field: FullField; steps: number}>({comparator: (a: FullField,b: FullField) => 0});
-        // queue.push(fullField);
-        // let last: number | undefined;
-        // while (true) {
-        //     const current = queue.pop();
-        //     if (!current) {
-        //         await outputCallback("I failed :(");
-        //         return;
-        //     }
-        //     const c = manhattanDistance(current.target, myPosition);
-        //     if (c !== last) {
-        //         console.log(c);
-        //         last = c;
-        //     }
-        //     const validMoves = await getValidMoves(current);
-        //     for (const m of validMoves) {
-        //         const newState = move(current, m.from, m.to);
-        //         if (manhattanDistance(newState.target, myPosition) === 0) {
-        //             await outputCallback("Found it!");
-        //             await outputCallback(serializer(newState));
-        //             await outputCallback(current.steps!+1);
-        //             return;
-        //         }
-        //         const serialization = await fullSerializer(newState);
-        //         if (!visited.has(serialization)) {
-        //             visited.add(serialization);
-        //             queue.push({...newState, steps: current.steps! + 1});
-        //         }
-        //     }
-        // }
     },
     { key: "grid-computing", title: "Grid Computing", hasAdditionalInput: true, stars: 2}
 );

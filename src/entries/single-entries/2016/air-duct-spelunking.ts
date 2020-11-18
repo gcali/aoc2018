@@ -8,7 +8,9 @@ interface Target {
     position: Coordinate;
 }
 
-const parseLines = (lines: string[]): { field: FixedSizeMatrix<"#" | ".">; startPosition: Coordinate; targets: Target[] } => {
+const parseLines = (lines: string[]):
+    { field: FixedSizeMatrix<"#" | ".">; startPosition: Coordinate; targets: Target[] } => {
+
     const size = {x: lines[0].length, y: lines.length};
     const field = new FixedSizeMatrix<"#" | ".">(size);
     let startPosition: Coordinate | undefined;
@@ -75,7 +77,11 @@ export const airDuctSpelunking = entryForFile(
                     }
                     newReached.sort();
                 }
-                const queueElement: QueueElement = {currentPosition: candidate, reachedTargets: newReached, steps: newSteps};
+                const queueElement: QueueElement = {
+                    currentPosition: candidate,
+                    reachedTargets: newReached,
+                    steps: newSteps
+                };
                 const state = serializeState(queueElement);
                 if (visitedStates.has(state)) {
                     continue;
@@ -128,7 +134,11 @@ export const airDuctSpelunking = entryForFile(
                         return;
                     }
                 }
-                const queueElement: QueueElement = {currentPosition: candidate, reachedTargets: newReached, steps: newSteps};
+                const queueElement: QueueElement = {
+                    currentPosition: candidate,
+                    reachedTargets: newReached,
+                    steps: newSteps
+                };
                 const state = serializeState(queueElement);
                 if (visitedStates.has(state)) {
                     continue;

@@ -99,8 +99,8 @@ export const anElephantNamedJoseph = entryForFile(
             await outputCallback(`${howManyElves}:${elves[0].index}:${calculator(howManyElves)}`);
         }
         await outputCallback("Final calculation:");
-        const howManyElves = parseInt(lines[0], 10);
-        await outputCallback(calculator(howManyElves));
+        const elvesCount = parseInt(lines[0], 10);
+        await outputCallback(calculator(elvesCount));
     },
     { key: "an-elephant-named-joseph", title: "An Elephant Named Joseph", stars: 2}
 );
