@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import "mocha";
-import { checksum, dragonEverything, dragonStep } from "../dragon-checksum";
+import { calculateChecksum, dragonEverything, dragonStep } from "../dragon-checksum";
 
 describe("Dragon Checksum", () => {
     it("Should apply dragon step to 1", () => {
@@ -28,12 +28,12 @@ describe("Dragon Checksum", () => {
     });
 
     it("Should checksum 110010110100", () => {
-        const result = checksum("110010110100");
+        const result = calculateChecksum("110010110100");
         expect(result).to.equal("100");
     });
 
     it("Should checksum 10000011110010000111", () => {
-        const result = checksum("10000011110010000111");
+        const result = calculateChecksum("10000011110010000111");
         expect(result).to.equal("01100");
     });
 
