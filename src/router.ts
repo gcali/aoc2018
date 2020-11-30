@@ -33,7 +33,7 @@ flat.flatMap((e) => e).forEach((e) => {
   routes.push({
     name: e.entry.name,
     path: `/entry/${e.entry.name}`,
-    component: e.entry.hasCustomComponent ? entryComponentMap[e.entry.name] : SimpleEntryTemplate,
+    component: (e.entry.name in entryComponentMap) ? entryComponentMap[e.entry.name] : SimpleEntryTemplate,
     props: {
       id: e.entry.date,
       title: e.entry.title,

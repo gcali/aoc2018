@@ -1,15 +1,18 @@
 import { Choice } from "../constants/choice";
+import { Coordinate } from "../support/geometry";
 import { Message } from "./entryStatusMessages";
 
 export interface EntryCallbackArg {
     lines: string[];
     outputCallback: ((outputLine: any, shouldClear?: boolean) => Promise<void>);
     pause: (() => Promise<void>);
-    statusCallback?: ((outputStatus: Message) => Promise<void>);
     isCancelled?: (() => boolean);
     additionalInputReader?: {
         read: () => Promise<string | null>;
         close: () => void;
+    };
+    screen?: {
+        requireScreen: (size?: Coordinate) => Promise<ScreenPrinter>;
     };
 }
 
@@ -27,8 +30,8 @@ interface EntryMetadata {
     key: string;
     stars?: 1 | 2;
     title: string;
+    date?: number;
     hasAdditionalInput?: boolean;
-    hasCustomComponent?: boolean;
 }
 
 export interface Entry {
@@ -46,8 +49,8 @@ export function entryForFile(first: EntryCallback, second: EntryCallback, metada
 }
 export function oldEntryForFile(first: OldEntryCallback, second: OldEntryCallback): Entry {
     return {
-        first: (args: EntryCallbackArg) => (first(args.lines, args.outputCallback, args.statusCallback)),
-        second: (args: EntryCallbackArg) => (second(args.lines, args.outputCallback, args.statusCallback))
+        first: (args: EntryCallbackArg) => (first(args.lines, args.outputCallback)),
+        second: (args: EntryCallbackArg) => (second(args.lines, args.outputCallback))
     };
 }
 
@@ -75,6 +78,27 @@ export function simpleOutputCallbackFactory(output: string[]) {
     };
 }
 
+export type Drawable = {
+    id: string;
+    color: string;
+} & ({
+    type: "rectangle";
+    c: Coordinate;
+    size: Coordinate;
+} | {
+    type: "points";
+    points: Coordinate[];
+});
+
+export interface ScreenPrinter {
+    add: (item: Drawable) => Promise<void>;
+    remove: (id: string) => Promise<void>;
+    stop: () => Promise<void>;
+    replace: (items: Drawable[]) => Promise<void>;
+    pause: () => (() => void);
+    forceRender: () => void;
+}
+
 interface ExecutionArgs {
     entry: Entry;
     choice: Choice;
@@ -82,10 +106,12 @@ interface ExecutionArgs {
     outputCallback: EntryCallbackArg["outputCallback"];
     isCancelled?: (() => boolean);
     pause?: () => Promise<void>;
-    statusCallback?: ((outputStatus: Message) => Promise<void>);
     additionalInputReader?: {
         read: () => Promise<string | null>;
         close: () => void;
+    };
+    screen?: {
+        requireScreen: (size?: Coordinate) => Promise<ScreenPrinter>;
     };
 }
 
@@ -96,8 +122,8 @@ export async function executeEntry({
     outputCallback,
     isCancelled,
     pause,
-    statusCallback,
-    additionalInputReader
+    additionalInputReader,
+    screen
 }: ExecutionArgs
 ) {
     let callback: EntryCallback;
@@ -112,8 +138,8 @@ export async function executeEntry({
             outputCallback,
             pause: pause || (() => new Promise<void>((resolve) => setTimeout(resolve, 0))),
             isCancelled,
-            statusCallback,
-            additionalInputReader
+            additionalInputReader,
+            screen
         });
     } catch (e) {
         await outputCallback("ERROR: " + (e as Error).message);

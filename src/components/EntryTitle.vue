@@ -40,7 +40,7 @@ export default class EntryTitle extends Vue {
     }
     .link {
         margin-left: 0.5em;
-        color: lightgrey;
+        color: $dark-transparent-color;
         font-size: 80%;
         @include small-screen {
             font-size: 100%;
@@ -58,7 +58,7 @@ export default class EntryTitle extends Vue {
             }
         }
         &:hover {
-            color: $dark-color;
+            color: $dark-transparent-text;
         }
     }
     hr {

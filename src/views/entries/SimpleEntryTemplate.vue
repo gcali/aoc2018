@@ -1,7 +1,7 @@
 <template lang="pug">
     EntryTemplate(:title="title", :id="id", :year="year", @file-loaded="readFile", :disabled="disabled")
         .output
-            EntrySimpleOutput(:key="$route.path", :lines="output")
+            EntrySimpleOutput(:key="$route.path", :lines="output" @print-factory="readFactory")
         .input(v-if="showAdditionalInput" )
             input(
                 type="text" 
@@ -21,8 +21,10 @@ import {
     Entry,
     executeEntry,
     EntryFileHandling,
-    simpleOutputCallbackFactory
+    simpleOutputCallbackFactory,
+    ScreenPrinter
 } from "../../entries/entry";
+import { Coordinate } from "../../support/geometry";
 @Component({
     components: {
         EntryTemplate,
@@ -51,6 +53,10 @@ export default class SimpleEntryTemplate extends Vue {
     private showInput: boolean = false;
     private disabled: boolean = false;
 
+    private requireScreen?: (size?: Coordinate) => Promise<ScreenPrinter>;
+
+    private stopper?: () => Promise<void>;
+
     public sendInput() {
         const line = this.inputLine;
         this.inputLine = "";
@@ -65,6 +71,15 @@ export default class SimpleEntryTemplate extends Vue {
     public onRouteChanged() {
         this.output = [];
     }
+
+    public readFactory(factory: (c?: Coordinate) => Promise<ScreenPrinter>) {
+        this.requireScreen = async (size?: Coordinate) => {
+            const result = await factory(size);
+            this.stopper = result.stop;
+            return result;
+        };
+    }
+
     public async readFile(fileHandling: EntryFileHandling) {
         this.output = [];
         this.disabled = true;
@@ -82,14 +97,21 @@ export default class SimpleEntryTemplate extends Vue {
                     return await new Promise<string|null>((resolve, reject) => this.resolver = resolve);
                 }
             } : undefined;
-        await executeEntry({
-            entry: this.entry,
-            choice: fileHandling.choice,
-            lines: fileHandling.content,
-            outputCallback: simpleOutputCallbackFactory(this.output),
-            additionalInputReader
-        });
-        this.disabled = false;
+        try {
+            await executeEntry({
+                entry: this.entry,
+                choice: fileHandling.choice,
+                lines: fileHandling.content,
+                outputCallback: simpleOutputCallbackFactory(this.output),
+                additionalInputReader,
+                screen: this.requireScreen ? { requireScreen: this.requireScreen } : undefined
+            });
+        } finally {
+            if (this.stopper) {
+                this.stopper();
+            }
+            this.disabled = false;
+        }
     }
 
     private sendLine(line: string | null) {

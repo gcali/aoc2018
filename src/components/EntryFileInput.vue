@@ -88,9 +88,10 @@ export default class EntryFileInput extends Vue {
     }
     .selected-file {
         margin-left: 2em;
-        background-color: lightgrey;
+        background-color: $dark-transparent-color;
         border-radius: 4px;
         padding: 8px 16px;
+        color: $dark-transparent-text;
     }
     input {
         display: none;

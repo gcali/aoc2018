@@ -6,16 +6,23 @@
             button(@click="run", :class="{hidden: !executing}") Toggle Run
             input(v-model="timeout" type="number")
         .output
-            EntrySimpleOutput(:key="$route.path", :lines="output")
+            EntrySimpleOutput(:key="$route.path", :lines="output" @print-factory="readFactory")
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop } from "vue-property-decorator";
-import { Entry, EntryFileHandling, executeEntry, simpleOutputCallbackFactory } from "../../entries/entry";
+import {
+    Entry,
+    EntryFileHandling,
+    executeEntry,
+    ScreenPrinter,
+    simpleOutputCallbackFactory
+} from "../../entries/entry";
 import EntryTemplate from "@/components/EntryTemplate.vue";
 import EntrySimpleOutput from "@/components/EntrySimpleOutput.vue";
 import { setTimeoutAsync } from "../../support/async";
 import { isTimeoutMessage } from "../../entries/entryStatusMessages";
+import { Coordinate } from "../../support/geometry";
 
 @Component({
     components: {
@@ -38,6 +45,17 @@ export default class EntryWithPauseAndRun extends Vue {
 
     private output: string[] = [];
 
+    private requireScreen?: (size?: Coordinate) => Promise<ScreenPrinter>;
+    private screenPrinter?: ScreenPrinter;
+
+    public readFactory(factory: (c?: Coordinate) => Promise<ScreenPrinter>) {
+        this.requireScreen = async (size?: Coordinate) => {
+            const result = await factory(size);
+            this.screenPrinter = result;
+            return result;
+        };
+    }
+
     public async readFile(fileHandling: EntryFileHandling) {
         this.shouldRun = false;
         this.shouldStop = false;
@@ -46,6 +64,7 @@ export default class EntryWithPauseAndRun extends Vue {
         // this.timeout = 100;
         const that = this;
         try {
+            let drawingPause: (() => void) | undefined;
             await executeEntry(
                 {
                     entry: this.entry,
@@ -56,34 +75,50 @@ export default class EntryWithPauseAndRun extends Vue {
                     pause: () => {
                         const promise = new Promise<void>((resolve, reject) => {
                             if (this.shouldRun) {
-                                if (this.timeout > 0) {
-                                    setTimeout(resolve, this.timeout);
-                                } else {
+                                const resolver = drawingPause ? () => {
+                                    if (drawingPause) {
+                                        drawingPause();
+                                        drawingPause = undefined;
+                                    }
                                     resolve();
+                                } : resolve;
+                                if (this.timeout > 0) {
+                                    setTimeout(resolver , this.timeout);
+                                } else {
+                                    resolver();
                                 }
                             } else {
+                                // const drawingPause = this.screenPrinter ? this.screenPrinter.pause() : () => {};
+                                if (!drawingPause && this.screenPrinter) {
+                                    drawingPause = this.screenPrinter.pause();
+                                }
+                                if (this.screenPrinter) {
+                                    this.screenPrinter.forceRender();
+                                }
                                 this.resolver = resolve;
                             }
                         });
                         return promise;
                     },
-                    statusCallback: async (message) => {
-                        if (isTimeoutMessage(message)) {
-                            this.timeout = message.timeout;
-                        }
-                    }
+                    screen: this.requireScreen ? { requireScreen: this.requireScreen } : undefined
                 }
             );
         } catch (e) {
             throw e;
         } finally {
             this.executing = false;
+            if (this.screenPrinter) {
+                this.screenPrinter.stop();
+            }
         }
     }
 
     public stop() {
         this.shouldStop = true;
         this.nextState();
+        if (this.screenPrinter) {
+            this.screenPrinter.stop();
+        }
     }
 
     public run() {

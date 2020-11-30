@@ -1,7 +1,7 @@
-import { entryForFile } from "../../entry";
+import { Drawable, entryForFile, ScreenPrinter } from "../../entry";
 import { parseMemory, execute } from "../../../support/intcode";
 import { groupBy } from "../../../support/sequences";
-import { Coordinate, getBoundaries, diffCoordinate, sumCoordinate } from "../../../support/geometry";
+import { Coordinate, getBoundaries, diffCoordinate, sumCoordinate, scalarCoordinates, serialization } from "../../../support/geometry";
 import { FixedSizeMatrix } from "../../../support/matrix";
 import wu from "wu";
 
@@ -47,8 +47,23 @@ function tileVisualize(t: Tile): string {
     }
 }
 
+function tileColor(t: Tile): string {
+    switch (t) {
+        case "ball":
+            return "white";
+        case "block":
+            return "black";
+        case "empty":
+            return "transparent";
+        case "paddle":
+            return "yellow";
+        case "wall":
+            return "white";
+    }
+}
+
 export const carePackage = entryForFile(
-    async ({ lines, outputCallback, pause, isCancelled }) => {
+    async ({ lines, outputCallback, pause, isCancelled, screen }) => {
         const memory = parseMemory(lines[0]);
         const output: number[] = [];
         await execute({ memory, input: async () => { throw new Error("No input"); }, output: (e) => output.push(e) });
@@ -56,14 +71,19 @@ export const carePackage = entryForFile(
         const tiles = parseTiels(output);
         const blocks = tiles.filter((e) => e.tile === "block");
 
-        const visualization = visualizeTiles(tiles);
-
-        await outputCallback(visualization);
+        if (screen) {
+            const printer = await screen.requireScreen({x: 300, y: 300});
+            const visualization = screenMapTiles(tiles, {x: 300, y: 300});
+            printer.replace(visualization);
+        } else {
+            const visualization = visualizeTiles(tiles);
+            await outputCallback(visualization);
+        }
 
         await outputCallback("Blocks: ");
         await outputCallback(blocks.length);
     },
-    async ({ lines, outputCallback, pause, isCancelled }) => {
+    async ({ lines, outputCallback, pause, isCancelled, screen }) => {
         const memory = parseMemory(lines[0]);
         memory[0] = 2;
         let currentPaddleX = 0;
@@ -71,12 +91,16 @@ export const carePackage = entryForFile(
         let output: number[] = [];
         const tiles: Cell[] = [];
         let score: number = 0;
+        let printer: ScreenPrinter | undefined;
+        if (screen) {
+            printer = await screen.requireScreen({x: 300, y: 300});
+        }
         await execute({
             memory, input: async () => {
                 if (tiles.length > 0) {
                     ({ currentPaddleX, currentBallX } =
                         await updateTileFeedback(
-                            tiles, currentPaddleX, currentBallX, score, outputCallback, pause
+                            tiles, currentPaddleX, currentBallX, score, outputCallback, pause, printer
                         )
 
                     );
@@ -91,7 +115,7 @@ export const carePackage = entryForFile(
                         if (tiles.length > 0) {
                             ({ currentPaddleX, currentBallX } =
                                 await updateTileFeedback(
-                                    tiles, currentPaddleX, currentBallX, score, outputCallback, pause
+                                    tiles, currentPaddleX, currentBallX, score, outputCallback, pause, printer
                                 )
                             );
                         }
@@ -114,7 +138,7 @@ export const carePackage = entryForFile(
         });
         await outputCallback(score);
     },
-    { key: "care-package", title: "Care Package", stars: 2, hasCustomComponent: true}
+    { key: "care-package", title: "Care Package", stars: 2}
 );
 
 async function updateTileFeedback(
@@ -123,14 +147,19 @@ async function updateTileFeedback(
     currentBallX: number,
     score: number,
     outputCallback: (outputLine: any, shouldClear?: boolean | undefined) => Promise<void>,
-    pause: () => Promise<void>
+    pause: () => Promise<void>,
+    screen?: ScreenPrinter
 ) {
-    const visualization = visualizeTiles(tiles) + `\n\nScore: ${score}`;
     currentPaddleX = tiles.filter((t) => t.tile === "paddle")[0].coordinates.x;
     currentBallX = tiles.filter((t) => t.tile === "ball")[0].coordinates.x;
     await outputCallback(null);
-    await outputCallback(visualization);
-    // await setTimeoutAsync(5);
+    if (screen) {
+        await screen.replace(screenMapTiles(tiles, {x: 300, y: 300}));
+        await outputCallback(`Score: ${score}`);
+    } else {
+        const visualization = visualizeTiles(tiles) + `\n\nScore: ${score}`;
+        await outputCallback(visualization);
+    }
     await pause();
     return { currentPaddleX, currentBallX };
 }
@@ -141,6 +170,33 @@ function visualizeTiles(tiles: Cell[]) {
     tiles.forEach((t) => grid.set(t.coordinates, tileVisualize(t.tile)));
     const visualization = wu(grid.overRows()).map((row) => row.join("")).toArray().join("\n");
     return visualization;
+}
+
+function screenMapTiles(tiles: Cell[], size: Coordinate): Drawable[] {
+    const boundaries = getBoundaries(tiles.map((t) => t.coordinates));
+    const sizes = {x: Math.floor(size.x / boundaries.size.x), y: Math.floor(size.y / boundaries.size.y)};
+    const squareSize = Math.min(sizes.x, sizes.y);
+    if (squareSize === 0) {
+        return [];
+    }
+
+    return tiles.map((tile) => {
+        let coordinates = {x: tile.coordinates.x * squareSize, y: tile.coordinates.y * squareSize};
+        let padding: number = 0;
+        if (squareSize >= 6) {
+            const maxPadding = Math.floor(squareSize / 4);
+            padding = Math.min(maxPadding, 4);
+        }
+        coordinates = sumCoordinate(coordinates, {x: padding, y: padding});
+        const drawableSize = {x: squareSize - 2 * padding, y: squareSize - 2 * padding};
+        return {
+            id: serialization.serialize(tile.coordinates),
+            color: tileColor(tile.tile),
+            type: "rectangle",
+            c: coordinates,
+            size: drawableSize
+        } as Drawable;
+    });
 }
 
 function parseTiels(output: number[]) {

@@ -1,6 +1,16 @@
-import { entryForFile } from "../../entry";
+import { Drawable, entryForFile, ScreenPrinter } from "../../entry";
 import { FixedSizeMatrix } from "../../../support/matrix";
-import { CCoordinate, Coordinate, Rotation, rotate, directions, manhattanDistance, getSurrounding } from "../../../support/geometry";
+import {
+    CCoordinate,
+    Coordinate,
+    Rotation,
+    rotate,
+    directions,
+    manhattanDistance,
+    scalarCoordinates,
+    sumCoordinate,
+    serialization
+} from "../../../support/geometry";
 
 type InputCell = " " | CartDirections | "|" | "-" | "/" | "\\" | "+";
 type CartDirections = "^" | ">" | "v" | "<";
@@ -174,6 +184,146 @@ class Field {
             }
         });
     }
+
+    public toDrawable(size: Coordinate, skipCarts: boolean = false): Drawable[] {
+        const squareSize = Math.floor(Math.min(size.x / this.matrix.size.x, size.y / this.matrix.size.y));
+        const padding = 3;
+
+        const result: Drawable[] = [];
+        this.matrix.onEveryCellSync((c, e) => {
+            if (!e) {
+                return;
+            }
+            const baseCoordinates = scalarCoordinates(c, squareSize);
+            const matchingCarts = this.carts.filter((cart) => manhattanDistance(cart.position, c) === 0);
+            if (matchingCarts.length === 1) {
+                e = matchingCarts[0].toString();
+            } else if (matchingCarts.length > 1) {
+                result.push({
+                    id: serialization.serialize(c),
+                    c,
+                    color: "red",
+                    type: "rectangle",
+                    size: {x: squareSize, y: squareSize},
+                });
+                return;
+            }
+            switch (e) {
+                case " ":
+                    return;
+                case "+":
+                    result.push({
+                        type: "rectangle",
+                        c: sumCoordinate(baseCoordinates, {x: 0, y: padding}),
+                        color: "white",
+                        size: {x: squareSize, y: squareSize - padding * 2},
+                        id: serialization.serialize(c) + "-"
+                    });
+                    result.push({
+                        type: "rectangle",
+                        c: sumCoordinate(baseCoordinates, {x: padding, y: 0}),
+                        color: "white",
+                        size: {x: squareSize - padding * 2, y: squareSize},
+                        id: serialization.serialize(c) + "|"
+                    });
+                    break;
+                case "|":
+                    result.push({
+                        type: "rectangle",
+                        c: sumCoordinate(baseCoordinates, {x: padding, y: 0}),
+                        color: "white",
+                        size: {x: squareSize - padding * 2, y: squareSize},
+                        id: serialization.serialize(c) + "|"
+                    });
+                    break;
+                case "-":
+                    result.push({
+                        type: "rectangle",
+                        c: sumCoordinate(baseCoordinates, {x: 0, y: padding}),
+                        color: "white",
+                        size: {x: squareSize, y: squareSize - padding * 2},
+                        id: serialization.serialize(c) + "-"
+                    });
+                    break;
+                case "/":
+                    result.push({
+                        type: "points",
+                        id: serialization.serialize(c),
+                        color: "white",
+                        points: [
+                            { x: baseCoordinates.x, y: baseCoordinates.y + squareSize - padding},
+                            { x: baseCoordinates.x + squareSize - padding, y: baseCoordinates.y},
+                            { x: baseCoordinates.x + squareSize, y: baseCoordinates.y + padding},
+                            { x: baseCoordinates.x + padding, y: baseCoordinates.y + squareSize}
+                        ]
+                    });
+                    break;
+                case "\\":
+                    result.push({
+                        type: "points",
+                        id: serialization.serialize(c),
+                        color: "white",
+                        points: [
+                            { x: baseCoordinates.x, y: baseCoordinates.y + padding},
+                            { x: baseCoordinates.x +  padding, y: baseCoordinates.y},
+                            { x: baseCoordinates.x + squareSize, y: baseCoordinates.y + squareSize - padding},
+                            { x: baseCoordinates.x + squareSize - padding, y: baseCoordinates.y + squareSize}
+                        ]
+                    });
+                    break;
+                case ">":
+                    result.push({
+                        type: "points",
+                        id: serialization.serialize(c),
+                        color: "pink",
+                        points: [
+                            baseCoordinates,
+                            {x: baseCoordinates.x + squareSize, y: baseCoordinates.y + squareSize / 2},
+                            {x: baseCoordinates.x, y: baseCoordinates.y + squareSize}
+                        ]
+                    });
+                    break;
+                case "<":
+                    result.push({
+                        type: "points",
+                        id: serialization.serialize(c),
+                        color: "pink",
+                        points: [
+                            {x: baseCoordinates.x + squareSize, y: baseCoordinates.y},
+                            {x: baseCoordinates.x, y: baseCoordinates.y + squareSize / 2},
+                            {x: baseCoordinates.x + squareSize, y: baseCoordinates.y + squareSize}
+                        ]
+                    });
+                    break;
+                case "^":
+                    result.push({
+                        type: "points",
+                        id: serialization.serialize(c),
+                        color: "pink",
+                        points: [
+                            {x: baseCoordinates.x + squareSize / 2, y: baseCoordinates.y},
+                            {x: baseCoordinates.x, y: baseCoordinates.y + squareSize},
+                            {x: baseCoordinates.x + squareSize, y: baseCoordinates.y + squareSize},
+                        ]
+                    });
+                    break;
+                case "v":
+                    result.push({
+                        type: "points",
+                        id: serialization.serialize(c),
+                        color: "pink",
+                        points: [
+                            {x: baseCoordinates.x + squareSize / 2, y: baseCoordinates.y + squareSize},
+                            {x: baseCoordinates.x, y: baseCoordinates.y},
+                            {x: baseCoordinates.x + squareSize, y: baseCoordinates.y},
+                        ]
+                    });
+                    break;
+            }
+        });
+        return result;
+    }
+
     private isVertical(cell: InputCell | undefined) {
         if (!cell) {
             return false;
@@ -241,37 +391,49 @@ class Field {
 }
 
 export const mineCartMadness = entryForFile(
-    async ({ lines, outputCallback, statusCallback, isCancelled, pause }) => {
+    async ({ lines, outputCallback, isCancelled, pause, screen }) => {
         const field = parseLines(lines);
-        await outputCallback(field.toString(true), true);
+        let printer: ScreenPrinter | null = null;
+        if (screen) {
+            printer = await screen.requireScreen({x: 1600, y: 1600});
+            await outputCallback("Running...");
+        }
+        if (printer) {
+            printer.replace(field.toDrawable({x: 1600, y: 1600}, false));
+        } else {
+            await outputCallback(field.toString(true), true);
+        }
         await pause();
         while (!isCancelled || !isCancelled()) {
-            await outputCallback([
-                " ",
-                field.toString(false)
-            ], true);
+            if (printer) {
+                printer.replace(field.toDrawable({x: 1600, y: 1600}));
+            } else {
+                await outputCallback([
+                    " ",
+                    field.toString(false)
+                ], true);
+            }
             field.tick();
             if (field.hasCrashes()) {
                 break;
             }
             await pause();
         }
-        await outputCallback([
-            "Crash: " + JSON.stringify(field.crashes[0].position),
-            field.toString(false)
-        ], true);
+        if (printer) {
+            printer.replace(field.toDrawable({x: 1600, y: 1600}));
+            await outputCallback("Crash: " + JSON.stringify(field.crashes[0].position));
+        } else {
+            await outputCallback([
+                "Crash: " + JSON.stringify(field.crashes[0].position),
+                field.toString(false)
+            ], true);
+        }
     },
-    async ({ lines, outputCallback, statusCallback, isCancelled, pause }) => {
+    async ({ lines, outputCallback, isCancelled, pause }) => {
         const field = parseLines(lines);
         await outputCallback(field.toString(true), true);
         await pause();
         while (!isCancelled || !isCancelled()) {
-            if (statusCallback) {
-                await statusCallback({
-                    messageType: "Timeout",
-                    timeout: 0
-                });
-            }
             await outputCallback([
                 "Remaining carts: " + field.remainingCarts.length,
                 field.toString(false)

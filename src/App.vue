@@ -31,10 +31,11 @@ export default class App extends Vue {
 }
 button {
     padding: 8px 16px;
-    box-shadow: inset 0px 0px 0px 1px grey;
+    box-shadow: inset 0px 0px 0px 1px black;
     border: none;
     border-radius: 4px;
-    background-color: white;
+    // background-color: white;
+    background-color: $dark-transparent-text;
     font-size: 16px;
     cursor: pointer;
 }
