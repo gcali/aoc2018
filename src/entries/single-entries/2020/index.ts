@@ -1,5 +1,5 @@
-import { placeholder } from "./placeholder";
+import { reportRepair } from "./report-repair";
 
 export const entries = [
-        placeholder
+        reportRepair
 ];
