@@ -29,6 +29,9 @@ export default class App extends Vue {
 .hidden {
     display: none !important;
 }
+.transparent {
+    visibility: hidden;
+}
 button {
     padding: 8px 16px;
     box-shadow: inset 0px 0px 0px 1px black;

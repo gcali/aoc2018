@@ -2,18 +2,19 @@ import { Choice } from "../constants/choice";
 import { Coordinate } from "../support/geometry";
 import { Message } from "./entryStatusMessages";
 
+export interface ScreenBuilder {requireScreen: (size?: Coordinate) => Promise<ScreenPrinter>; }
+
 export interface EntryCallbackArg {
     lines: string[];
     outputCallback: ((outputLine: any, shouldClear?: boolean) => Promise<void>);
     pause: (() => Promise<void>);
-    isCancelled?: (() => boolean);
+    isCancelled: (() => boolean);
+    setAutoStop: () => void;
     additionalInputReader?: {
         read: () => Promise<string | null>;
         close: () => void;
     };
-    screen?: {
-        requireScreen: (size?: Coordinate) => Promise<ScreenPrinter>;
-    };
+    screen?: ScreenBuilder;
 }
 
 type OldEntryCallback = (
@@ -95,6 +96,7 @@ export interface ScreenPrinter {
     remove: (id: string) => Promise<void>;
     stop: () => Promise<void>;
     replace: (items: Drawable[]) => Promise<void>;
+    changeColor: (indexOrId: string | number, color: string) => Promise<void>;
     pause: () => (() => void);
     forceRender: () => void;
 }
@@ -104,7 +106,7 @@ interface ExecutionArgs {
     choice: Choice;
     lines: string[];
     outputCallback: EntryCallbackArg["outputCallback"];
-    isCancelled?: (() => boolean);
+    isCancelled: (() => boolean);
     pause?: () => Promise<void>;
     additionalInputReader?: {
         read: () => Promise<string | null>;
@@ -113,6 +115,10 @@ interface ExecutionArgs {
     screen?: {
         requireScreen: (size?: Coordinate) => Promise<ScreenPrinter>;
     };
+}
+
+export class StopException extends Error {
+    public isStop = true;
 }
 
 export async function executeEntry({
@@ -133,15 +139,31 @@ export async function executeEntry({
         callback = entry.second;
     }
     try {
+        const basePause = pause || (() => new Promise<void>((resolve) => setTimeout(resolve, 0)));
+        let shouldAutoStop = false;
+        const wrappedPause = async () => {
+            if (shouldAutoStop && isCancelled()) {
+                throw new StopException();
+            }
+            await basePause();
+            if (shouldAutoStop && isCancelled()) {
+                throw new StopException();
+            }
+        };
         await callback({
             lines,
             outputCallback,
-            pause: pause || (() => new Promise<void>((resolve) => setTimeout(resolve, 0))),
+            pause: wrappedPause,
             isCancelled,
             additionalInputReader,
-            screen
+            screen,
+            setAutoStop: () => shouldAutoStop = true,
         });
     } catch (e) {
+        if ((e as StopException).isStop) {
+            console.log("Stopped, all fine");
+            return;
+        }
         await outputCallback("ERROR: " + (e as Error).message);
         console.error(e);
     }

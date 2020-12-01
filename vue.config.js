@@ -1,6 +1,7 @@
 if (process.env.NODE_ENV === "production") {
     module.exports = {
-        publicPath: '/aoc'
+        publicPath: '/aoc',
+        configureWebpack: {}
     }
 }
 else {
@@ -21,6 +22,17 @@ module.exports = {
                 @import "@/style/media.scss";
                 `
             }
+        }
+    },
+    configureWebpack: {
+        ...module.exports.configureWebpack,
+        module: {
+            rules: [
+                {
+                    test: /\.txt$/i,
+                    use: 'raw-loader'
+                }
+            ]
         }
     }
 }

@@ -8,5 +8,6 @@ export const map: { [key: string]: VueConstructor<Vue> } = {
     "settlers-of-the-north-pole": EntryWithPauseAndRun,
     "go-with-the-flow": EntryWithPauseAndRun,
     "safe-cracking": EntryWithPauseAndRun,
-    "care-package": EntryWithPauseAndRun
+    "care-package": EntryWithPauseAndRun,
+    "report-repair": EntryWithPauseAndRun
 };

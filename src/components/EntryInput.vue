@@ -1,11 +1,13 @@
 <template lang="pug">
     .input
         EntryFileInput(
-            :key="this.$route.path",
             readFile="true",
             @file-content="readFileContent",
             :disabled="disabled"
+            v-if="!noInput"
         )
+        div(v-else :style="{marginBottom: '1em'}") No input available: 
+            | you cannot select your input for the current year in order to avoid cheating!
         .choices(:class="{hidden: hideChoices}")
             EntryChoice(:key="this.$route.path", @execute="loadFile", :disabled="disabled")
 </template>
@@ -16,6 +18,7 @@ import EntryChoice from "@/components/EntryChoice.vue";
 import { Component, Vue, Emit, Prop } from "vue-property-decorator";
 import { Choice } from "../constants/choice";
 import { EntryFileHandling } from "../entries/entry";
+import { embeddedLines } from "../entries/embeddedData";
 
 @Component({
     components: {
@@ -25,11 +28,16 @@ import { EntryFileHandling } from "../entries/entry";
 })
 export default class EntryInput extends Vue {
     @Prop({ default: false }) public disabled!: boolean;
+    @Prop({required: true, default: ""}) public entryKey!: string;
 
     private inputContent: string | null = null;
 
+    public get noInput(): boolean {
+        return this.entryKey in embeddedLines;
+    }
+
     public get hideChoices(): boolean {
-        return this.inputContent === null;
+        return this.inputContent === null && !this.noInput;
     }
 
     public readFileContent(content: string) {
@@ -38,6 +46,10 @@ export default class EntryInput extends Vue {
 
     @Emit("file-loaded")
     public loadFile(choice: Choice): EntryFileHandling {
+        if (this.noInput) {
+            return {choice, content: embeddedLines[this.entryKey] || []};
+            return {choice, content: []};
+        }
         if (!this.inputContent) {
             throw Error("No file was read");
         }

@@ -1,10 +1,21 @@
 <template lang="pug">
-    EntryTemplate(:title="title", :id="id", @file-loaded="readFile", :disabled="executing", :year="year")
-        .input(:class="{hidden:!executing}")
-            button(@click="nextState", :class="{hidden: !executing}") Next
-            button(@click="stop", :class="{hidden: !executing}") Stop
-            button(@click="run", :class="{hidden: !executing}") Toggle Run
-            input(v-model="timeout" type="number")
+    EntryTemplate(
+        :title="title"
+        :id="id"
+        @file-loaded="readFile"
+        :disabled="executing"
+        :year="year"
+        :entryKey="this.entry.metadata.key"
+    )
+        .input(:class="{transparent:!executing}")
+            button(@click="play", :class="{transparent: !executing || running}") Play
+            button(@click="nextState", :class="{transparent: !executing || running}") Next
+            button(@click="stop", :class="{transparent: !executing}") Stop
+            button(@click="run", :class="{transparent: !executing || running}") Toggle Run
+            button(@click="run", :class="{transparent: !executing || !running}") Pause
+            .speed
+                label Animation delay
+                input(v-model="timeout" type="number" min="0" step="10")
         .output
             EntrySimpleOutput(:key="$route.path", :lines="output" @print-factory="readFactory")
 </template>
@@ -40,6 +51,7 @@ export default class EntryWithPauseAndRun extends Vue {
     private resolver?: () => void;
     private shouldStop: boolean = false;
     private shouldRun: boolean = false;
+    private running: boolean = false;
 
     private timeout = 100;
 
@@ -57,6 +69,7 @@ export default class EntryWithPauseAndRun extends Vue {
     }
 
     public async readFile(fileHandling: EntryFileHandling) {
+        this.running = false;
         this.shouldRun = false;
         this.shouldStop = false;
         this.executing = true;
@@ -65,6 +78,7 @@ export default class EntryWithPauseAndRun extends Vue {
         const that = this;
         try {
             let drawingPause: (() => void) | undefined;
+            let lastPause = 0;
             await executeEntry(
                 {
                     entry: this.entry,
@@ -75,6 +89,7 @@ export default class EntryWithPauseAndRun extends Vue {
                     pause: () => {
                         const promise = new Promise<void>((resolve, reject) => {
                             if (this.shouldRun) {
+                                this.running = true;
                                 const resolver = drawingPause ? () => {
                                     if (drawingPause) {
                                         drawingPause();
@@ -85,9 +100,16 @@ export default class EntryWithPauseAndRun extends Vue {
                                 if (this.timeout > 0) {
                                     setTimeout(resolver , this.timeout);
                                 } else {
-                                    resolver();
+                                    const currentTime = new Date().getTime();
+                                    if (currentTime - lastPause > 500) {
+                                        lastPause = currentTime;
+                                        setTimeout(resolver, 0);
+                                    } else {
+                                        resolver();
+                                    }
                                 }
                             } else {
+                                this.running = false;
                                 // const drawingPause = this.screenPrinter ? this.screenPrinter.pause() : () => {};
                                 if (!drawingPause && this.screenPrinter) {
                                     drawingPause = this.screenPrinter.pause();
@@ -113,8 +135,14 @@ export default class EntryWithPauseAndRun extends Vue {
         }
     }
 
+    public play() {
+        this.shouldRun = true;
+        this.nextState();
+    }
+
     public stop() {
         this.shouldStop = true;
+        this.running = false;
         this.nextState();
         if (this.screenPrinter) {
             this.screenPrinter.stop();
@@ -139,5 +167,11 @@ export default class EntryWithPauseAndRun extends Vue {
 .output {
     display: flex;
     align-items: stretch;
+}
+.input .speed {
+    label {
+        margin-right: 1em;
+    }
+    margin: 1em 0em;
 }
 </style> 

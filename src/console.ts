@@ -115,6 +115,8 @@ reader(async (lines) => {
                 outputCallback,
                 // tslint:disable-next-line:no-empty
                 pause: async () => { },
+                // tslint:disable-next-line:no-empty
+                setAutoStop: () => { },
                 additionalInputReader
             }/*, lines, outputCallback*/);
         } else {
@@ -124,6 +126,8 @@ reader(async (lines) => {
                 isCancelled: () => false,
                 // tslint:disable-next-line:no-empty
                 pause: async () => { },
+                // tslint:disable-next-line:no-empty
+                setAutoStop: () => { },
                 additionalInputReader
             });
         }

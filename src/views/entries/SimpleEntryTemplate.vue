@@ -1,5 +1,12 @@
 <template lang="pug">
-    EntryTemplate(:title="title", :id="id", :year="year", @file-loaded="readFile", :disabled="disabled")
+    EntryTemplate(
+        :title="title"
+        :id="id"
+        :year="year"
+        @file-loaded="readFile"
+        :disabled="disabled"
+        :entryKey="this.entry.metadata.key"
+    )
         .output
             EntrySimpleOutput(:key="$route.path", :lines="output" @print-factory="readFactory")
         .input(v-if="showAdditionalInput" )
@@ -104,7 +111,8 @@ export default class SimpleEntryTemplate extends Vue {
                 lines: fileHandling.content,
                 outputCallback: simpleOutputCallbackFactory(this.output),
                 additionalInputReader,
-                screen: this.requireScreen ? { requireScreen: this.requireScreen } : undefined
+                screen: this.requireScreen ? { requireScreen: this.requireScreen } : undefined,
+                isCancelled: () => false
             });
         } finally {
             if (this.stopper) {

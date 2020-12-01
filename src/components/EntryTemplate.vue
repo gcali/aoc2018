@@ -1,7 +1,7 @@
 <template lang="pug">
     div.wrapper
         EntryTitle(:date="id", :name="title", :year="year")
-        EntryInput(:key="$route.path", @file-loaded="fileLoaded", :disabled="disabled")
+        EntryInput(:key="$route.path", @file-loaded="fileLoaded", :disabled="disabled" :entryKey="entryKey")
         slot
 </template>
 
@@ -21,7 +21,9 @@ export default class EntryTemplate extends Vue {
     @Prop() public title!: string;
     @Prop() public id!: number;
     @Prop({ default: false }) public disabled!: boolean;
-    @Prop({ required: true }) public year!: number;
+    @Prop({ required: true }) public year!: string;
+    @Prop({required: false, default: false}) public noInput!: boolean;
+    @Prop({required: true}) public entryKey!: string;
     @Emit("file-loaded")
     public fileLoaded(fileHandling: EntryFileHandling) {
         return fileHandling;

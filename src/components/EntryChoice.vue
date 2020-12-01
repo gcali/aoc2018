@@ -36,6 +36,8 @@ export default class EntryChoice extends Vue {
     }
     .choices {
         margin-right: 1em;
+        display: flex;
+        flex-wrap: wrap;
     }
 }
 </style>

@@ -1,12 +1,12 @@
 <template lang="pug">
-    .wrapper(:class="{hidden: hideOutput}")
+    .wrapper()
         .screen-output(v-if="canvasSize")
             canvas( 
                 ref="canvas"
                 :width="canvasSize.width"
                 :height="canvasSize.height"
             )
-        .output(ref="output") {{text}}
+        .output(ref="output", :class="{hidden: hideOutput}") {{text}}
 </template>
 
 
@@ -74,6 +74,7 @@ export default class EntrySimpleOutput extends Vue {
                     }
                 },
                 stop: async () => {
+                    this.renderIteration();
                     this.context = null;
                     console.log("Stopping render...");
                 },
@@ -94,6 +95,15 @@ export default class EntrySimpleOutput extends Vue {
                 },
                 forceRender: () => {
                     this.renderIteration();
+                },
+                changeColor: async (idOrIndex: string | number, color: string) => {
+                    const index: number = typeof idOrIndex === "string" ?
+                        this.toDraw.findIndex((e) => e.id === idOrIndex)
+                        : idOrIndex;
+                    if (index < 0 || index >= this.toDraw.length) {
+                        return;
+                    }
+                    this.toDraw[index].color = color;
                 }
             };
         });
