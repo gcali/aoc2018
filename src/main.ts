@@ -24,9 +24,6 @@ library.add(
   faLink
 );
 
-import {init} from "./entries/embeddedData";
-init();
-
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 
 Vue.config.productionTip = false;
