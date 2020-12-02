@@ -53,12 +53,18 @@ export default class EntryWithPauseAndRun extends Vue {
     private shouldRun: boolean = false;
     private running: boolean = false;
 
-    private timeout = 100;
+    private timeout = 50;
 
     private output: string[] = [];
 
     private requireScreen?: (size?: Coordinate) => Promise<ScreenPrinter>;
     private screenPrinter?: ScreenPrinter;
+
+    public mounted() {
+        if (this.entry.metadata && this.entry.metadata.suggestedDelay !== undefined) {
+            this.timeout = this.entry.metadata.suggestedDelay;
+        }
+    }
 
     public readFactory(factory: (c?: Coordinate) => Promise<ScreenPrinter>) {
         this.requireScreen = async (size?: Coordinate) => {

@@ -7,7 +7,7 @@ export interface ScreenBuilder {requireScreen: (size?: Coordinate) => Promise<Sc
 export interface EntryCallbackArg {
     lines: string[];
     outputCallback: ((outputLine: any, shouldClear?: boolean) => Promise<void>);
-    pause: (() => Promise<void>);
+    pause: Pause;
     isCancelled: (() => boolean);
     setAutoStop: () => void;
     additionalInputReader?: {
@@ -16,6 +16,8 @@ export interface EntryCallbackArg {
     };
     screen?: ScreenBuilder;
 }
+
+export type Pause = (times?: number) => Promise<void>;
 
 type OldEntryCallback = (
     lines: string[],
@@ -33,6 +35,7 @@ interface EntryMetadata {
     title: string;
     date?: number;
     hasAdditionalInput?: boolean;
+    suggestedDelay?: number;
 }
 
 export interface Entry {
@@ -141,13 +144,16 @@ export async function executeEntry({
     try {
         const basePause = pause || (() => new Promise<void>((resolve) => setTimeout(resolve, 0)));
         let shouldAutoStop = false;
-        const wrappedPause = async () => {
-            if (shouldAutoStop && isCancelled()) {
-                throw new StopException();
-            }
-            await basePause();
-            if (shouldAutoStop && isCancelled()) {
-                throw new StopException();
+        const wrappedPause = async (times?: number) => {
+            times = times || 1;
+            for (let i = 0; i < times; i++) {
+                if (shouldAutoStop && isCancelled()) {
+                    throw new StopException();
+                }
+                await basePause();
+                if (shouldAutoStop && isCancelled()) {
+                    throw new StopException();
+                }
             }
         };
         await callback({

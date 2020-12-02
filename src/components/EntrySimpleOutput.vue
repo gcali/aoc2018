@@ -49,6 +49,7 @@ export default class EntrySimpleOutput extends Vue {
     private stop: boolean = false;
 
     private pause: boolean = false;
+    private pauseFor?: number = undefined;
 
     public mounted() {
         this.$emit("print-factory", async (size?: Coordinate): Promise<ScreenPrinter> => {
@@ -87,7 +88,8 @@ export default class EntrySimpleOutput extends Vue {
                     this.ids = newIds;
                     this.startRender();
                 },
-                pause: () => {
+                pause: (times?: number) => {
+                    this.pauseFor = times;
                     this.pause = true;
                     return () => {
                         this.pause = false;
