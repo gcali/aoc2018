@@ -87,8 +87,17 @@ export default class SimpleEntryTemplate extends Vue {
         };
     }
 
-    public async readFile(fileHandling: EntryFileHandling) {
+    @Watch('entry')
+    onEntryChanged() {
+        this.reset();
+    }
+
+    private reset() {
         this.output = [];
+    }
+
+    public async readFile(fileHandling: EntryFileHandling) {
+        this.reset();
         this.disabled = true;
         this.showInput = true;
         const additionalInputReader = this.showAdditionalInput ?

@@ -21,7 +21,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from "vue-property-decorator";
+import { Component, Vue, Prop, Watch } from "vue-property-decorator";
 import {
     Entry,
     EntryFileHandling,
@@ -60,10 +60,9 @@ export default class EntryWithPauseAndRun extends Vue {
     private requireScreen?: (size?: Coordinate) => Promise<ScreenPrinter>;
     private screenPrinter?: ScreenPrinter;
 
-    public mounted() {
-        if (this.entry.metadata && this.entry.metadata.suggestedDelay !== undefined) {
-            this.timeout = this.entry.metadata.suggestedDelay;
-        }
+    @Watch('entry')
+    onEntryChanged() {
+        this.reset();
     }
 
     public readFactory(factory: (c?: Coordinate) => Promise<ScreenPrinter>) {
@@ -74,12 +73,20 @@ export default class EntryWithPauseAndRun extends Vue {
         };
     }
 
-    public async readFile(fileHandling: EntryFileHandling) {
+    private reset() {
         this.running = false;
         this.shouldRun = false;
         this.shouldStop = false;
-        this.executing = true;
+        this.executing = false;
         this.output = [];
+        if (this.entry.metadata && this.entry.metadata.suggestedDelay !== undefined) {
+            this.timeout = this.entry.metadata.suggestedDelay;
+        }
+    }
+
+    public async readFile(fileHandling: EntryFileHandling) {
+        this.reset();
+        this.executing = true;
         // this.timeout = 100;
         const that = this;
         try {
