@@ -58,7 +58,7 @@ export const tobogganTrajectory = entryForFile(
         }
         await outputCallback(result);
     },
-    { key: "toboggan-trajectory", title: "Toboggan Trajectory", customComponent: "pause-and-run", suggestedDelay: 50}
+    { key: "toboggan-trajectory", title: "Toboggan Trajectory", stars: 2, customComponent: "pause-and-run", suggestedDelay: 50}
 );
 
 /*
