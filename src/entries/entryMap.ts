@@ -10,6 +10,4 @@ export const map: { [key: string]: VueConstructor<Vue> } = {
     "go-with-the-flow": EntryWithPauseAndRun,
     "safe-cracking": EntryWithPauseAndRun,
     "care-package": EntryWithPauseAndRun,
-    "report-repair": EntryWithPauseAndRun,
-    [passwordPhilosophy.metadata!.key]: EntryWithPauseAndRun
 };

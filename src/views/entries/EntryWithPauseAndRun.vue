@@ -60,6 +60,8 @@ export default class EntryWithPauseAndRun extends Vue {
     private requireScreen?: (size?: Coordinate) => Promise<ScreenPrinter>;
     private screenPrinter?: ScreenPrinter;
 
+    private destroying = false;
+
     @Watch('entry')
     onEntryChanged() {
         this.reset();
@@ -73,7 +75,16 @@ export default class EntryWithPauseAndRun extends Vue {
         };
     }
 
+    beforeDestroy() {
+        this.reset();
+        this.destroying = true;
+        if (this.screenPrinter) {
+            this.screenPrinter.stop();
+        }
+    }
+
     private reset() {
+        this.destroying = false;
         this.running = false;
         this.shouldRun = false;
         this.shouldStop = false;
@@ -97,7 +108,7 @@ export default class EntryWithPauseAndRun extends Vue {
                     entry: this.entry,
                     choice: fileHandling.choice,
                     lines: fileHandling.content,
-                    outputCallback: simpleOutputCallbackFactory(this.output),
+                    outputCallback: simpleOutputCallbackFactory(this.output, () => this.destroying),
                     isCancelled: () => that.shouldStop,
                     pause: () => {
                         const promise = new Promise<void>((resolve, reject) => {
@@ -157,9 +168,6 @@ export default class EntryWithPauseAndRun extends Vue {
         this.shouldStop = true;
         this.running = false;
         this.nextState();
-        if (this.screenPrinter) {
-            this.screenPrinter.stop();
-        }
     }
 
     public run() {

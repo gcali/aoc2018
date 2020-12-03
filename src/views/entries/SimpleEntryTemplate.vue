@@ -60,6 +60,8 @@ export default class SimpleEntryTemplate extends Vue {
     private showInput: boolean = false;
     private disabled: boolean = false;
 
+    private destroying = false;
+
     private requireScreen?: (size?: Coordinate) => Promise<ScreenPrinter>;
 
     private stopper?: () => Promise<void>;
@@ -92,6 +94,11 @@ export default class SimpleEntryTemplate extends Vue {
         this.reset();
     }
 
+    beforeDestroy() {
+        this.reset();
+        this.destroying = true;
+    }
+
     private reset() {
         this.output = [];
     }
@@ -118,7 +125,7 @@ export default class SimpleEntryTemplate extends Vue {
                 entry: this.entry,
                 choice: fileHandling.choice,
                 lines: fileHandling.content,
-                outputCallback: simpleOutputCallbackFactory(this.output),
+                outputCallback: simpleOutputCallbackFactory(this.output, () => this.destroying),
                 additionalInputReader,
                 screen: this.requireScreen ? { requireScreen: this.requireScreen } : undefined,
                 isCancelled: () => false

@@ -104,11 +104,9 @@ class PasswordPhilosophyVisualizer implements IPasswordPhilosophyVisualizer {
 }
 
 class DummyPasswordPhilosophyVisualizer implements IPasswordPhilosophyVisualizer {
-    setupPasswords(passwords: string[]): Promise<void> {
-        throw new Error('Method not implemented.');
+    async setupPasswords(passwords: string[]): Promise<void> {
     }
-    colorPassword(passwordIndex: number, indexes: number[], isValid: boolean): Promise<void> {
-        throw new Error('Method not implemented.');
+    async colorPassword(passwordIndex: number, indexes: number[], isValid: boolean): Promise<void> {
     }
 
 }

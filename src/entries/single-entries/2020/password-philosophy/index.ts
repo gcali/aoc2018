@@ -65,7 +65,7 @@ export const passwordPhilosophy = entryForFile(
         // await outputCallback(satisfied);
         await runEntry(screen, pause, lines, isLineReallyValid, outputCallback);
     },
-    { key: "password-philosophy", title: "Password Philosophy", stars: 2, suggestedDelay: 20}
+    { key: "password-philosophy", title: "Password Philosophy", customComponent: "pause-and-run", stars: 2, suggestedDelay: 20}
 );
 
 async function runEntry(

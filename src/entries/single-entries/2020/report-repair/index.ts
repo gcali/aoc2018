@@ -58,5 +58,5 @@ export const reportRepair = entryForFile(
         await outputCallback("Not found :(");
 
     },
-    { key: "report-repair", title: "Report Repair", stars: 2 }
+    { key: "report-repair", title: "Report Repair", customComponent: "pause-and-run", stars: 2 }
 );

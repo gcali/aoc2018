@@ -36,6 +36,7 @@ interface EntryMetadata {
     date?: number;
     hasAdditionalInput?: boolean;
     suggestedDelay?: number;
+    customComponent?: "pause-and-run";
 }
 
 export interface Entry {
@@ -63,8 +64,11 @@ export interface EntryFileHandling {
     content: string[];
 }
 
-export function simpleOutputCallbackFactory(output: string[]) {
+export function simpleOutputCallbackFactory(output: string[], avoidOutput?: () => boolean) {
     return (outputLine: any, shouldClear?: boolean): Promise<void> => {
+        if (avoidOutput && avoidOutput()) {
+            return new Promise((resolve) => resolve());
+        }
         if (shouldClear) {
             output.length = 0;
         }

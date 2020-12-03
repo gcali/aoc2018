@@ -1,8 +1,8 @@
-import { entryForFile } from "../../entry";
+import { entryForFile, Pause } from "../../entry";
 import { parseMemory, execute, Memory } from "../../../support/intcode";
 
 export const springdroidAdventure = entryForFile(
-    async ({ lines, outputCallback }) => {
+    async ({ lines, outputCallback, pause }) => {
         const program = [
             // "NOT J J",
             // "AND A J",
@@ -19,10 +19,10 @@ export const springdroidAdventure = entryForFile(
             "WALK"
         ];
         const memory = parseMemory(lines[0]);
-        const output: string[] = await executeAscii(program, memory);
+        const output: string[] = await executeAscii(program, memory, pause);
         await outputCallback(output.join(""));
     },
-    async ({ lines, outputCallback }) => {
+    async ({ lines, outputCallback, pause }) => {
         const program = [
             "NOT B J",
             "NOT E T",
@@ -117,16 +117,17 @@ export const springdroidAdventure = entryForFile(
             "RUN",
         ];
         const memory = parseMemory(lines[0]);
-        const output: string[] = await executeAscii(program5, memory);
+        const output: string[] = await executeAscii(program5, memory, pause);
         await outputCallback(output.join(""));
     },
     { key: "springdroid-adventure", title: "Springdroid Adventure", stars: 2}
 );
 
-async function executeAscii(program: string[], memory: Memory) {
+async function executeAscii(program: string[], memory: Memory, pause: Pause) {
     const output: string[] = [];
     const input = program.concat([""]).join("\n").split("").map((e) => e.charCodeAt(0));
     let nextInput = 0;
+    let lastTime = 0;
     await execute({
         memory,
         input: async () => {
@@ -138,7 +139,14 @@ async function executeAscii(program: string[], memory: Memory) {
             } else {
                 output.push(String.fromCharCode(n));
             }
-        }
+        },
+        next: async () => {
+            const current = new Date().getTime();
+            if (current - lastTime > 500) {
+                lastTime = current;
+                await pause();
+            }
+        },
     });
     return output;
 }
