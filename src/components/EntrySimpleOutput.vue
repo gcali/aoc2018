@@ -51,6 +51,8 @@ export default class EntrySimpleOutput extends Vue {
     private pause: boolean = false;
     private pauseFor?: number = undefined;
 
+    private manualRender: boolean = false;
+
     public mounted() {
         this.$emit("print-factory", async (size?: Coordinate): Promise<ScreenPrinter> => {
             this.canvasSize = size ? {width: size.x, height: size.y} : {width: 300, height: 300};
@@ -106,6 +108,9 @@ export default class EntrySimpleOutput extends Vue {
                         return;
                     }
                     this.toDraw[index].color = color;
+                },
+                setManualRender: () => {
+                    this.manualRender = true;
                 }
             };
         });
@@ -120,6 +125,9 @@ export default class EntrySimpleOutput extends Vue {
         if (!this.stop && this.context === null) {
             console.log("Starting render...");
             this.context = this.$refs.canvas.getContext("2d");
+            if (this.manualRender) {
+                return;
+            }
             const render = () => {
                 if (this.context !== null && this.canvasSize) {
                     if (!this.pause) {

@@ -106,6 +106,7 @@ export interface ScreenPrinter {
     changeColor: (indexOrId: string | number, color: string) => Promise<void>;
     pause: () => (() => void);
     forceRender: () => void;
+    setManualRender: () => void;
 }
 
 interface ExecutionArgs {

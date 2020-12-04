@@ -1,6 +1,7 @@
 import { entryForFile } from "../../../entry";
+import { buildVisualizer } from './visualizer';
 
-type Passport = {[key: string]: string};
+export type Passport = {[key: string]: string};
 
 export const parseLines = (lines: string[]): Passport[] => {
     const passports: Passport[] = [];
@@ -23,22 +24,37 @@ export const parseLines = (lines: string[]): Passport[] => {
     return passports;
 }
 
+export const validFields = [
+    "byr",
+    "iyr",
+    "eyr",
+    "hgt",
+    "hcl",
+    "ecl",
+    "pid",
+    "cid"
+];
+
 const hasPassportValidFields = (passport: Passport): boolean => {
-    const validFields = [
-        "byr",
-        "iyr",
-        "eyr",
-        "hgt",
-        "hcl",
-        "ecl",
-        "pid",
-        "cid"
-    ];
     const expectedKeys = new Set<string>(validFields.slice(0, validFields.length-1));
     for (const field of Object.keys(passport)) {
         expectedKeys.delete(field);
     }
     return expectedKeys.size === 0;
+};
+
+const getMissingFields = (passport: Passport): string[] => {
+    const expectedKeys = new Set<string>(validFields.slice(0, validFields.length-1));
+    for (const field of Object.keys(passport)) {
+        expectedKeys.delete(field);
+    }
+    return [...expectedKeys.values()];
+}
+
+const getInvalidFields = (passport: Passport): string[] => {
+    const missing = getMissingFields(passport);
+    const invalid = Object.keys(passport).filter(field => !isValidField(field, passport[field]));
+    return missing.concat(invalid);
 };
 
 export const isPassportValid = (passport: Passport): boolean => {
@@ -124,17 +140,43 @@ export const isValidField = (field: string, value: string): boolean => {
 }
 
 export const passportProcessing = entryForFile(
-    async ({ lines, outputCallback }) => {
+    async ({ lines, outputCallback, screen, pause, setAutoStop }) => {
+        setAutoStop();
+        const visualizer = buildVisualizer(screen, pause);
         const passports = parseLines(lines);
-        const valid = passports.filter(hasPassportValidFields);
-        await outputCallback(valid.length);
+        await visualizer.setupPassports(passports);
+        let validPassports = 0;
+        for (let i = 0; i < passports.length; i++) {
+            const passport = passports[i];
+            const missing = getMissingFields(passport);
+            if (missing.length > 0) {
+                await visualizer.setWrongFields(i, missing);
+            } else {
+                await visualizer.setValid(i);
+                validPassports++;
+            }
+        }
+        await outputCallback(validPassports);
     },
-    async ({ lines, outputCallback }) => {
+    async ({ lines, outputCallback, screen, pause, setAutoStop }) => {
+        setAutoStop();
+        const visualizer = buildVisualizer(screen, pause);
         const passports = parseLines(lines);
-        const valid = passports.filter(isPassportValid);
-        await outputCallback(valid.length);
+        await visualizer.setupPassports(passports);
+        let validPassports = 0;
+        for (let i = 0; i < passports.length; i++) {
+            const passport = passports[i];
+            const missing = getInvalidFields(passport);
+            if (missing.length > 0) {
+                await visualizer.setWrongFields(i, missing);
+            } else {
+                await visualizer.setValid(i);
+                validPassports++;
+            }
+        }
+        await outputCallback(validPassports);
     },
-    { key: "passport-processing", title: "Passport Processing", stars: 2}
+    { key: "passport-processing", title: "Passport Processing", stars: 2, customComponent: "pause-and-run", suggestedDelay: 20}
 );
 
 /*
