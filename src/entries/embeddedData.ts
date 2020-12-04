@@ -7,10 +7,14 @@ import {passwordPhilosophy} from "./single-entries/2020/password-philosophy";
 import tobogganTrajectoryEmbedded from "../../data/2020/toboggan-trajectory.txt";
 import { tobogganTrajectory } from './single-entries/2020/toboggan-trajectory';
 
+import passportProcessingEmbedded from "../../data/2020/passport-processing.txt";
+import {passportProcessing} from "./single-entries/2020/passport-processing";
+
 
 const parse = (data: string): string[] => data.trim().split("\n");
 export const embeddedLines: { [key: string]: string[] } = {
     [reportRepair.metadata!.key]: parse(reportRepairEmbedded),
     [passwordPhilosophy.metadata!.key]: parse(passwordPhillosophyEmbedded),
     [tobogganTrajectory.metadata!.key]: parse(tobogganTrajectoryEmbedded),
+    [passportProcessing.metadata!.key]: parse(passportProcessingEmbedded),
 };
