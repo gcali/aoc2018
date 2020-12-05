@@ -7,7 +7,6 @@ import EntryWithPauseAndRun from "@/views/entries/EntryWithPauseAndRun.vue";
 
 import { entryList, EntryRoute } from "./entries/entryList";
 import { map as entryComponentMap } from "./entries/entryMap";
-import { e } from 'mathjs';
 
 Vue.use(Router);
 
@@ -34,24 +33,24 @@ const getTemplate = (entry: EntryRoute): VueConstructor<Vue> => {
     if (entry.entry.metadata.customComponent === "pause-and-run") {
       return EntryWithPauseAndRun;
     }
-  } 
+  }
   return SimpleEntryTemplate;
-}
+};
 
 const flat = Object.keys(entryList)
-  .map((year) => entryList[year].map((e, index) => ({ entry: e, year })))
-  .filter((e) => e);
-flat.flatMap((e) => e).forEach((e) => {
+  .map((year) => entryList[year].map((entry, index) => ({ entry, year })))
+  .filter((k) => k);
+flat.flatMap((k) => k).forEach((k) => {
   routes.push({
-    name: e.entry.name,
-    path: `/entry/${e.entry.name}`,
-    component: getTemplate(e.entry),
+    name: k.entry.name,
+    path: `/entry/${k.entry.name}`,
+    component: getTemplate(k.entry),
     props: {
-      id: e.entry.date,
-      title: e.entry.title,
-      entry: e.entry.entry,
-      year: e.year,
-      stars: e.entry.stars || 0
+      id: k.entry.date,
+      title: k.entry.title,
+      entry: k.entry.entry,
+      year: k.year,
+      stars: k.entry.stars || 0
     }
   });
 });

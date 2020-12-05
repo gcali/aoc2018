@@ -89,18 +89,14 @@ export default class SimpleEntryTemplate extends Vue {
         };
     }
 
-    @Watch('entry')
-    onEntryChanged() {
+    @Watch("entry")
+    public onEntryChanged() {
         this.reset();
     }
 
-    beforeDestroy() {
+    public beforeDestroy() {
         this.reset();
         this.destroying = true;
-    }
-
-    private reset() {
-        this.output = [];
     }
 
     public async readFile(fileHandling: EntryFileHandling) {
@@ -136,6 +132,10 @@ export default class SimpleEntryTemplate extends Vue {
             }
             this.disabled = false;
         }
+    }
+
+    private reset() {
+        this.output = [];
     }
 
     private sendLine(line: string | null) {

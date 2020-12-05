@@ -1,18 +1,18 @@
-import { expect } from 'chai';
+import { expect } from "chai";
 import "mocha";
-import { isPassportValid, isValidField, parseLines } from '.';
+import { isPassportValid, isValidField, parseLines } from ".";
 
-type Expected = [string, boolean]
+type Expected = [string, boolean];
 
-const testData: [string, Expected[]][] = [
-    ["byr", [["2002", true], ["2003",false]]],
+const testData: Array<[string, Expected[]]> = [
+    ["byr", [["2002", true], ["2003", false]]],
     ["hgt", [["60in", true], ["190cm", true], ["190in", false], ["190", false]] ],
     ["hcl", [["#123abc", true], ["#123abz", false], ["123abc", false]] ],
     ["ecl", [["brn", true], ["wat", false]]],
     ["pid", [["000000001", true], ["0123456789", false]]]
-]
+];
 
-const invalid = 
+const invalid =
 `eyr:1972 cid:100
 hcl:#18171d ecl:amb hgt:170 pid:186cm iyr:2018 byr:1926
 
@@ -27,7 +27,7 @@ hgt:59cm ecl:zzz
 eyr:2038 hcl:74454a iyr:2023
 pid:3556412378 byr:2007`;
 
-const validP = 
+const validP =
 `pid:087499704 hgt:74in ecl:grn iyr:2012 eyr:2030 byr:1980
 hcl:#623a2f
 
@@ -51,7 +51,7 @@ describe("Passport Processing", () => {
         }
     }
     it("should validate all 4 valid passports", () => {
-        const passports = parseLines(validP.split("\n").map(l => l.trim()));
+        const passports = parseLines(validP.split("\n").map((l) => l.trim()));
         expect(passports.filter(isPassportValid)).to.eql(passports);
     });
 

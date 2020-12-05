@@ -5,13 +5,13 @@ import passwordPhillosophyEmbedded from "../../data/2020/password-philosophy.txt
 import {passwordPhilosophy} from "./single-entries/2020/password-philosophy";
 
 import tobogganTrajectoryEmbedded from "../../data/2020/toboggan-trajectory.txt";
-import { tobogganTrajectory } from './single-entries/2020/toboggan-trajectory';
+import { tobogganTrajectory } from "./single-entries/2020/toboggan-trajectory";
 
 import passportProcessingEmbedded from "../../data/2020/passport-processing.txt";
 import {passportProcessing} from "./single-entries/2020/passport-processing";
 
-import { binaryBoarding } from './single-entries/2020/binary-boarding';
-import  binaryBoardingEmbedded from "../../data/2020/binary-boarding.txt";
+import { binaryBoarding } from "./single-entries/2020/binary-boarding";
+import binaryBoardingEmbedded from "../../data/2020/binary-boarding.txt";
 
 
 const parse = (data: string): string[] => data.trim().split("\n");

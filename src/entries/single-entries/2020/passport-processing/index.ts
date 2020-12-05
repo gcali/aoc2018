@@ -1,7 +1,7 @@
 import { entryForFile } from "../../../entry";
-import { buildVisualizer } from './visualizer';
+import { buildVisualizer } from "./visualizer";
 
-export type Passport = {[key: string]: string};
+export interface Passport {[key: string]: string; }
 
 export const parseLines = (lines: string[]): Passport[] => {
     const passports: Passport[] = [];
@@ -12,7 +12,7 @@ export const parseLines = (lines: string[]): Passport[] => {
             passports.push(currentPassport);
             currentPassport = {};
         } else {
-            const tokens = line.split(" ").map(t => t.trim().split(":"));
+            const tokens = line.split(" ").map((t) => t.trim().split(":"));
             for (const [field, value] of tokens) {
                 currentPassport[field] = value;
             }
@@ -22,7 +22,7 @@ export const parseLines = (lines: string[]): Passport[] => {
         passports.push(currentPassport);
     }
     return passports;
-}
+};
 
 export const validFields = [
     "byr",
@@ -36,7 +36,7 @@ export const validFields = [
 ];
 
 const hasPassportValidFields = (passport: Passport): boolean => {
-    const expectedKeys = new Set<string>(validFields.slice(0, validFields.length-1));
+    const expectedKeys = new Set<string>(validFields.slice(0, validFields.length - 1));
     for (const field of Object.keys(passport)) {
         expectedKeys.delete(field);
     }
@@ -44,16 +44,16 @@ const hasPassportValidFields = (passport: Passport): boolean => {
 };
 
 const getMissingFields = (passport: Passport): string[] => {
-    const expectedKeys = new Set<string>(validFields.slice(0, validFields.length-1));
+    const expectedKeys = new Set<string>(validFields.slice(0, validFields.length - 1));
     for (const field of Object.keys(passport)) {
         expectedKeys.delete(field);
     }
     return [...expectedKeys.values()];
-}
+};
 
 const getInvalidFields = (passport: Passport): string[] => {
     const missing = getMissingFields(passport);
-    const invalid = Object.keys(passport).filter(field => !isValidField(field, passport[field]));
+    const invalid = Object.keys(passport).filter((field) => !isValidField(field, passport[field]));
     return missing.concat(invalid);
 };
 
@@ -67,7 +67,7 @@ export const isPassportValid = (passport: Passport): boolean => {
         }
     }
     return true;
-}
+};
 
 export const isValidField = (field: string, value: string): boolean => {
         const hasFourDigits = () => value.length === 4;
@@ -81,7 +81,7 @@ export const isValidField = (field: string, value: string): boolean => {
                     return false;
                 }
                 break;
-            
+
             case "iyr":
                 if (!hasFourDigits() || intValue() < 2010 || intValue() > 2020) {
                     return false;
@@ -94,7 +94,7 @@ export const isValidField = (field: string, value: string): boolean => {
                 break;
             case "hgt":
                 const suffix = value.slice(-2);
-                const height = parseInt(value.slice(0,-2),10);
+                const height = parseInt(value.slice(0, -2), 10);
                 if (height.toString() !== value.slice(0, -2)) {
                     return false;
                 }
@@ -110,7 +110,7 @@ export const isValidField = (field: string, value: string): boolean => {
                     return false;
                 }
                 break;
-            
+
             case "hcl":
                 if (!/^#[0-9a-f]{6}$/.test(value)) {
                     return false;
@@ -137,7 +137,7 @@ export const isValidField = (field: string, value: string): boolean => {
                 break;
         }
         return true;
-}
+};
 
 export const passportProcessing = entryForFile(
     async ({ lines, outputCallback, screen, pause, setAutoStop }) => {
@@ -176,7 +176,13 @@ export const passportProcessing = entryForFile(
         }
         await outputCallback(validPassports);
     },
-    { key: "passport-processing", title: "Passport Processing", stars: 2, customComponent: "pause-and-run", suggestedDelay: 20}
+    {
+        key: "passport-processing",
+        title: "Passport Processing",
+        stars: 2,
+        customComponent: "pause-and-run",
+        suggestedDelay: 20
+    }
 );
 
 /*
@@ -192,10 +198,10 @@ let's see about the second
 Ok, turns out I hated the second part. I did a stupid error with regexes (wasn't there
 something about trying to solve one problem with regexes and having two problems as a
 consequence?), I tried to validate the passport with /[0-9]{6}/, when of course I
-should have used /^[0-9]{6}$/. 
+should have used /^[0-9]{6}$/.
 Having one extra valid passport meant I had no clue about what rule was failing,
 and that meant double checking all the rules; when I found no issue, I started writing
-tests. Luckily, my case was covered in the test cases given in the examples; at the 
+tests. Luckily, my case was covered in the test cases given in the examples; at the
 same time, it was the last example, so it took some time. In any case, it's done,
 let's forget about this one, shall we?
 */

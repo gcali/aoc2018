@@ -62,8 +62,8 @@ export default class EntryWithPauseAndRun extends Vue {
 
     private destroying = false;
 
-    @Watch('entry')
-    onEntryChanged() {
+    @Watch("entry")
+    public onEntryChanged() {
         this.reset();
     }
 
@@ -75,23 +75,11 @@ export default class EntryWithPauseAndRun extends Vue {
         };
     }
 
-    beforeDestroy() {
+    public beforeDestroy() {
         this.reset();
         this.destroying = true;
         if (this.screenPrinter) {
             this.screenPrinter.stop();
-        }
-    }
-
-    private reset() {
-        this.destroying = false;
-        this.running = false;
-        this.shouldRun = false;
-        this.shouldStop = false;
-        this.executing = false;
-        this.output = [];
-        if (this.entry.metadata && this.entry.metadata.suggestedDelay !== undefined) {
-            this.timeout = this.entry.metadata.suggestedDelay;
         }
     }
 
@@ -178,6 +166,18 @@ export default class EntryWithPauseAndRun extends Vue {
             const resolver = this.resolver;
             this.resolver = undefined;
             resolver();
+        }
+    }
+
+    private reset() {
+        this.destroying = false;
+        this.running = false;
+        this.shouldRun = false;
+        this.shouldStop = false;
+        this.executing = false;
+        this.output = [];
+        if (this.entry.metadata && this.entry.metadata.suggestedDelay !== undefined) {
+            this.timeout = this.entry.metadata.suggestedDelay;
         }
     }
 }

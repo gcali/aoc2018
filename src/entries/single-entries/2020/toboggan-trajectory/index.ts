@@ -1,12 +1,12 @@
-import { CCoordinate, Coordinate } from '../../../../support/geometry';
+import { CCoordinate, Coordinate } from "../../../../support/geometry";
 import { entryForFile } from "../../../entry";
-import { buildVisualizer } from './visualizer';
+import { buildVisualizer } from "./visualizer";
 
 const parseLines = (lines: string[]): {grid: string[][], size: Coordinate} => {
     const height = lines.length;
     const width = lines[0].length;
-    return {grid: lines.map(line => line.split("")), size: {x: width, y: height}};
-}
+    return {grid: lines.map((line) => line.split("")), size: {x: width, y: height}};
+};
 
 export const tobogganTrajectory = entryForFile(
     async ({ lines, outputCallback, pause, screen, setAutoStop }) => {
@@ -39,7 +39,7 @@ export const tobogganTrajectory = entryForFile(
             {x: 5, y: 1},
             {x: 7, y: 1},
             {x: 1, y: 2}
-        ].map(s => new CCoordinate(s.x,s.y));
+        ].map((s) => new CCoordinate(s.x, s.y));
         let result = 1;
         for (const slope of candidateSlopes) {
             await visualizer.resetField();
@@ -58,7 +58,13 @@ export const tobogganTrajectory = entryForFile(
         }
         await outputCallback(result);
     },
-    { key: "toboggan-trajectory", title: "Toboggan Trajectory", stars: 2, customComponent: "pause-and-run", suggestedDelay: 50}
+    {
+        key: "toboggan-trajectory",
+        title: "Toboggan Trajectory",
+        stars: 2,
+        customComponent: "pause-and-run",
+        suggestedDelay: 50
+    }
 );
 
 /*
@@ -70,8 +76,9 @@ export const tobogganTrajectory = entryForFile(
     8:46
     Ok, first part done, let's see the second one
     8:50
-    Way easier than expected, no field necessary. 
+    Way easier than expected, no field necessary.
     I remembered the third days to be more difficult! So, 12 minutes, would I have been able to
-    get in the leaderboard? ... Of course not, 00:04:56 is the slowest time. Ok, that's it for now, I'll try some visualizations
+    get in the leaderboard? ... Of course not,
+    00:04:56 is the slowest time. Ok, that's it for now, I'll try some visualizations
     later
 */

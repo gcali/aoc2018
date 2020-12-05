@@ -1,5 +1,5 @@
-import { Coordinate } from '../../../../support/geometry';
-import { Drawable, Pause, ScreenBuilder, ScreenPrinter } from '../../../entry';
+import { Coordinate } from "../../../../support/geometry";
+import { Drawable, Pause, ScreenBuilder, ScreenPrinter } from "../../../entry";
 
 const constantsBuilder = ((expectedPasswords: number) => {
     const padding = 10;
@@ -9,10 +9,13 @@ const constantsBuilder = ((expectedPasswords: number) => {
     const lineHeight = 4;
     const passwordsPerColumn = expectedPasswords / columns;
 
-    const screenSize = {x: 600 + padding * 2, y: padding * 2 + passwordsPerColumn * (lineHeight + spacing) + padding*2};
+    const screenSize = {
+        x: 600 + padding * 2,
+        y: padding * 2 + passwordsPerColumn * (lineHeight + spacing) + padding * 2
+    };
 
     const indicatorSize = lineHeight;
-    const columnLength = (screenSize.x - padding*2) / columns;
+    const columnLength = (screenSize.x - padding * 2) / columns;
     return {
         screenSize,
         spacing,
@@ -25,7 +28,10 @@ const constantsBuilder = ((expectedPasswords: number) => {
         lineMaxLength: columnLength - padding - spacing - indicatorSize,
     };
 });
-export const buildVisualizer = async (screenBuilder: ScreenBuilder | undefined, pause: Pause): Promise<IPasswordPhilosophyVisualizer> => 
+export const buildVisualizer = async (
+    screenBuilder: ScreenBuilder | undefined,
+    pause: Pause
+): Promise<IPasswordPhilosophyVisualizer> =>
     screenBuilder ? new PasswordPhilosophyVisualizer(screenBuilder, pause) : new DummyPasswordPhilosophyVisualizer();
 
 export interface IPasswordPhilosophyVisualizer {
@@ -33,7 +39,7 @@ export interface IPasswordPhilosophyVisualizer {
     colorPassword(passwordIndex: number, indexes: number[], isValid: boolean): Promise<void>;
 }
 class PasswordPhilosophyVisualizer implements IPasswordPhilosophyVisualizer {
-    private passwords: (Drawable & {type: "rectangle"})[] = [];
+    private passwords: Array<Drawable & {type: "rectangle"}> = [];
     private indicators: Drawable[] = [];
     private letterSize: number = 0;
     private constants?: ReturnType<typeof constantsBuilder>;
@@ -41,13 +47,7 @@ class PasswordPhilosophyVisualizer implements IPasswordPhilosophyVisualizer {
     constructor(private screenBuilder: ScreenBuilder, private pause: Pause) {
     }
 
-    private async buildScreen() {
-        if (this.constants) {
-            this.printer = await this.screenBuilder.requireScreen(this.constants.screenSize);
-        }
-    }
-
-    async setupPasswords(passwords: string[]): Promise<void> {
+    public async setupPasswords(passwords: string[]): Promise<void> {
         this.constants = constantsBuilder(passwords.length);
         await this.buildScreen();
         if (this.printer) {
@@ -55,24 +55,37 @@ class PasswordPhilosophyVisualizer implements IPasswordPhilosophyVisualizer {
             this.letterSize = this.constants.lineMaxLength / maxLength;
             this.passwords = passwords.map((password, i) => {
                 const columnIndex = Math.floor(i / this.constants!.passwordsPerColumn);
-                const rowIndex = Math.floor(i%this.constants!.passwordsPerColumn);
+                const rowIndex = Math.floor(i % this.constants!.passwordsPerColumn);
                 return {
                     color: "white",
                     id: i.toString(),
                     type: "rectangle",
-                    c: {x: this.constants!.padding + columnIndex * this.constants!.columnLength, y: rowIndex*(this.constants!.lineHeight+this.constants!.spacing) + this.constants!.padding },
-                    size: {x: this.constants!.lineMaxLength * (password.length / maxLength), y: this.constants!.lineHeight}
+                    c: {
+                        x: this.constants!.padding +
+                            columnIndex * this.constants!.columnLength,
+                        y: rowIndex * (this.constants!.lineHeight + this.constants!.spacing) +
+                            this.constants!.padding
+                    },
+                    size: {
+                        x: this.constants!.lineMaxLength * (password.length / maxLength),
+                        y: this.constants!.lineHeight
+                    }
                 };
             });
-            console.table(this.passwords.slice(0, 200).map(e => ({color: e.color, id: e.id,...(e.type === "rectangle" ? e.c : {})})));
             this.indicators = passwords.map((password, i) => {
                 const columnIndex = Math.floor(i / this.constants!.passwordsPerColumn);
-                const rowIndex = Math.floor(i%this.constants!.passwordsPerColumn);
+                const rowIndex = Math.floor(i % this.constants!.passwordsPerColumn);
                 return {
                     color: "white",
                     id: i.toString() + "-indicator",
                     type: "rectangle",
-                    c: {x: this.constants!.padding + (columnIndex + 1) * this.constants!.columnLength - this.constants!.padding - this.constants!.indicatorSize, y: rowIndex*(this.constants!.lineHeight+this.constants!.spacing) + this.constants!.padding },
+                    c: {
+                        x: this.constants!.padding +
+                            (columnIndex + 1) * this.constants!.columnLength -
+                            this.constants!.padding - this.constants!.indicatorSize,
+                        y: rowIndex * (this.constants!.lineHeight + this.constants!.spacing) +
+                            this.constants!.padding
+                        },
                     size: {x: this.constants!.indicatorSize, y: this.constants!.lineHeight}
                 };
 
@@ -82,10 +95,10 @@ class PasswordPhilosophyVisualizer implements IPasswordPhilosophyVisualizer {
             await this.pause(5);
         }
     }
-    async colorPassword(passwordIndex: number, indexes: number[], isValid: boolean): Promise<void> {
+    public async colorPassword(passwordIndex: number, indexes: number[], isValid: boolean): Promise<void> {
         if (this.printer) {
             const drawablePassword = this.passwords[passwordIndex];
-            const selectedLetters: Drawable[] = indexes.map(index => {
+            const selectedLetters: Drawable[] = indexes.map((index) => {
                 return {
                     type: "rectangle",
                     c: {x: drawablePassword.c.x + index * this.letterSize, y: drawablePassword.c.y },
@@ -101,12 +114,18 @@ class PasswordPhilosophyVisualizer implements IPasswordPhilosophyVisualizer {
             await this.pause();
         }
     }
+
+    private async buildScreen() {
+        if (this.constants) {
+            this.printer = await this.screenBuilder.requireScreen(this.constants.screenSize);
+        }
+    }
 }
 
 class DummyPasswordPhilosophyVisualizer implements IPasswordPhilosophyVisualizer {
-    async setupPasswords(passwords: string[]): Promise<void> {
+    public async setupPasswords(passwords: string[]): Promise<void> {
     }
-    async colorPassword(passwordIndex: number, indexes: number[], isValid: boolean): Promise<void> {
+    public async colorPassword(passwordIndex: number, indexes: number[], isValid: boolean): Promise<void> {
     }
 
 }
