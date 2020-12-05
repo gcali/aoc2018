@@ -1,3 +1,4 @@
+import { binaryBoarding } from './binary-boarding';
 import { passportProcessing } from './passport-processing';
 import { passwordPhilosophy } from './password-philosophy';
 import { reportRepair } from "./report-repair";
@@ -7,5 +8,6 @@ export const entries = [
         reportRepair,
         passwordPhilosophy,
         tobogganTrajectory,
-        passportProcessing
+        passportProcessing,
+        binaryBoarding
 ];
