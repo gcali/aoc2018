@@ -2,7 +2,7 @@ import { getCoordinateForGrid, multiplyCoordinate, sumCoordinate } from "../../.
 import { Drawable, Pause, ScreenBuilder, ScreenPrinter } from "../../../entry";
 
 const constants = (() => {
-    const columns = 12;
+    const columns = 10;
 
     const letterColumns = 2;
     const letterRows = 13;
