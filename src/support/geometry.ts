@@ -227,6 +227,13 @@ export function getRanges(points: Coordinate[]) {
     return { maxX, minX, maxY, minY };
 }
 
+export function getCoordinateForGrid(index: number, rows: number): Coordinate {
+    return {
+        x: Math.floor(index/rows),
+        y: index % rows
+    };
+}
+
 
 export const serialization = {
     serialize(c: Coordinate): string {
@@ -247,3 +254,10 @@ export const serialization = {
 export const euclidean3dDistance = (a: Coordinate3d, b: Coordinate3d): number => {
     return Math.sqrt((b.x - a.x) ** 2 + (b.y - a.y) ** 2 + (b.z - a.z) ** 2);
 };
+
+export const multiplyCoordinate = (a: Coordinate, b: Coordinate): Coordinate => {
+    return {
+        x: a.x * b.x,
+        y: a.y * b.y
+    };
+}

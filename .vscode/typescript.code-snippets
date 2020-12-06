@@ -18,7 +18,7 @@
 	"EntryTemplate": {
 		"prefix": "entry",
 		"body": [
-			"import { entryForFile } from \"../../entry\";",
+			"import { entryForFile } from \"../../../entry\";",
 			"",
 			"export const ${1:entry} = entryForFile(",
 			"    async ({ lines, outputCallback }) => {",
@@ -29,6 +29,39 @@
 			"    },",
 			"    { key: \"${2:key}\", title: \"${3:title}\"}",
 			");"
+		],
+		"description": "Basic template for an entry",
+		"scope": "typescript"
+	},
+	"VisualizerTemplate": {
+		"prefix": "visualizer",
+		"body": [
+			"import { Pause, ScreenBuilder, ScreenPrinter } from '../../../entry';",
+			"",
+			"export interface I${1:Visualizer} {",
+			"",
+			"}",
+			"",
+			"export const buildVisualizer = (screenBuilder: ScreenBuilder | undefined, pause: Pause) => {",
+			"    if (screenBuilder) {",
+			"        return new RealVisualizer(screenBuilder, pause);",
+			"    } else {",
+			"        return new DummyVisualizer();",
+			"    }",
+			"}",
+			"",
+			"class RealVisualizer implements I${1} {",
+			"    private printer!: ScreenPrinter;",
+			"    constructor(",
+			"        private readonly screenBuilder: ScreenBuilder,",
+			"        private readonly pause: Pause",
+			"    ) { ",
+			"    }",
+			"}",
+			"",
+			"class DummyVisualizer implements I${1} {",
+			"",
+			"}",
 		],
 		"description": "Basic template for an entry",
 		"scope": "typescript"

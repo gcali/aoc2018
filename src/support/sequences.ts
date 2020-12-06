@@ -87,3 +87,20 @@ export function* buildGroups<T>(data: T[], size: number, step: number = 1): Iter
         yield data.slice(i, i + size);
     }
 }
+
+export function* buildGroupsFromSeparator<T>(data: Iterable<T>, isSeparator: (e: T) => boolean): Iterable<T[]> {
+    let current: T[] = [];
+    let hadItems = false;
+    for (const item of data) {
+        hadItems = true;
+        if (isSeparator(item)) {
+            yield current;
+            current = [];
+        } else {
+            current.push(item);
+        }
+    }
+    if (hadItems && current.length > 0) {
+        yield current;
+    }
+}
