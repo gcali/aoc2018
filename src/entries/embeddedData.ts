@@ -13,6 +13,9 @@ import {passportProcessing} from "./single-entries/2020/passport-processing";
 import { binaryBoarding } from "./single-entries/2020/binary-boarding";
 import binaryBoardingEmbedded from "../../data/2020/binary-boarding.txt";
 
+import {customCustoms} from "./single-entries/2020/custom-customs";
+import customCustomsEmbedded from "../../data/2020/custom-customs.txt";
+
 
 const parse = (data: string): string[] => data.trim().split("\n");
 export const embeddedLines: { [key: string]: string[] } = {
@@ -21,4 +24,5 @@ export const embeddedLines: { [key: string]: string[] } = {
     [tobogganTrajectory.metadata!.key]: parse(tobogganTrajectoryEmbedded),
     [passportProcessing.metadata!.key]: parse(passportProcessingEmbedded),
     [binaryBoarding.metadata!.key]: parse(binaryBoardingEmbedded),
+    [customCustoms.metadata!.key]: parse(customCustomsEmbedded),
 };

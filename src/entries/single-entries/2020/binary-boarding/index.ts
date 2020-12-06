@@ -29,5 +29,9 @@ export const binaryBoarding = entryForFile(
             }
         await outputCallback("Didn't find it :(");
     },
-    { key: "binary-boarding", title: "Binary Boarding"}
+    {
+        key: "binary-boarding",
+        title: "Binary Boarding",
+        stars: 2
+    }
 );
