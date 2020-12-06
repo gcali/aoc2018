@@ -1,8 +1,8 @@
-import { getCoordinateForGrid, multiplyCoordinate, sumCoordinate } from '../../../../support/geometry';
-import { Drawable, Pause, ScreenBuilder, ScreenPrinter } from '../../../entry';
+import { getCoordinateForGrid, multiplyCoordinate, sumCoordinate } from "../../../../support/geometry";
+import { Drawable, Pause, ScreenBuilder, ScreenPrinter } from "../../../entry";
 
 const constants = (() => {
-    const columns = 30;
+    const columns = 12;
 
     const letterColumns = 2;
     const letterRows = 13;
@@ -17,8 +17,8 @@ const constants = (() => {
     };
     const groupSize = {
         x: letterSpacing.x + letterColumns * letterOffset.x,
-        y: letterSpacing.y + letterRows * letterOffset.y 
-    }
+        y: letterSpacing.y + letterRows * letterOffset.y
+    };
 
     const groupOffset = sumCoordinate(groupSize, groupSpacing);
 
@@ -31,13 +31,11 @@ const constants = (() => {
         letterOffset,
         letterSpacing,
         letterRows,
-        rows: 0,
+        rows: 1,
         screenSizeBuilder(entries: number) {
-            const rows = Math.ceil(entries/columns);
-            this.rows = rows;
             return {
                 x: columns * groupOffset.x + groupSpacing.x,
-                y: rows * groupOffset.y + groupSpacing.y
+                y: 1 * groupOffset.y + groupSpacing.y
             };
         }
     };
@@ -45,6 +43,9 @@ const constants = (() => {
 export interface ICustomCustomsVisualizer {
     setup(groups: number): Promise<void>;
     addLetter(group: number, letter: string): Promise<void>;
+    setLetters(group: number, letters: Iterable<string>): Promise<void>;
+    startGroup(group: number): Promise<void>;
+    endGroup(group: number): Promise<void>;
 }
 
 export const buildVisualizer = (screenBuilder: ScreenBuilder | undefined, pause: Pause) => {
@@ -53,29 +54,44 @@ export const buildVisualizer = (screenBuilder: ScreenBuilder | undefined, pause:
     } else {
         return new DummyVisualizer();
     }
-}
+};
 
 type LocalDrawable = Drawable & {type: "rectangle"};
 
+const clear = "slategray";
+const ok = "lime";
+
 class RealVisualizer implements ICustomCustomsVisualizer {
     private printer!: ScreenPrinter;
-    private drawables: {main: LocalDrawable; letters: LocalDrawable[]}[] = [];
+    private drawables: Array<{main: LocalDrawable; letters: LocalDrawable[]}> = [];
     constructor(
         private readonly screenBuilder: ScreenBuilder,
         private readonly pause: Pause
-    ) { 
+    ) {
     }
-    private getIndex(letter: string): number {
-        return letter.charCodeAt(0) - "a".charCodeAt(0);
+    public async setLetters(group: number, letters: Iterable<string>): Promise<void> {
+        this.clearLetters(group);
+        for (const letter of letters) {
+            this.drawables[this.getGroupIndex(group)].letters[this.getIndex(letter)].color = ok;
+        }
+        this.printer.forceRender();
+        await this.pause();
     }
-    async setup(groups: number): Promise<void> {
+
+    public async startGroup(group: number): Promise<void> {
+        const index = this.getGroupIndex(group);
+        this.clearPreviousLetters(index);
+    }
+    public async endGroup(group: number): Promise<void> {
+    }
+    public async setup(groups: number): Promise<void> {
         const screenSize = constants.screenSizeBuilder(groups);
         this.printer = await this.screenBuilder.requireScreen(screenSize);
         this.printer.setManualRender();
-        for (let i = 0; i < groups; i++) {
+        for (let i = 0; i < constants.columns; i++) {
             const coordinates = {
-                x: Math.floor(i / constants.rows),
-                y: i % constants.rows
+                x: i,
+                y: 0
             };
             const viewCoordinates = {
                 x: constants.groupSpacing.x + constants.groupOffset.x * coordinates.x,
@@ -89,9 +105,9 @@ class RealVisualizer implements ICustomCustomsVisualizer {
                     size: constants.groupSize,
                     c: viewCoordinates
                 },
-                letters: [...Array(26).keys()].map(iLetter => {
+                letters: [...Array(26).keys()].map((iLetter) => {
                     const letterCoordinates = getCoordinateForGrid(iLetter, constants.letterRows);
-                    const letterViewCoordinates = 
+                    const letterViewCoordinates =
                         sumCoordinate(
                             sumCoordinate(
                                 multiplyCoordinate(
@@ -106,28 +122,48 @@ class RealVisualizer implements ICustomCustomsVisualizer {
                         type: "rectangle",
                         size: constants.letterSize,
                         c: letterViewCoordinates,
-                        color: "slategray",
+                        color: clear,
                         id: `${i}-${iLetter}`
                     };
                 })
             });
         }
-        const totalDrawables = this.drawables.flatMap(d => [
+        const totalDrawables = this.drawables.flatMap((d) => [
             d.main
         ].concat(d.letters));
         await this.printer.replace(totalDrawables);
         this.printer.forceRender();
         await this.pause();
     }
-    async addLetter(group: number, letter: string): Promise<void> {
-        this.drawables[group].letters[this.getIndex(letter)].color = "lime";
+    public async addLetter(group: number, letter: string): Promise<void> {
+        this.drawables[this.getGroupIndex(group)].letters[this.getIndex(letter)].color = ok;
         this.printer.forceRender();
         await this.pause();
+    }
+    private getGroupIndex(group: number) {
+        return group % constants.columns;
+
+    }
+    private clearPreviousLetters(i: number) {
+        const previous = [1].map((k) => i + constants.columns + k).map((e) => e % constants.columns);
+        for (const p of previous) {
+            this.clearLetters(p);
+        }
+    }
+
+    private clearLetters(p: number) {
+        this.drawables[this.getGroupIndex(p)].letters.forEach((l) => l.color = clear);
+    }
+    private getIndex(letter: string): number {
+        return letter.charCodeAt(0) - "a".charCodeAt(0);
     }
 }
 
 class DummyVisualizer implements ICustomCustomsVisualizer {
-    async setup(groups: number): Promise<void> { }
-    async addLetter(group: number, letter: string): Promise<void> { }
+    public async setLetters(group: number, letters: Iterable<string>): Promise<void> { }
+    public async startGroup(group: number): Promise<void> { }
+    public async endGroup(group: number): Promise<void> { }
+    public async setup(groups: number): Promise<void> { }
+    public async addLetter(group: number, letter: string): Promise<void> { }
 
 }

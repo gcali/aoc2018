@@ -32,6 +32,7 @@ import {
     ScreenPrinter
 } from "../../entries/entry";
 import { Coordinate } from "../../support/geometry";
+import { setTimeoutAsync } from "../../support/async";
 @Component({
     components: {
         EntryTemplate,
@@ -99,6 +100,13 @@ export default class SimpleEntryTemplate extends Vue {
         this.destroying = true;
     }
 
+    private get timeout() {
+        if (this.entry.metadata && this.entry.metadata!.suggestedDelay) {
+            return this.entry.metadata!.suggestedDelay;
+        }
+        return 0;
+    }
+
     public async readFile(fileHandling: EntryFileHandling) {
         this.reset();
         this.disabled = true;
@@ -124,7 +132,8 @@ export default class SimpleEntryTemplate extends Vue {
                 outputCallback: simpleOutputCallbackFactory(this.output, () => this.destroying),
                 additionalInputReader,
                 screen: this.requireScreen ? { requireScreen: this.requireScreen } : undefined,
-                isCancelled: () => false
+                isCancelled: () => false,
+                pause: async () => await setTimeoutAsync(this.timeout)
             });
         } finally {
             if (this.stopper) {

@@ -229,7 +229,7 @@ export function getRanges(points: Coordinate[]) {
 
 export function getCoordinateForGrid(index: number, rows: number): Coordinate {
     return {
-        x: Math.floor(index/rows),
+        x: Math.floor(index / rows),
         y: index % rows
     };
 }
@@ -260,4 +260,4 @@ export const multiplyCoordinate = (a: Coordinate, b: Coordinate): Coordinate => 
         x: a.x * b.x,
         y: a.y * b.y
     };
-}
+};
