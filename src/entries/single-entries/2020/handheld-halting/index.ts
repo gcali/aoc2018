@@ -82,11 +82,12 @@ export const handheldHalting = entryForFile(
         setAutoStop();
         const visualizer = buildVisualizer(screen, pause);
         const program = parseLines(lines);
-        await visualizer.setup(program, 1);
+        await visualizer.setup(program, 1, 0.4);
         const executed = new Set<number>();
         await execute(program, emptyState(), {
             interceptor: async (s) => {
                 if (executed.has(s.currentInstruction)) {
+                    await visualizer.setStatus(0, "loop");
                     await resultOutputCallback(s.acc);
                     return false;
                 } else {
@@ -124,7 +125,7 @@ export const handheldHalting = entryForFile(
                 };
             });
 
-        await visualizer.setup(program, executions.length);
+        await visualizer.setup(program, executions.length, 0.25);
         let found = false;
         while (!found) {
             for (const execution of executions) {
@@ -138,9 +139,11 @@ export const handheldHalting = entryForFile(
                 execution.state = await execute(program, execution.state, {
                     interceptor: async (s) => {
                         if (execution.executed.has(s.currentInstruction)) {
+                            await visualizer.setStatus(execution.executionIndex, "loop");
                             execution.stop = true;
                             return false;
                         } else if (s.currentInstruction < 0 || s.currentInstruction >= program.length) {
+                            await visualizer.setStatus(execution.executionIndex, "finished");
                             found = true;
                             await resultOutputCallback(s.acc);
                             return false;

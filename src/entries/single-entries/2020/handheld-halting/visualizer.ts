@@ -5,22 +5,43 @@ import { Drawable, Pause, ScreenBuilder, ScreenPrinter } from '../../../entry';
 export interface IHandheldHalting {
     setup(program: Instruction[], instances: number): Promise<void>;
     setExecuted(programNumber: number, instruction: number): Promise<void>;
+    setStatus(programNumber: number, status: "loop" | "finished"): Promise<void>;
 }
 
 const constants = (() => {
-    const instructionSize = { x: 20, y: 2};
-    const instructionSpacing = {x: 4, y: 2};
-    const instructionOffset = sumCoordinate(instructionSize, instructionSpacing);
+    const programSize = {
+        x: 50,
+        y: 10
+    };
+    const indicatorSize = {
+        x: 0,
+        y: programSize.y
+    };
+    const indicatorSpacing = {
+        x: 2,
+        y: 0
+    };
+    const programSpacing = {
+        x: 5,
+        y: 5
+    };
+    const programOffset = sumCoordinate(programSize, programSpacing);
+    const columns = 5;
     return {
-        instructionSize,
-        instructionSpacing,
-        instructionOffset,
-        screenSizeBuilder(lines: number, programs: number) {
+        rows: 0,
+        screenSizeBuilder(programs: number) {
+            this.rows = Math.ceil(programs / columns);
             return {
-                x: instructionOffset.x * programs + instructionSpacing.x,
-                y: instructionOffset.y * lines + instructionSpacing.y
+                x: programOffset.x * Math.min(columns, programs) + programSpacing.x,
+                y: programOffset.y * this.rows + programSpacing.y
             };
-        }
+        },
+        columns,
+        programOffset,
+        programSize,
+        programSpacing,
+        indicatorSize,
+        indicatorSpacing
     };
 })();
 
@@ -41,40 +62,84 @@ class RealVisualizer implements IHandheldHalting {
         private readonly pause: Pause
     ) { 
     }
-    private programDrawables: LocalDrawable[][] = [];
-    async setup(program: Instruction[], instances: number): Promise<void> {
-        const screenSize = constants.screenSizeBuilder(program.length, instances);
-        this.printer = await this.screenBuilder.requireScreen(screenSize);
-        this.printer.setManualRender();
-        this.programDrawables = [];
-        for (let programIndex = 0; programIndex < instances; programIndex++) {
-            this.programDrawables.push(program.map((instruction, instructionIndex) => {
-                const coordinates = {x: programIndex, y: instructionIndex};
-                const viewCoordinates = {
-                    x: coordinates.x * constants.instructionOffset.x + constants.instructionSpacing.x,
-                    y: coordinates.y * constants.instructionOffset.y + constants.instructionSpacing.x
-                };
-                return {
-                    type: "rectangle",
-                    color: "white",
-                    c: viewCoordinates,
-                    id: `${programIndex}|${instructionIndex}`,
-                    size: constants.instructionSize
-                } as LocalDrawable;
-            }));
-        }
-        this.printer.replace(this.programDrawables.flatMap(d => d));
+    async setStatus(programNumber: number, status: 'loop' | 'finished'): Promise<void> {
+        this.updateSize(programNumber);
+        this.programs[programNumber].drawable.color = status === "loop" ? "red" : "lime";
         this.printer.forceRender();
         await this.pause();
     }
-    async setExecuted(programNumber: number, instruction: number): Promise<void> {
-        this.programDrawables[programNumber][instruction].color = "red";
+    // private programDrawables: LocalDrawable[][] = [];
+    private programs: {
+        drawable: LocalDrawable,
+        instructionsToDraw: number
+    }[] = [];
+    private sizeIncrement = 0;
+    async setup(program: Instruction[], instances: number, expectedFill: number = 1): Promise<void> {
+        const screenSize = constants.screenSizeBuilder(instances);
+
+        this.sizeIncrement = (constants.programSize.x - 1) / (program.length * expectedFill);
+
+        this.printer = await this.screenBuilder.requireScreen(screenSize);
+        this.printer.setManualRender();
+        
+        const toDraw: Drawable[] = [];
+
+        for (let i = 0; i < instances; i++) {
+            const coordinate = {
+                x: i % constants.columns,
+                y: Math.floor(i / constants.columns)
+            };
+            const viewCoordinates = {
+                x: coordinate.x * constants.programOffset.x + constants.programSpacing.x,
+                y: coordinate.y * constants.programOffset.y + constants.programSpacing.y
+            };
+
+            const drawableProgram: LocalDrawable = {
+                c: viewCoordinates,
+                color: "white",
+                id: `program-${i}`,
+                size: {...constants.programSize, x: 1},
+                type: "rectangle"
+            };
+            toDraw.push(drawableProgram);
+            this.programs.push({drawable: drawableProgram, instructionsToDraw: 0});
+
+            const indicator: LocalDrawable = {
+                c: {
+                    x: viewCoordinates.x + constants.programSize.x + constants.indicatorSpacing.x,
+                    y: viewCoordinates.y
+                },
+                color: "white",
+                id: `indicator-${i}`,
+                size: constants.indicatorSize,
+                type: "rectangle"
+            };
+            toDraw.push(indicator);
+        }
+
+        this.printer.replace(toDraw);
         this.printer.forceRender();
         await this.pause();
+    }
+    private updateSize(programNumber: number) {
+        const p = this.programs[programNumber];
+        p.drawable.size.x += (this.sizeIncrement * p.instructionsToDraw);
+        p.instructionsToDraw = 0;
+    }
+
+    async setExecuted(programNumber: number, instruction: number): Promise<void> {
+        const p = this.programs[programNumber];
+        p.instructionsToDraw++;
+        if (p.instructionsToDraw > 20) {
+            this.updateSize(programNumber);
+            this.printer.forceRender();
+            await this.pause();
+        }
     }
 }
 
 class DummyVisualizer implements IHandheldHalting {
+    async setStatus(programNumber: number, status: 'loop' | 'finished'): Promise<void> { }
     async setup(program: Instruction[], instances: number): Promise<void> { }
     async setExecuted(programNumber: number, instruction: number): Promise<void> { }
 
