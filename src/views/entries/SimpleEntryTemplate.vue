@@ -7,6 +7,10 @@
         :disabled="disabled"
         :entryKey="this.entry.metadata.key"
     )
+        .quick-run
+            label Quick run
+            input(type="checkbox" v-model="quickRun" :disabled="executing")
+            label(v-if="time") Time: {{time}}
         .output
             EntrySimpleOutput(:key="$route.path", :lines="output" @print-factory="readFactory")
         .input(v-if="showAdditionalInput" )
@@ -41,6 +45,7 @@ import { setTimeoutAsync } from "../../support/async";
 })
 export default class SimpleEntryTemplate extends Vue {
 
+    private quickRun = false;
     public get showAdditionalInput(): boolean {
         const hasAdditionalInput = (this.entry.metadata !== undefined) &&
             (this.entry.metadata.hasAdditionalInput === true);
@@ -55,6 +60,8 @@ export default class SimpleEntryTemplate extends Vue {
 
     private inputLine: string = "";
 
+    private executing = false;
+
     private buffer: Array<string | null> = [];
     private resolver: ((s: string | null) => void) | null = null;
 
@@ -62,6 +69,8 @@ export default class SimpleEntryTemplate extends Vue {
     private disabled: boolean = false;
 
     private destroying = false;
+
+    private time: string = "";
 
     private requireScreen?: (size?: Coordinate) => Promise<ScreenPrinter>;
 
@@ -107,6 +116,14 @@ export default class SimpleEntryTemplate extends Vue {
         return 0;
     }
 
+    private createPause(): () => Promise<void> {
+        if (this.quickRun) {
+            return () => new Promise<void>((resolve, reject) => resolve());
+        } else {
+            return async () => await setTimeoutAsync(this.timeout);
+        }
+    }
+
     public async readFile(fileHandling: EntryFileHandling) {
         this.reset();
         this.disabled = true;
@@ -125,6 +142,8 @@ export default class SimpleEntryTemplate extends Vue {
                 }
             } : undefined;
         try {
+            this.executing = true;
+            const startTime = new Date().getTime();
             await executeEntry({
                 entry: this.entry,
                 choice: fileHandling.choice,
@@ -133,9 +152,13 @@ export default class SimpleEntryTemplate extends Vue {
                 additionalInputReader,
                 screen: this.requireScreen ? { requireScreen: this.requireScreen } : undefined,
                 isCancelled: () => false,
-                pause: async () => await setTimeoutAsync(this.timeout)
+                pause: this.createPause()
             });
+            if (this.quickRun) {
+                this.time = `${new Date().getTime() - startTime}ms`;
+            }
         } finally {
+            this.executing = false;
             if (this.stopper) {
                 this.stopper();
             }
@@ -144,6 +167,7 @@ export default class SimpleEntryTemplate extends Vue {
     }
 
     private reset() {
+        this.executing = false;
         this.output = [];
     }
 

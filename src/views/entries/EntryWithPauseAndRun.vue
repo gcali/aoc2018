@@ -7,7 +7,11 @@
         :year="year"
         :entryKey="this.entry.metadata.key"
     )
-        .input(:class="{transparent:!executing}")
+        .quick-run
+            label Quick run
+            input(type="checkbox" v-model="quickRun" :disabled="executing")
+            label(v-if="time") Time: {{time}}
+        .input(:class="{transparent:!executing || quickRun}")
             button(@click="play", :class="{transparent: !executing || running}") Play
             button(@click="nextState", :class="{transparent: !executing || running}") Next
             button(@click="stop", :class="{transparent: !executing}") Stop
@@ -52,6 +56,7 @@ export default class EntryWithPauseAndRun extends Vue {
     private shouldStop: boolean = false;
     private shouldRun: boolean = false;
     private running: boolean = false;
+    private time: string = "";
 
     private timeout = 50;
 
@@ -61,6 +66,7 @@ export default class EntryWithPauseAndRun extends Vue {
     private screenPrinter?: ScreenPrinter;
 
     private destroying = false;
+    private quickRun = false;
 
     @Watch("entry")
     public onEntryChanged() {
@@ -76,21 +82,62 @@ export default class EntryWithPauseAndRun extends Vue {
     }
 
     public beforeDestroy() {
+        this.quickRun = false;
         this.reset();
         this.destroying = true;
         if (this.screenPrinter) {
             this.screenPrinter.stop();
         }
     }
+    
+    private createPause(): (() => Promise<void>) {
+        let drawingPause: (() => void) | undefined;
+        let lastPause = 0;
+        return this.quickRun ? () => new Promise<void>((resolve, reject) => resolve())
+        : () => {
+            const promise = new Promise<void>((resolve, reject) => {
+                if (this.shouldRun) {
+                    this.running = true;
+                    const resolver = drawingPause ? () => {
+                        if (drawingPause) {
+                            drawingPause();
+                            drawingPause = undefined;
+                        }
+                        resolve();
+                    } : resolve;
+                    if (this.timeout > 0) {
+                        setTimeout(resolver , this.timeout);
+                    } else {
+                        const currentTime = new Date().getTime();
+                        if (currentTime - lastPause > 500) {
+                            lastPause = currentTime;
+                            setTimeout(resolver, 0);
+                        } else {
+                            resolver();
+                        }
+                    }
+                } else {
+                    this.running = false;
+                    if (!drawingPause && this.screenPrinter) {
+                        drawingPause = this.screenPrinter.pause();
+                    }
+                    if (this.screenPrinter) {
+                        this.screenPrinter.forceRender();
+                    }
+                    this.resolver = resolve;
+                }
+            });
+            return promise;
+        }
+
+    }
 
     public async readFile(fileHandling: EntryFileHandling) {
         this.reset();
         this.executing = true;
-        // this.timeout = 100;
         const that = this;
         try {
-            let drawingPause: (() => void) | undefined;
-            let lastPause = 0;
+            const startTime = new Date().getTime();
             await executeEntry(
                 {
                     entry: this.entry,
@@ -98,45 +145,13 @@ export default class EntryWithPauseAndRun extends Vue {
                     lines: fileHandling.content,
                     outputCallback: simpleOutputCallbackFactory(this.output, () => this.destroying),
                     isCancelled: () => that.shouldStop,
-                    pause: () => {
-                        const promise = new Promise<void>((resolve, reject) => {
-                            if (this.shouldRun) {
-                                this.running = true;
-                                const resolver = drawingPause ? () => {
-                                    if (drawingPause) {
-                                        drawingPause();
-                                        drawingPause = undefined;
-                                    }
-                                    resolve();
-                                } : resolve;
-                                if (this.timeout > 0) {
-                                    setTimeout(resolver , this.timeout);
-                                } else {
-                                    const currentTime = new Date().getTime();
-                                    if (currentTime - lastPause > 500) {
-                                        lastPause = currentTime;
-                                        setTimeout(resolver, 0);
-                                    } else {
-                                        resolver();
-                                    }
-                                }
-                            } else {
-                                this.running = false;
-                                // const drawingPause = this.screenPrinter ? this.screenPrinter.pause() : () => {};
-                                if (!drawingPause && this.screenPrinter) {
-                                    drawingPause = this.screenPrinter.pause();
-                                }
-                                if (this.screenPrinter) {
-                                    this.screenPrinter.forceRender();
-                                }
-                                this.resolver = resolve;
-                            }
-                        });
-                        return promise;
-                    },
-                    screen: this.requireScreen ? { requireScreen: this.requireScreen } : undefined
+                    pause: this.createPause(),
+                    screen: this.requireScreen && !this.quickRun ? { requireScreen: this.requireScreen } : undefined
                 }
             );
+            if (this.quickRun) {
+                this.time = `${new Date().getTime() - startTime}ms`;
+            }
         } catch (e) {
             throw e;
         } finally {
@@ -170,6 +185,7 @@ export default class EntryWithPauseAndRun extends Vue {
     }
 
     private reset() {
+        this.time = "";
         this.destroying = false;
         this.running = false;
         this.shouldRun = false;
