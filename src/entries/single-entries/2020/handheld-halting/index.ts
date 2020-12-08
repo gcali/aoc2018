@@ -71,13 +71,13 @@ const execute = async (
     };
 
 export const handheldHalting = entryForFile(
-    async ({ lines, outputCallback }) => {
+    async ({ lines, resultOutputCallback }) => {
         const program = parseLines(lines);
         const executed = new Set<number>();
         await execute(program, emptyState(), {
             interceptor: async (s) => {
                 if (executed.has(s.currentInstruction)) {
-                    await outputCallback(s.acc);
+                    await resultOutputCallback(s.acc);
                     return false;
                 } else {
                     executed.add(s.currentInstruction);
@@ -86,7 +86,7 @@ export const handheldHalting = entryForFile(
             }
         });
     },
-    async ({ lines, outputCallback }) => {
+    async ({ lines, resultOutputCallback }) => {
         const program = parseLines(lines);
         const executions = program
             .map((inst, index) => ({inst, index}))
@@ -121,7 +121,7 @@ export const handheldHalting = entryForFile(
                             return false;
                         } else if (s.currentInstruction < 0 || s.currentInstruction >= program.length) {
                             found = true;
-                            await outputCallback(s.acc);
+                            await resultOutputCallback(s.acc);
                             return false;
                         } else {
                             if (toExecute > 0) {

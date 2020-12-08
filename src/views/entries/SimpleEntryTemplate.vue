@@ -145,11 +145,9 @@ export default class SimpleEntryTemplate extends Vue {
                 screen: this.requireScreen ? { requireScreen: this.requireScreen } : undefined,
                 isCancelled: () => false,
                 pause: this.createPause(),
-                isQuickRunning: this.quickRun
+                isQuickRunning: this.quickRun,
+                stopTimer: () => this.time = `${new Date().getTime() - startTime}ms`
             });
-            if (this.quickRun) {
-                this.time = `${new Date().getTime() - startTime}ms`;
-            }
         } finally {
             this.executing = false;
             if (this.stopper) {
@@ -164,11 +162,7 @@ export default class SimpleEntryTemplate extends Vue {
     }
 
     private createPause(): () => Promise<void> {
-        if (this.quickRun) {
-            return () => new Promise<void>((resolve, reject) => resolve());
-        } else {
-            return async () => await setTimeoutAsync(this.timeout);
-        }
+        return async () => await setTimeoutAsync(this.timeout);
     }
 
     private reset() {

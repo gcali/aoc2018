@@ -7,7 +7,7 @@ export interface ScreenBuilder {requireScreen: (size?: Coordinate) => Promise<Sc
 export interface EntryCallbackArg {
     lines: string[];
     outputCallback: ((outputLine: any, shouldClear?: boolean) => Promise<void>);
-    resultOutputcallback: ((outputLine: any) => Promise<void>);
+    resultOutputCallback: ((outputLine: any) => Promise<void>);
     pause: Pause;
     isCancelled: (() => boolean);
     setAutoStop: () => void;
@@ -126,6 +126,7 @@ interface ExecutionArgs {
         requireScreen: (size?: Coordinate) => Promise<ScreenPrinter>;
     };
     isQuickRunning: boolean;
+    stopTimer: () => void;
 }
 
 export class StopException extends Error {
@@ -142,6 +143,7 @@ export async function executeEntry({
     additionalInputReader,
     screen,
     isQuickRunning,
+    stopTimer
 }: ExecutionArgs
 ) {
     let callback: EntryCallback;
@@ -168,10 +170,18 @@ export async function executeEntry({
                 }
             }
         };
+        let resultOutput = 0;
         await callback({
             lines,
             outputCallback: !isQuickRunning ? outputCallback : async () => {},
-            resultOutputcallback: outputCallback,
+            resultOutputCallback: isQuickRunning? async (line: any, shouldClear?: boolean) => {
+                if (resultOutput > 0) {
+                    throw new Error("Cannot output results more than once");
+                }
+                stopTimer();
+                resultOutput++;
+                await outputCallback(line, shouldClear);
+            } : outputCallback,
             pause: wrappedPause,
             isCancelled,
             additionalInputReader,

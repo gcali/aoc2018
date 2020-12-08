@@ -1,16 +1,26 @@
 import minimist from "minimist";
 
 const args = (minimist as any)(process.argv.slice(2), {
-    alias: { e: "entry", h: "help", s: "second", l: "list", y: "year", n: "noNumber", f: "file"},
+    alias: { 
+        e: "entry", 
+        h: "help", 
+        s: "second", 
+        l: "list", 
+        y: "year", 
+        n: "noNumber", 
+        f: "file",
+        q: "quick"
+    },
     number: ["e", "y"],
     default: {
         "y": null,
         "e": null,
         "n": false,
-        "f": null
+        "f": null,
+        "q": false
     },
     string: ["file"],
-    boolean: ["help", "second", "list", "noNumber"],
+    boolean: ["help", "second", "list", "noNumber", "quick"],
 });
 
 
@@ -24,6 +34,7 @@ Options:
     -l, --list: list entries,
     -y, --year: year,
     -n, --noNumber: hide number in list, optional, default to false
+    -q, --quick: run with minimal output and prints the time of execution
 `;
 
 const error = () => { console.log(usage); process.exit(1); };
@@ -67,8 +78,6 @@ let additionalInputReader: undefined | {
     read: () => Promise<string | null>;
     close: () => void;
 };
-// let additionalReader: undefined | (() => Promise<string>);
-// let closer: undefined | (() => void);
 if (isReadingFromFile) {
     reader = generateFileReader(args.f);
     const lines: (string | null)[] = [];
@@ -99,36 +108,49 @@ if (isReadingFromFile) {
 }
 
 reader(async (lines) => {
-    // tslint:disable-next-line:no-console
-    const outputCallback = async (line: string) => {
+    const baseOutputCallback = async (line: string) => {
         if (line === null) {
             console.clear();
         } else {
             console.log(line);
         }
     }
+    let resultCalls = 0;
+    const outputCallback = args.q ? async () => {} : baseOutputCallback;
+    const startTime = new Date().getTime();
+    const resultOutputCallback = args.q ? async (line: any) => {
+        if (resultCalls > 0) {
+            throw new Error("Can execute result output only once");
+        }
+        resultCalls++;
+        if (typeof line === "string") {
+            console.log(line);
+        } else {
+            console.log(JSON.stringify(line));
+        }
+        console.log(`Time: ${new Date().getTime() - startTime}ms`);
+    } : baseOutputCallback;
+
     try {
         if (args.s) {
             await entryCallback.second({
                 isCancelled: () => false,
                 lines,
                 outputCallback,
-                // tslint:disable-next-line:no-empty
                 pause: async () => { },
-                // tslint:disable-next-line:no-empty
                 setAutoStop: () => { },
-                additionalInputReader
-            }/*, lines, outputCallback*/);
+                additionalInputReader,
+                resultOutputCallback,
+            });
         } else {
             await entryCallback.first({
                 lines,
                 outputCallback,
                 isCancelled: () => false,
-                // tslint:disable-next-line:no-empty
                 pause: async () => { },
-                // tslint:disable-next-line:no-empty
                 setAutoStop: () => { },
-                additionalInputReader
+                additionalInputReader,
+                resultOutputCallback
             });
         }
     } finally {

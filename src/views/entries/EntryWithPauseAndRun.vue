@@ -100,21 +100,17 @@ export default class EntryWithPauseAndRun extends Vue {
         const that = this;
         try {
             const startTime = new Date().getTime();
-            await executeEntry(
-                {
-                    entry: this.entry,
-                    choice: fileHandling.choice,
-                    lines: fileHandling.content,
-                    outputCallback: simpleOutputCallbackFactory(this.output, () => this.destroying),
-                    isCancelled: () => that.shouldStop,
-                    pause: this.createPause(),
-                    screen: this.requireScreen && !this.quickRun ? { requireScreen: this.requireScreen } : undefined,
-                    isQuickRunning: this.quickRun
-                }
-            );
-            if (this.quickRun) {
-                this.time = `${new Date().getTime() - startTime}ms`;
-            }
+            await executeEntry({
+                entry: this.entry,
+                choice: fileHandling.choice,
+                lines: fileHandling.content,
+                outputCallback: simpleOutputCallbackFactory(this.output, () => this.destroying),
+                isCancelled: () => that.shouldStop,
+                pause: this.createPause(),
+                screen: this.requireScreen && !this.quickRun ? { requireScreen: this.requireScreen } : undefined,
+                isQuickRunning: this.quickRun,
+                stopTimer: () => this.time = `${new Date().getTime() - startTime}ms`
+            });
         } catch (e) {
             throw e;
         } finally {
@@ -150,8 +146,7 @@ export default class EntryWithPauseAndRun extends Vue {
     private createPause(): (() => Promise<void>) {
         let drawingPause: (() => void) | undefined;
         let lastPause = 0;
-        return this.quickRun ? () => new Promise<void>((resolve, reject) => resolve())
-        : () => {
+        return () => {
             const promise = new Promise<void>((resolve, reject) => {
                 if (this.shouldRun) {
                     this.running = true;

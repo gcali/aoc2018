@@ -45,7 +45,7 @@ const toString = (bagRules: BagRule[]): string => {
 };
 
 export const handyHaversacks = entryForFile(
-    async ({ lines, outputCallback }) => {
+    async ({ lines, resultOutputCallback: resultOutputcallback }) => {
         const reverseRules = new DefaultListDictionaryString<string>();
         const rules = parseLines(lines);
         for (const rule of rules) {
@@ -72,9 +72,9 @@ export const handyHaversacks = entryForFile(
             }
         }
 
-        await outputCallback(results.size);
+        await resultOutputcallback(results.size);
     },
-    async ({ lines, outputCallback }) => {
+    async ({ lines, resultOutputCallback }) => {
         const rules = parseLines(lines);
         const directRules: {[key: string]: Array<{quantity: number; color: string}>} = {};
         for (const rule of rules) {
@@ -97,7 +97,7 @@ export const handyHaversacks = entryForFile(
         }
 
         const output = result.reduce((acc, next) => acc + next.quantity, 0);
-        await outputCallback(output);
+        await resultOutputCallback(output);
     },
     { 
         key: "handy-haversacks", 
