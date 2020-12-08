@@ -11,7 +11,7 @@ export interface IHandheldHalting {
 const constants = (() => {
     const programSize = {
         x: 50,
-        y: 10
+        y: 5
     };
     const indicatorSize = {
         x: 0,
@@ -26,7 +26,7 @@ const constants = (() => {
         y: 5
     };
     const programOffset = sumCoordinate(programSize, programSpacing);
-    const columns = 5;
+    const columns = 7;
     return {
         rows: 0,
         screenSizeBuilder(programs: number) {
@@ -63,10 +63,17 @@ class RealVisualizer implements IHandheldHalting {
     ) { 
     }
     async setStatus(programNumber: number, status: 'loop' | 'finished'): Promise<void> {
-        this.updateSize(programNumber);
+        for (let i = 0; i <= programNumber; i++) {
+            this.updateSize(i);
+        }
         this.programs[programNumber].drawable.color = status === "loop" ? "red" : "lime";
         this.printer.forceRender();
         await this.pause();
+        for (let i = programNumber + 1; i < this.programs.length; i++) {
+            this.updateSize(i);
+            this.printer.forceRender();
+            await this.pause();
+        }
     }
     // private programDrawables: LocalDrawable[][] = [];
     private programs: {
