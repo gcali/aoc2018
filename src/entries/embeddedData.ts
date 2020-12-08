@@ -19,6 +19,9 @@ import customCustomsEmbedded from "../../data/2020/custom-customs.txt";
 import {handyHaversacks} from "./single-entries/2020/handy-haversacks";
 import handyHaversacksEmbedded from "../../data/2020/handy-haversacks.txt";
 
+import {handheldHalting} from "./single-entries/2020/handheld-halting";
+import handheldHaltingEmbedded from "../../data/2020/handheld-halting.txt";
+
 
 const parse = (data: string): string[] => data.trim().split("\n");
 export const embeddedLines: { [key: string]: string[] } = {
@@ -28,5 +31,6 @@ export const embeddedLines: { [key: string]: string[] } = {
     [passportProcessing.metadata!.key]: parse(passportProcessingEmbedded),
     [binaryBoarding.metadata!.key]: parse(binaryBoardingEmbedded),
     [customCustoms.metadata!.key]: parse(customCustomsEmbedded),
-    [handyHaversacks.metadata!.key]: parse(handyHaversacksEmbedded)
+    [handyHaversacks.metadata!.key]: parse(handyHaversacksEmbedded),
+    [handheldHalting.metadata!.key]: parse(handheldHaltingEmbedded),
 };
