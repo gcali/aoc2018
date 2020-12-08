@@ -185,7 +185,7 @@ export async function executeEntry({
             pause: wrappedPause,
             isCancelled,
             additionalInputReader,
-            screen,
+            screen: isQuickRunning ? undefined : screen,
             setAutoStop: () => shouldAutoStop = true,
         });
     } catch (e) {

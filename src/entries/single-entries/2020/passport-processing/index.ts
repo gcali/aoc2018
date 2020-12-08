@@ -140,7 +140,13 @@ export const isValidField = (field: string, value: string): boolean => {
 };
 
 export const passportProcessing = entryForFile(
-    async ({ lines, outputCallback, screen, pause, setAutoStop }) => {
+    async ({ 
+        lines, 
+        resultOutputCallback, 
+        screen, 
+        pause, 
+        setAutoStop 
+    }) => {
         setAutoStop();
         const visualizer = buildVisualizer(screen, pause);
         const passports = parseLines(lines);
@@ -156,9 +162,15 @@ export const passportProcessing = entryForFile(
                 validPassports++;
             }
         }
-        await outputCallback(validPassports);
+        await resultOutputCallback(validPassports);
     },
-    async ({ lines, outputCallback, screen, pause, setAutoStop }) => {
+    async ({ 
+        lines, 
+        resultOutputCallback, 
+        screen, 
+        pause, 
+        setAutoStop 
+    }) => {
         setAutoStop();
         const visualizer = buildVisualizer(screen, pause);
         const passports = parseLines(lines);
@@ -174,14 +186,15 @@ export const passportProcessing = entryForFile(
                 validPassports++;
             }
         }
-        await outputCallback(validPassports);
+        await resultOutputCallback(validPassports);
     },
     {
         key: "passport-processing",
         title: "Passport Processing",
         stars: 2,
         customComponent: "pause-and-run",
-        suggestedDelay: 20
+        suggestedDelay: 20,
+        supportsQuickRunning: true
     }
 );
 

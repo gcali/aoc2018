@@ -54,7 +54,8 @@ export default class EntrySimpleOutput extends Vue {
     private manualRender: boolean = false;
 
     public mounted() {
-        this.$emit("print-factory", async (size?: Coordinate): Promise<ScreenPrinter> => {
+        this.$emit("print-factory", {
+            factory: async (size?: Coordinate): Promise<ScreenPrinter> => {
             this.canvasSize = size ? {width: size.x, height: size.y} : {width: 300, height: 300};
             this.ids = new Set<string>();
             this.toDraw = [];
@@ -113,7 +114,7 @@ export default class EntrySimpleOutput extends Vue {
                     this.manualRender = true;
                 }
             };
-        });
+        }, clear: () => this.canvasSize = null});
     }
 
     @Watch("text")

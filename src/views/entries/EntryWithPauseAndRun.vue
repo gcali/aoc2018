@@ -75,11 +75,15 @@ export default class EntryWithPauseAndRun extends Vue {
     @Watch("entry")
     public onEntryChanged() {
         this.reset();
+        this.quickRun = false;
     }
 
-    public readFactory(factory: (c?: Coordinate) => Promise<ScreenPrinter>) {
+    private clearScreen?: () => void;
+
+    public readFactory(args: {factory: (c?: Coordinate) => Promise<ScreenPrinter>, clear: () => void}) {
+        this.clearScreen = args.clear;
         this.requireScreen = async (size?: Coordinate) => {
-            const result = await factory(size);
+            const result = await args.factory(size);
             this.screenPrinter = result;
             return result;
         };
@@ -185,6 +189,9 @@ export default class EntryWithPauseAndRun extends Vue {
     }
 
     private reset() {
+        if (this.clearScreen) {
+            this.clearScreen();
+        }
         this.time = "";
         this.destroying = false;
         this.running = false;

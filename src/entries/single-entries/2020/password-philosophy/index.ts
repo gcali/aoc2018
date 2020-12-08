@@ -62,21 +62,19 @@ import { entryForFile, Pause, ScreenBuilder } from "../../../entry";
 import { buildVisualizer } from "./visualizer";
 
 export const passwordPhilosophy = entryForFile(
-    async ({ lines, outputCallback, screen, pause }) => {
-        await runEntry(screen, pause, lines, isLineValid, outputCallback);
+    async ({ lines, resultOutputCallback, screen, pause }) => {
+        await runEntry(screen, pause, lines, isLineValid, resultOutputCallback);
     },
-    async ({ lines, outputCallback, screen, pause }) => {
-        // const satisfied =
-        //     parseLines(lines).filter(l => isLineReallyValid(l)[0]).length;
-        // await outputCallback(satisfied);
-        await runEntry(screen, pause, lines, isLineReallyValid, outputCallback);
+    async ({ lines, resultOutputCallback, screen, pause }) => {
+        await runEntry(screen, pause, lines, isLineReallyValid, resultOutputCallback);
     },
     {
         key: "password-philosophy",
         title: "Password Philosophy",
         customComponent: "pause-and-run",
         stars: 2,
-        suggestedDelay: 20
+        suggestedDelay: 20,
+        supportsQuickRunning: true
     }
 );
 
@@ -85,8 +83,7 @@ async function runEntry(
     pause: Pause,
     lines: string[],
     passwordChecker: PasswordChecker,
-    outputCallback: (outputLine: any, shouldClear?: boolean | undefined
-) => Promise<void>) {
+    outputCallback: (outputLine: any) => Promise<void>) {
     const visualizer = await buildVisualizer(screen, pause);
     const passwordLines = parseLines(lines);
     await visualizer.setupPasswords(passwordLines.map((l) => l.password));

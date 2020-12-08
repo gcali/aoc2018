@@ -31,19 +31,29 @@ const findProd = async (
 };
 
 export const reportRepair = entryForFile(
-    async ({ lines, outputCallback, screen, pause, setAutoStop }) => {
+    async ({ 
+        lines,
+        outputCallback,
+        resultOutputCallback,
+        screen,
+        pause,
+        setAutoStop 
+    }) => {
         setAutoStop();
         const ns = lines.map((line) => parseInt(line, 10)).sort((a, b) => a - b);
         console.log(ns);
         const visualizer = await buildVisualizer(screen, ns, 0, pause);
         const result = await findProd(ns, 2020, 0, visualizer);
-        if (result) {
-            await outputCallback(result);
-        } else {
-            await outputCallback("Not found :(");
-        }
+        await resultOutputCallback(result || "Not found :(");
     },
-    async ({ lines, outputCallback, screen, pause, setAutoStop}) => {
+    async ({ 
+        lines, 
+        outputCallback, 
+        resultOutputCallback,
+        screen, 
+        pause, 
+        setAutoStop
+    }) => {
         setAutoStop();
         const ns = lines.map((line) => parseInt(line, 10)).sort((a, b) => a - b);
         const visualizer = await buildVisualizer(screen, ns, 1, pause);
@@ -51,12 +61,18 @@ export const reportRepair = entryForFile(
             await updateDeadCandidateVisualizer(visualizer, i);
             const result = await findProd(ns, 2020 - ns[i], i + 1, visualizer);
             if (result) {
-                await outputCallback(result * ns[i]);
+                await resultOutputCallback(result * ns[i]);
                 return;
             }
         }
         await outputCallback("Not found :(");
 
     },
-    { key: "report-repair", title: "Report Repair", customComponent: "pause-and-run", stars: 2 }
+    { 
+        key: "report-repair", 
+        title: "Report Repair", 
+        customComponent: "pause-and-run", 
+        stars: 2 ,
+        supportsQuickRunning: true
+    }
 );

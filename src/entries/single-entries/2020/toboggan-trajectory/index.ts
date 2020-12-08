@@ -9,7 +9,7 @@ const parseLines = (lines: string[]): {grid: string[][], size: Coordinate} => {
 };
 
 export const tobogganTrajectory = entryForFile(
-    async ({ lines, outputCallback, pause, screen, setAutoStop }) => {
+    async ({ lines, resultOutputCallback, pause, screen, setAutoStop }) => {
         setAutoStop();
         const visualizer = buildVisualizer(screen, pause);
         const {grid, size} = parseLines(lines);
@@ -26,9 +26,9 @@ export const tobogganTrajectory = entryForFile(
             currentCoordinate = slope.sum(currentCoordinate);
             currentCoordinate.x %= size.x;
         }
-        await outputCallback(trees);
+        await resultOutputCallback(trees);
     },
-    async ({ lines, outputCallback, pause, screen, setAutoStop}) => {
+    async ({ lines, resultOutputCallback, pause, screen, setAutoStop}) => {
         setAutoStop();
         const visualizer = buildVisualizer(screen, pause);
         const {grid, size} = parseLines(lines);
@@ -56,14 +56,15 @@ export const tobogganTrajectory = entryForFile(
             }
             result *= trees;
         }
-        await outputCallback(result);
+        await resultOutputCallback(result);
     },
     {
         key: "toboggan-trajectory",
         title: "Toboggan Trajectory",
         stars: 2,
         customComponent: "pause-and-run",
-        suggestedDelay: 50
+        suggestedDelay: 50,
+        supportsQuickRunning: true
     }
 );
 

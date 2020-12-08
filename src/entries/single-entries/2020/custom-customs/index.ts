@@ -21,7 +21,13 @@ const buildAnswers = (line: string, set?: Set<string> | undefined): Set<string> 
 };
 
 export const customCustoms = entryForFile(
-    async ({ lines, outputCallback, setAutoStop, pause, screen }) => {
+    async ({ 
+        lines,
+        resultOutputCallback,
+        setAutoStop,
+        pause,
+        screen 
+    }) => {
         setAutoStop();
         const visualizer = buildVisualizer(screen, pause);
         const groups = [...buildGroupsFromSeparator(lines, (l) => l.length === 0)];
@@ -37,9 +43,15 @@ export const customCustoms = entryForFile(
             await visualizer.endGroup(i);
             total += answers.size;
         }
-        await outputCallback(total);
+        await resultOutputCallback(total);
     },
-    async ({ lines, outputCallback, setAutoStop, screen, pause }) => {
+    async ({ 
+        lines,
+        resultOutputCallback,
+        setAutoStop,
+        screen,
+        pause 
+    }) => {
         setAutoStop();
         const visualizer = buildVisualizer(screen, pause);
         const groups = [...buildGroupsFromSeparator(lines, (l) => l.length === 0)];
@@ -63,32 +75,14 @@ export const customCustoms = entryForFile(
             }
         }
 
-        // let count = 0;
-        // let isFirst = true;
-        // let currentSet = new Set<string>();
-        // for (const line of lines) {
-        //     if (!line) {
-        //         count += currentSet.size;
-        //         currentSet = new Set<string>();
-        //         isFirst = true;
-        //     } else {
-        //         if (isFirst) {
-        //             isFirst = false;
-        //             buildAnswers(line, currentSet);
-        //         } else {
-        //             const currentAnswers = buildAnswers(line);
-        //             currentSet = intersect(currentSet, currentAnswers);
-        //         }
-        //     }
-        // }
-        // count += currentSet.size;
-        await outputCallback(total);
+        await resultOutputCallback(total);
     },
     {
         key: "custom-customs",
         title: "Custom Customs",
         stars: 2,
         suggestedDelay: 10,
-        customComponent: "pause-and-run"
+        customComponent: "pause-and-run",
+        supportsQuickRunning: true
     }
 );

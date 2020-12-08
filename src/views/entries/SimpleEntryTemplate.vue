@@ -44,6 +44,7 @@ import { setTimeoutAsync } from "../../support/async";
     }
 })
 export default class SimpleEntryTemplate extends Vue {
+    private clearScreen?: () => void;
     public get showAdditionalInput(): boolean {
         const hasAdditionalInput = (this.entry.metadata !== undefined) &&
             (this.entry.metadata.hasAdditionalInput === true);
@@ -98,17 +99,19 @@ export default class SimpleEntryTemplate extends Vue {
         this.output = [];
     }
 
-    public readFactory(factory: (c?: Coordinate) => Promise<ScreenPrinter>) {
+    public readFactory(args: {factory: (c?: Coordinate) => Promise<ScreenPrinter>, clear: () => void}) {
         this.requireScreen = async (size?: Coordinate) => {
-            const result = await factory(size);
+            const result = await args.factory(size);
             this.stopper = result.stop;
             return result;
         };
+        this.clearScreen = args.clear;
     }
 
     @Watch("entry")
     public onEntryChanged() {
         this.reset();
+        this.quickRun = false;
     }
 
     public beforeDestroy() {
@@ -166,6 +169,10 @@ export default class SimpleEntryTemplate extends Vue {
     }
 
     private reset() {
+        if (this.clearScreen) {
+            this.clearScreen();
+        }
+        this.time = "";
         this.executing = false;
         this.output = [];
     }
