@@ -7,7 +7,7 @@
         :disabled="disabled"
         :entryKey="this.entry.metadata.key"
     )
-        .quick-run
+        .quick-run(v-if="supportsQuickRunning")
             label Quick run
             input(type="checkbox" v-model="quickRun" :disabled="executing")
             label(v-if="time") Time: {{time}}
@@ -144,7 +144,8 @@ export default class SimpleEntryTemplate extends Vue {
                 additionalInputReader,
                 screen: this.requireScreen ? { requireScreen: this.requireScreen } : undefined,
                 isCancelled: () => false,
-                pause: this.createPause()
+                pause: this.createPause(),
+                isQuickRunning: this.quickRun
             });
             if (this.quickRun) {
                 this.time = `${new Date().getTime() - startTime}ms`;
@@ -156,6 +157,10 @@ export default class SimpleEntryTemplate extends Vue {
             }
             this.disabled = false;
         }
+    }
+
+    public get supportsQuickRunning() {
+        return this.entry.metadata && this.entry.metadata.supportsQuickRunning;
     }
 
     private createPause(): () => Promise<void> {

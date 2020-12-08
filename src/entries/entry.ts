@@ -7,6 +7,7 @@ export interface ScreenBuilder {requireScreen: (size?: Coordinate) => Promise<Sc
 export interface EntryCallbackArg {
     lines: string[];
     outputCallback: ((outputLine: any, shouldClear?: boolean) => Promise<void>);
+    resultOutputcallback: ((outputLine: any) => Promise<void>);
     pause: Pause;
     isCancelled: (() => boolean);
     setAutoStop: () => void;
@@ -37,6 +38,7 @@ interface EntryMetadata {
     hasAdditionalInput?: boolean;
     suggestedDelay?: number;
     customComponent?: "pause-and-run";
+    supportsQuickRunning?: boolean;
 }
 
 export interface Entry {
@@ -123,6 +125,7 @@ interface ExecutionArgs {
     screen?: {
         requireScreen: (size?: Coordinate) => Promise<ScreenPrinter>;
     };
+    isQuickRunning: boolean;
 }
 
 export class StopException extends Error {
@@ -137,7 +140,8 @@ export async function executeEntry({
     isCancelled,
     pause,
     additionalInputReader,
-    screen
+    screen,
+    isQuickRunning,
 }: ExecutionArgs
 ) {
     let callback: EntryCallback;
@@ -150,6 +154,9 @@ export async function executeEntry({
         const basePause = pause || (() => new Promise<void>((resolve) => setTimeout(resolve, 0)));
         let shouldAutoStop = false;
         const wrappedPause = async (times?: number) => {
+            if (isQuickRunning) {
+                return;
+            }
             times = times || 1;
             for (let i = 0; i < times; i++) {
                 if (shouldAutoStop && isCancelled()) {
@@ -163,7 +170,8 @@ export async function executeEntry({
         };
         await callback({
             lines,
-            outputCallback,
+            outputCallback: !isQuickRunning ? outputCallback : async () => {},
+            resultOutputcallback: outputCallback,
             pause: wrappedPause,
             isCancelled,
             additionalInputReader,

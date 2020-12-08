@@ -143,5 +143,10 @@ export const handheldHalting = entryForFile(
             }
         }
     },
-    { key: "handheld-halting", title: "Handheld Halting", stars: 2}
+    { 
+        key: "handheld-halting", 
+        title: "Handheld Halting", 
+        stars: 2,
+        supportsQuickRunning: true
+    }
 );

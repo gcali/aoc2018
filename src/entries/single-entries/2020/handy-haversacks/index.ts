@@ -96,7 +96,13 @@ export const handyHaversacks = entryForFile(
             }
         }
 
-        await outputCallback(result.reduce((acc, next) => acc + next.quantity, 0));
+        const output = result.reduce((acc, next) => acc + next.quantity, 0);
+        await outputCallback(output);
     },
-    { key: "handy-haversacks", title: "Handy Haversacks", stars: 2}
+    { 
+        key: "handy-haversacks", 
+        title: "Handy Haversacks", 
+        stars: 2,
+        supportsQuickRunning: true
+    }
 );
