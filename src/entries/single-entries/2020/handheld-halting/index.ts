@@ -1,25 +1,25 @@
-import { exec } from 'child_process';
+import { exec } from "child_process";
 import { entryForFile } from "../../../entry";
 
-type Instruction = {
-    op: "acc" | "jmp" | "nop",
-    arg: number
-};
+interface Instruction {
+    op: "acc" | "jmp" | "nop";
+    arg: number;
+}
 
-type State = {
-    acc: number,
-    currentInstruction: number
+interface State {
+    acc: number;
+    currentInstruction: number;
 }
 
 const parseLines = (lines: string[]): Instruction[] => {
-    return lines.map(line => {
+    return lines.map((line) => {
         const [op, arg] = line.split(" ");
         return {
             op: op as "jmp" | "acc" | "nop",
             arg: parseInt(arg, 10)
-        }
-    })
-}
+        };
+    });
+};
 
 const executeInstruction = (instruction: Instruction, state: State) => {
     let shouldChangeInstruction = true;
@@ -39,15 +39,15 @@ const executeInstruction = (instruction: Instruction, state: State) => {
     if (shouldChangeInstruction) {
         state.currentInstruction++;
     }
-}
+};
 
-const emptyState = (): State => ({ 
+const emptyState = (): State => ({
     acc: 0,
     currentInstruction: 0
 });
 
 const execute = async (
-    program: Instruction[], 
+    program: Instruction[],
     startState: State,
     options?: {
         interceptor?: (state: State, currentInstruction?: Instruction) => Promise<boolean>,
@@ -68,7 +68,7 @@ const execute = async (
             executeInstruction(nextInstruction, state);
         }
         return state;
-    }
+    };
 
 export const handheldHalting = entryForFile(
     async ({ lines, outputCallback }) => {
@@ -90,8 +90,8 @@ export const handheldHalting = entryForFile(
         const program = parseLines(lines);
         const executions = program
             .map((inst, index) => ({inst, index}))
-            .filter(e => e.inst.op === "nop" || e.inst.op === "jmp")
-            .map(e => {
+            .filter((e) => e.inst.op === "nop" || e.inst.op === "jmp")
+            .map((e) => {
                 return {
                     index: e.index,
                     instruction: {
@@ -101,7 +101,7 @@ export const handheldHalting = entryForFile(
                     state: emptyState(),
                     stop: false,
                     executed: new Set<number>()
-                }
+                };
             });
 
         let found = false;
@@ -139,7 +139,7 @@ export const handheldHalting = entryForFile(
                         }
                         return program[currentInstruction];
                     }
-                })
+                });
             }
         }
     },

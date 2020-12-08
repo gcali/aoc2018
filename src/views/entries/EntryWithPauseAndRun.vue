@@ -89,48 +89,6 @@ export default class EntryWithPauseAndRun extends Vue {
             this.screenPrinter.stop();
         }
     }
-    
-    private createPause(): (() => Promise<void>) {
-        let drawingPause: (() => void) | undefined;
-        let lastPause = 0;
-        return this.quickRun ? () => new Promise<void>((resolve, reject) => resolve())
-        : () => {
-            const promise = new Promise<void>((resolve, reject) => {
-                if (this.shouldRun) {
-                    this.running = true;
-                    const resolver = drawingPause ? () => {
-                        if (drawingPause) {
-                            drawingPause();
-                            drawingPause = undefined;
-                        }
-                        resolve();
-                    } : resolve;
-                    if (this.timeout > 0) {
-                        setTimeout(resolver , this.timeout);
-                    } else {
-                        const currentTime = new Date().getTime();
-                        if (currentTime - lastPause > 500) {
-                            lastPause = currentTime;
-                            setTimeout(resolver, 0);
-                        } else {
-                            resolver();
-                        }
-                    }
-                } else {
-                    this.running = false;
-                    if (!drawingPause && this.screenPrinter) {
-                        drawingPause = this.screenPrinter.pause();
-                    }
-                    if (this.screenPrinter) {
-                        this.screenPrinter.forceRender();
-                    }
-                    this.resolver = resolve;
-                }
-            });
-            return promise;
-        }
-
-    }
 
     public async readFile(fileHandling: EntryFileHandling) {
         this.reset();
@@ -182,6 +140,48 @@ export default class EntryWithPauseAndRun extends Vue {
             this.resolver = undefined;
             resolver();
         }
+    }
+
+    private createPause(): (() => Promise<void>) {
+        let drawingPause: (() => void) | undefined;
+        let lastPause = 0;
+        return this.quickRun ? () => new Promise<void>((resolve, reject) => resolve())
+        : () => {
+            const promise = new Promise<void>((resolve, reject) => {
+                if (this.shouldRun) {
+                    this.running = true;
+                    const resolver = drawingPause ? () => {
+                        if (drawingPause) {
+                            drawingPause();
+                            drawingPause = undefined;
+                        }
+                        resolve();
+                    } : resolve;
+                    if (this.timeout > 0) {
+                        setTimeout(resolver , this.timeout);
+                    } else {
+                        const currentTime = new Date().getTime();
+                        if (currentTime - lastPause > 500) {
+                            lastPause = currentTime;
+                            setTimeout(resolver, 0);
+                        } else {
+                            resolver();
+                        }
+                    }
+                } else {
+                    this.running = false;
+                    if (!drawingPause && this.screenPrinter) {
+                        drawingPause = this.screenPrinter.pause();
+                    }
+                    if (this.screenPrinter) {
+                        this.screenPrinter.forceRender();
+                    }
+                    this.resolver = resolve;
+                }
+            });
+            return promise;
+        };
+
     }
 
     private reset() {

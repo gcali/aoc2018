@@ -1,45 +1,45 @@
-import { DefaultListDictionaryString, Queue } from '../../../../support/data-structure';
+import { DefaultListDictionaryString, Queue } from "../../../../support/data-structure";
 import { entryForFile } from "../../../entry";
 
-type BagRule = {
+interface BagRule {
     color: string;
-    contains?: {quantity: number; color: string}[]
+    contains?: Array<{quantity: number; color: string}>;
 }
 
-const parseContainingBags = (line: string): {quantity: number; color: string}[] => {
+const parseContainingBags = (line: string): Array<{quantity: number; color: string}> => {
     const startFrom = line.indexOf("contain") + "contain".length;
     line = line.slice(startFrom).trim();
     const bags = line
         .replace(".", "")
         .split(", ")
-        .map(l => l.split(" "))
-        .map(l => {
+        .map((l) => l.split(" "))
+        .map((l) => {
             const quantity = parseInt(l[0], 10);
-            const color = l.slice(1,3).join(" ");
+            const color = l.slice(1, 3).join(" ");
             return {
                 quantity,
                 color
-            }
+            };
         });
     return bags;
 };
 
 const parseLines = (lines: string[]): BagRule[] => {
-    return lines.map(line => {
+    return lines.map((line) => {
         const splitIndex = line.indexOf("bags");
         const mainColor = line.slice(0, splitIndex).trim();
         const isEmpty = line.indexOf("contain no") >= 0;
         return {
             color: mainColor,
             contains: isEmpty ? undefined : parseContainingBags(line)
-        }
+        };
     });
-}
+};
 
 const toString = (bagRules: BagRule[]): string => {
     return bagRules
-        .map(b => `${b.color} bags contain ${b.contains ? 
-            b.contains.map(e => `${e.quantity} ${e.color} bag${e.quantity > 1 ? "s" : ""}`).join(",")
+        .map((b) => `${b.color} bags contain ${b.contains ?
+            b.contains.map((e) => `${e.quantity} ${e.color} bag${e.quantity > 1 ? "s" : ""}`).join(",")
             : "no other bags"}.`)
         .join("\n");
 };
@@ -76,11 +76,11 @@ export const handyHaversacks = entryForFile(
     },
     async ({ lines, outputCallback }) => {
         const rules = parseLines(lines);
-        const directRules : {[key: string]: {quantity: number; color: string}[]} = {};
+        const directRules: {[key: string]: Array<{quantity: number; color: string}>} = {};
         for (const rule of rules) {
             directRules[rule.color] = rule.contains || [];
         }
-        const result: {quantity: number; color: string}[] = [];
+        const result: Array<{quantity: number; color: string}> = [];
         const toExplore = new Queue<{quantity: number; color: string}>();
         toExplore.add({quantity: 1, color: "shiny gold"});
         while (true) {
@@ -98,5 +98,5 @@ export const handyHaversacks = entryForFile(
 
         await outputCallback(result.reduce((acc, next) => acc + next.quantity, 0));
     },
-    { key: "handy-haversacks", title: "Handy Haversacks"}
+    { key: "handy-haversacks", title: "Handy Haversacks", stars: 2}
 );

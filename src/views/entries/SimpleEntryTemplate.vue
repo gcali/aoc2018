@@ -44,12 +44,17 @@ import { setTimeoutAsync } from "../../support/async";
     }
 })
 export default class SimpleEntryTemplate extends Vue {
-
-    private quickRun = false;
     public get showAdditionalInput(): boolean {
         const hasAdditionalInput = (this.entry.metadata !== undefined) &&
             (this.entry.metadata.hasAdditionalInput === true);
         return hasAdditionalInput && this.showInput;
+    }
+
+    private get timeout() {
+        if (this.entry.metadata && this.entry.metadata!.suggestedDelay) {
+            return this.entry.metadata!.suggestedDelay;
+        }
+        return 0;
     }
     @Prop() public title!: string;
     @Prop() public id!: number;
@@ -57,6 +62,8 @@ export default class SimpleEntryTemplate extends Vue {
     @Prop() public year!: string;
 
     public output: string[] = [];
+
+    private quickRun = false;
 
     private inputLine: string = "";
 
@@ -109,21 +116,6 @@ export default class SimpleEntryTemplate extends Vue {
         this.destroying = true;
     }
 
-    private get timeout() {
-        if (this.entry.metadata && this.entry.metadata!.suggestedDelay) {
-            return this.entry.metadata!.suggestedDelay;
-        }
-        return 0;
-    }
-
-    private createPause(): () => Promise<void> {
-        if (this.quickRun) {
-            return () => new Promise<void>((resolve, reject) => resolve());
-        } else {
-            return async () => await setTimeoutAsync(this.timeout);
-        }
-    }
-
     public async readFile(fileHandling: EntryFileHandling) {
         this.reset();
         this.disabled = true;
@@ -163,6 +155,14 @@ export default class SimpleEntryTemplate extends Vue {
                 this.stopper();
             }
             this.disabled = false;
+        }
+    }
+
+    private createPause(): () => Promise<void> {
+        if (this.quickRun) {
+            return () => new Promise<void>((resolve, reject) => resolve());
+        } else {
+            return async () => await setTimeoutAsync(this.timeout);
         }
     }
 
