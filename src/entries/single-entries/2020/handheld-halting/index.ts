@@ -1,12 +1,13 @@
 import { exec } from "child_process";
 import { entryForFile } from "../../../entry";
+import { buildVisualizer } from './visualizer';
 
-interface Instruction {
+export interface Instruction {
     op: "acc" | "jmp" | "nop";
     arg: number;
 }
 
-interface State {
+export interface State {
     acc: number;
     currentInstruction: number;
 }
@@ -71,8 +72,17 @@ const execute = async (
     };
 
 export const handheldHalting = entryForFile(
-    async ({ lines, resultOutputCallback }) => {
+    async ({ 
+        lines, 
+        resultOutputCallback, 
+        screen, 
+        pause,
+        setAutoStop
+    }) => {
+        setAutoStop();
+        const visualizer = buildVisualizer(screen, pause);
         const program = parseLines(lines);
+        await visualizer.setup(program, 1);
         const executed = new Set<number>();
         await execute(program, emptyState(), {
             interceptor: async (s) => {
@@ -81,17 +91,26 @@ export const handheldHalting = entryForFile(
                     return false;
                 } else {
                     executed.add(s.currentInstruction);
+                    await visualizer.setExecuted(0, s.currentInstruction);
                     return true;
                 }
             }
         });
     },
-    async ({ lines, resultOutputCallback }) => {
+    async ({ 
+        lines, 
+        resultOutputCallback, 
+        screen, 
+        pause,
+        setAutoStop
+    }) => {
+        setAutoStop();
+        const visualizer = buildVisualizer(screen, pause);
         const program = parseLines(lines);
         const executions = program
             .map((inst, index) => ({inst, index}))
             .filter((e) => e.inst.op === "nop" || e.inst.op === "jmp")
-            .map((e) => {
+            .map((e, executionIndex) => {
                 return {
                     index: e.index,
                     instruction: {
@@ -100,10 +119,12 @@ export const handheldHalting = entryForFile(
                     },
                     state: emptyState(),
                     stop: false,
-                    executed: new Set<number>()
+                    executed: new Set<number>(),
+                    executionIndex
                 };
             });
 
+        await visualizer.setup(program, executions.length);
         let found = false;
         while (!found) {
             for (const execution of executions) {
@@ -125,6 +146,7 @@ export const handheldHalting = entryForFile(
                             return false;
                         } else {
                             if (toExecute > 0) {
+                                await visualizer.setExecuted(execution.executionIndex, s.currentInstruction);
                                 execution.executed.add(s.currentInstruction);
                                 toExecute--;
                                 return true;
@@ -147,6 +169,7 @@ export const handheldHalting = entryForFile(
         key: "handheld-halting", 
         title: "Handheld Halting", 
         stars: 2,
-        supportsQuickRunning: true
+        supportsQuickRunning: true,
+        customComponent: "pause-and-run"
     }
 );
