@@ -48,7 +48,7 @@ export class LinkedList<T> implements Iterable<{element: T, remove: () => void}>
       if (!current) {
         return;
       }
-        if (current.prev) {
+      if (current.prev) {
           current.prev.removeNext();
         } else {
           if (current.next) {
@@ -58,7 +58,7 @@ export class LinkedList<T> implements Iterable<{element: T, remove: () => void}>
             this.startNode = undefined;
           }
         }
-    }
+    };
     while (true) {
       if (!current) {
         return;

@@ -33,7 +33,6 @@ export default class EntryInput extends Vue {
     private inputContent: string | null = null;
 
     public get noInput(): boolean {
-        console.log(Object.keys(embeddedLines));
         return this.entryKey in embeddedLines;
     }
 
@@ -49,7 +48,6 @@ export default class EntryInput extends Vue {
     public async loadFile(choice: Choice): Promise<EntryFileHandling> {
         if (this.noInput) {
             const content = await (embeddedLines[this.entryKey] || (async () => [] as string[]))();
-            console.log(content);
             return {choice, content };
         }
         if (!this.inputContent) {

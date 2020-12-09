@@ -43,7 +43,6 @@ export const embeddedLines = [
             /* webpackChunkName: "[request]" */
             `../../data/2020/${next.metadata!.key}.txt`
         )).default as string;
-        console.log(data);
         return parse(data);
     };
     return acc;

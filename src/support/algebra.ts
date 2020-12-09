@@ -20,7 +20,7 @@ export const factorial = (n: number): number => {
 
 export const logarithm = (base: number, target: number): number => {
   return Math.log(base) / Math.log(target);
-}
+};
 
 const calculateExtended = (aP: number, bP: number, m: number): {
     a: number,
