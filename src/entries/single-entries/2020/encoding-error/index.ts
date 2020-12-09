@@ -1,3 +1,4 @@
+import { LinkedList } from '../../../../support/data-structure';
 import { entryForFile } from "../../../entry";
 
 const findInvalid = (ns: number[]): number | null => {
@@ -32,20 +33,20 @@ export const encodingError = entryForFile(
         if (invalid === null) {
             throw new Error("Could not find invalid");
         }
-        let sums: Array<{min: number, max: number, value: number}> = [];
+        const sums = new LinkedList<{min: number, max: number, value: number}>();
         for (const n of ns) {
-            sums.forEach((s) => {
-                s.value += n;
-                s.min = Math.min(n, s.min);
-                s.max = Math.max(n, s.max);
-            });
-            sums = sums.filter((s) => s.value <= invalid);
-            const matching = sums.find((s) => s.value === invalid);
-            if (matching) {
-                await resultOutputCallback(matching.min + matching.max);
-                return;
+            for (const sum of sums) {
+                sum.element.value += n;
+                sum.element.min = Math.min(n, sum.element.min);
+                sum.element.max = Math.max(n, sum.element.max);
+                if (sum.element.value === invalid) {
+                    await resultOutputCallback(sum.element.min + sum.element.max);
+                    return;
+                } else if (sum.element.value > invalid) {
+                    sum.remove();
+                }
             }
-            sums.push({min: n, max: n, value: n});
+            sums.addNode({min: n, max: n, value: n});
         }
         await resultOutputCallback("Could not find it");
     },

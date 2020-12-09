@@ -1,5 +1,4 @@
 import { entryForFile } from "../../entry";
-import * as mathjs from "mathjs";
 
 interface Coordinate3D {
     x: number;
@@ -140,7 +139,18 @@ function serializeTuple(coordinates: number[]): string {
     return coordinates.join("|");
 }
 
-const getLcm = mathjs.lcm;
+function gcd(a: number,b: number): number{
+  var t = 0;
+  a < b && (t = b, b = a, a = t); // swap them if a < b
+  t = a%b;
+  return t ? gcd(b,t) : b;
+}
+
+function lcm(a: number,b: number){
+  return a/gcd(a,b)*b;
+}
+
+const getLcm = lcm;
 
 // function getLcm(a: number, b: number): number {
 //     return mathjs.lcm(a, b);

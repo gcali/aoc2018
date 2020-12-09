@@ -1,4 +1,3 @@
-import { sum } from "mathjs";
 import { Md5 } from "ts-md5";
 import { Lifo, Queue } from "../../../support/data-structure";
 import { CCoordinate, Coordinate, directionList, directions, manhattanDistance, serialization } from "../../../support/geometry";
@@ -118,7 +117,7 @@ export const twoStepsForward = entryForFile(
             })).map((e) => ({...e, hash: hash(e.steps)}));
             spreads.push(surrounding.length);
             if (spreads.length > 10000) {
-                await outputCallback(sum(spreads) / spreads.length);
+                await outputCallback(spreads.reduce((acc, next) => acc + next, 0) / spreads.length);
                 spreads.length = 0;
             }
 

@@ -20,6 +20,57 @@ export class Lifo<T> {
   }
 }
 
+export class LinkedList<T> implements Iterable<{element: T, remove: () => void}> {
+  // private currentNode?: DoubleLinkedNode<T>;
+  private startNode?: DoubleLinkedNode<T>;
+
+  public addNode(element: T) {
+    if (!this.startNode) {
+      this.startNode = new DoubleLinkedNode<T>(element);
+    } else {
+      this.startNode.append(element);
+    }
+  }
+
+  public get length() {
+    let l = 0;
+    let n = this.startNode || null;
+    while (n) {
+      l++;
+      n = n.next;
+    }
+    return l;
+  }
+
+  public *[Symbol.iterator](): Iterator<{element: T, remove: () => void}> {
+    let current = this.startNode;
+    const remove = () => {
+      if (!current) {
+        return;
+      }
+        if (current.prev) {
+          current.prev.removeNext();
+        } else {
+          if (current.next) {
+            current.next.removePrev();
+            this.startNode = current.next;
+          } else {
+            this.startNode = undefined;
+          }
+        }
+    }
+    while (true) {
+      if (!current) {
+        return;
+      }
+      const c = current;
+      yield {element: c.value, remove};
+      current = current.next || undefined;
+    }
+  }
+
+}
+
 export class Queue<T> {
   private firstNode?: QueueNode<T>;
   private lastNode?: QueueNode<T>;
