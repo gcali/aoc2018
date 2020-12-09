@@ -18,29 +18,29 @@ const findInvalid = (ns: number[]): number | null => {
         }
     }
     return null;
-}
+};
 
 export const encodingError = entryForFile(
     async ({ lines, outputCallback, resultOutputCallback }) => {
-        const ns = lines.map(l => parseInt(l, 10));
+        const ns = lines.map((l) => parseInt(l, 10));
         const invalid = findInvalid(ns);
         await resultOutputCallback(ns === null ? "Did not find it :(" : invalid);
     },
     async ({ lines, outputCallback, resultOutputCallback }) => {
-        const ns = lines.map(l => parseInt(l, 10));
+        const ns = lines.map((l) => parseInt(l, 10));
         const invalid = findInvalid(ns);
         if (invalid === null) {
             throw new Error("Could not find invalid");
         }
-        let sums: {min: number, max: number, value: number}[] = [];
+        let sums: Array<{min: number, max: number, value: number}> = [];
         for (const n of ns) {
-            sums.forEach(s => {
+            sums.forEach((s) => {
                 s.value += n;
                 s.min = Math.min(n, s.min);
                 s.max = Math.max(n, s.max);
             });
-            sums = sums.filter(s => s.value <= invalid);
-            const matching = sums.find(s => s.value === invalid);
+            sums = sums.filter((s) => s.value <= invalid);
+            const matching = sums.find((s) => s.value === invalid);
             if (matching) {
                 await resultOutputCallback(matching.min + matching.max);
                 return;

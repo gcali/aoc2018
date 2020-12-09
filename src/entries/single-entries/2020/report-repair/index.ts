@@ -31,13 +31,13 @@ const findProd = async (
 };
 
 export const reportRepair = entryForFile(
-    async ({ 
+    async ({
         lines,
         outputCallback,
         resultOutputCallback,
         screen,
         pause,
-        setAutoStop 
+        setAutoStop
     }) => {
         setAutoStop();
         const ns = lines.map((line) => parseInt(line, 10)).sort((a, b) => a - b);
@@ -46,12 +46,12 @@ export const reportRepair = entryForFile(
         const result = await findProd(ns, 2020, 0, visualizer);
         await resultOutputCallback(result || "Not found :(");
     },
-    async ({ 
-        lines, 
-        outputCallback, 
+    async ({
+        lines,
+        outputCallback,
         resultOutputCallback,
-        screen, 
-        pause, 
+        screen,
+        pause,
         setAutoStop
     }) => {
         setAutoStop();
@@ -68,10 +68,10 @@ export const reportRepair = entryForFile(
         await outputCallback("Not found :(");
 
     },
-    { 
-        key: "report-repair", 
-        title: "Report Repair", 
-        customComponent: "pause-and-run", 
+    {
+        key: "report-repair",
+        title: "Report Repair",
+        customComponent: "pause-and-run",
         stars: 2 ,
         supportsQuickRunning: true
     }

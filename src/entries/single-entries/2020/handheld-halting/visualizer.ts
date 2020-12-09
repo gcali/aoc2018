@@ -1,6 +1,6 @@
-import { sumCoordinate } from '../../../../support/geometry';
-import { Instruction } from '.';
-import { Drawable, Pause, ScreenBuilder, ScreenPrinter } from '../../../entry';
+import { sumCoordinate } from "../../../../support/geometry";
+import { Instruction } from ".";
+import { Drawable, Pause, ScreenBuilder, ScreenPrinter } from "../../../entry";
 
 export interface IHandheldHalting {
     setup(program: Instruction[], instances: number): Promise<void>;
@@ -51,18 +51,24 @@ export const buildVisualizer = (screenBuilder: ScreenBuilder | undefined, pause:
     } else {
         return new DummyVisualizer();
     }
-}
+};
 
 type LocalDrawable = Drawable & {type: "rectangle"};
 
 class RealVisualizer implements IHandheldHalting {
     private printer!: ScreenPrinter;
+    // private programDrawables: LocalDrawable[][] = [];
+    private programs: Array<{
+        drawable: LocalDrawable,
+        instructionsToDraw: number
+    }> = [];
+    private sizeIncrement = 0;
     constructor(
         private readonly screenBuilder: ScreenBuilder,
         private readonly pause: Pause
-    ) { 
+    ) {
     }
-    async setStatus(programNumber: number, status: 'loop' | 'finished'): Promise<void> {
+    public async setStatus(programNumber: number, status: "loop" | "finished"): Promise<void> {
         for (let i = 0; i <= programNumber; i++) {
             this.updateSize(i);
         }
@@ -75,20 +81,14 @@ class RealVisualizer implements IHandheldHalting {
             await this.pause();
         }
     }
-    // private programDrawables: LocalDrawable[][] = [];
-    private programs: {
-        drawable: LocalDrawable,
-        instructionsToDraw: number
-    }[] = [];
-    private sizeIncrement = 0;
-    async setup(program: Instruction[], instances: number, expectedFill: number = 1): Promise<void> {
+    public async setup(program: Instruction[], instances: number, expectedFill: number = 1): Promise<void> {
         const screenSize = constants.screenSizeBuilder(instances);
 
         this.sizeIncrement = (constants.programSize.x - 1) / (program.length * expectedFill);
 
         this.printer = await this.screenBuilder.requireScreen(screenSize);
         this.printer.setManualRender();
-        
+
         const toDraw: Drawable[] = [];
 
         for (let i = 0; i < instances; i++) {
@@ -128,13 +128,8 @@ class RealVisualizer implements IHandheldHalting {
         this.printer.forceRender();
         await this.pause();
     }
-    private updateSize(programNumber: number) {
-        const p = this.programs[programNumber];
-        p.drawable.size.x += (this.sizeIncrement * p.instructionsToDraw);
-        p.instructionsToDraw = 0;
-    }
 
-    async setExecuted(programNumber: number, instruction: number): Promise<void> {
+    public async setExecuted(programNumber: number, instruction: number): Promise<void> {
         const p = this.programs[programNumber];
         p.instructionsToDraw++;
         if (p.instructionsToDraw > 20) {
@@ -143,11 +138,16 @@ class RealVisualizer implements IHandheldHalting {
             await this.pause();
         }
     }
+    private updateSize(programNumber: number) {
+        const p = this.programs[programNumber];
+        p.drawable.size.x += (this.sizeIncrement * p.instructionsToDraw);
+        p.instructionsToDraw = 0;
+    }
 }
 
 class DummyVisualizer implements IHandheldHalting {
-    async setStatus(programNumber: number, status: 'loop' | 'finished'): Promise<void> { }
-    async setup(program: Instruction[], instances: number): Promise<void> { }
-    async setExecuted(programNumber: number, instruction: number): Promise<void> { }
+    public async setStatus(programNumber: number, status: "loop" | "finished"): Promise<void> { }
+    public async setup(program: Instruction[], instances: number): Promise<void> { }
+    public async setExecuted(programNumber: number, instruction: number): Promise<void> { }
 
 }

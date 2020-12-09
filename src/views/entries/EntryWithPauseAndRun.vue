@@ -46,6 +46,10 @@ import { Coordinate } from "../../support/geometry";
     }
 })
 export default class EntryWithPauseAndRun extends Vue {
+
+    public get supportsQuickRunning() {
+        return this.entry.metadata && this.entry.metadata.supportsQuickRunning;
+    }
     @Prop() public title!: string;
     @Prop() public id!: number;
     @Prop() public entry!: Entry;
@@ -68,17 +72,13 @@ export default class EntryWithPauseAndRun extends Vue {
     private destroying = false;
     private quickRun = false;
 
-    public get supportsQuickRunning() {
-        return this.entry.metadata && this.entry.metadata.supportsQuickRunning;
-    }
+    private clearScreen?: () => void;
 
     @Watch("entry")
     public onEntryChanged() {
         this.reset();
         this.quickRun = false;
     }
-
-    private clearScreen?: () => void;
 
     public readFactory(args: {factory: (c?: Coordinate) => Promise<ScreenPrinter>, clear: () => void}) {
         this.clearScreen = args.clear;

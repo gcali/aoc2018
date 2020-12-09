@@ -21,12 +21,12 @@ const buildAnswers = (line: string, set?: Set<string> | undefined): Set<string> 
 };
 
 export const customCustoms = entryForFile(
-    async ({ 
+    async ({
         lines,
         resultOutputCallback,
         setAutoStop,
         pause,
-        screen 
+        screen
     }) => {
         setAutoStop();
         const visualizer = buildVisualizer(screen, pause);
@@ -45,12 +45,12 @@ export const customCustoms = entryForFile(
         }
         await resultOutputCallback(total);
     },
-    async ({ 
+    async ({
         lines,
         resultOutputCallback,
         setAutoStop,
         screen,
-        pause 
+        pause
     }) => {
         setAutoStop();
         const visualizer = buildVisualizer(screen, pause);

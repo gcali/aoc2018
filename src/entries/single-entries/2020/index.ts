@@ -6,7 +6,7 @@ import { reportRepair } from "./report-repair";
 import { tobogganTrajectory } from "./toboggan-trajectory";
 import { handyHaversacks } from "./handy-haversacks";
 import { handheldHalting } from "./handheld-halting";
-import { encodingError } from './encoding-error';
+import { encodingError } from "./encoding-error";
 
 export const entries = [
         reportRepair,

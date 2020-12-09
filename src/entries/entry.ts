@@ -174,7 +174,7 @@ export async function executeEntry({
         await callback({
             lines,
             outputCallback: !isQuickRunning ? outputCallback : async () => {},
-            resultOutputCallback: isQuickRunning? async (line: any, shouldClear?: boolean) => {
+            resultOutputCallback: isQuickRunning ? async (line: any, shouldClear?: boolean) => {
                 if (resultOutput > 0) {
                     throw new Error("Cannot output results more than once");
                 }

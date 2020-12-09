@@ -44,7 +44,6 @@ import { setTimeoutAsync } from "../../support/async";
     }
 })
 export default class SimpleEntryTemplate extends Vue {
-    private clearScreen?: () => void;
     public get showAdditionalInput(): boolean {
         const hasAdditionalInput = (this.entry.metadata !== undefined) &&
             (this.entry.metadata.hasAdditionalInput === true);
@@ -57,12 +56,17 @@ export default class SimpleEntryTemplate extends Vue {
         }
         return 0;
     }
+
+    public get supportsQuickRunning() {
+        return this.entry.metadata && this.entry.metadata.supportsQuickRunning;
+    }
     @Prop() public title!: string;
     @Prop() public id!: number;
     @Prop() public entry!: Entry;
     @Prop() public year!: string;
 
     public output: string[] = [];
+    private clearScreen?: () => void;
 
     private quickRun = false;
 
@@ -158,10 +162,6 @@ export default class SimpleEntryTemplate extends Vue {
             }
             this.disabled = false;
         }
-    }
-
-    public get supportsQuickRunning() {
-        return this.entry.metadata && this.entry.metadata.supportsQuickRunning;
     }
 
     private createPause(): () => Promise<void> {

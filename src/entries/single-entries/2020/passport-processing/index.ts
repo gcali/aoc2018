@@ -140,12 +140,12 @@ export const isValidField = (field: string, value: string): boolean => {
 };
 
 export const passportProcessing = entryForFile(
-    async ({ 
-        lines, 
-        resultOutputCallback, 
-        screen, 
-        pause, 
-        setAutoStop 
+    async ({
+        lines,
+        resultOutputCallback,
+        screen,
+        pause,
+        setAutoStop
     }) => {
         setAutoStop();
         const visualizer = buildVisualizer(screen, pause);
@@ -164,12 +164,12 @@ export const passportProcessing = entryForFile(
         }
         await resultOutputCallback(validPassports);
     },
-    async ({ 
-        lines, 
-        resultOutputCallback, 
-        screen, 
-        pause, 
-        setAutoStop 
+    async ({
+        lines,
+        resultOutputCallback,
+        screen,
+        pause,
+        setAutoStop
     }) => {
         setAutoStop();
         const visualizer = buildVisualizer(screen, pause);

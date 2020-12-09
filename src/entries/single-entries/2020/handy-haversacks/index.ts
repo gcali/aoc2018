@@ -99,9 +99,9 @@ export const handyHaversacks = entryForFile(
         const output = result.reduce((acc, next) => acc + next.quantity, 0);
         await resultOutputCallback(output);
     },
-    { 
-        key: "handy-haversacks", 
-        title: "Handy Haversacks", 
+    {
+        key: "handy-haversacks",
+        title: "Handy Haversacks",
         stars: 2,
         supportsQuickRunning: true
     }

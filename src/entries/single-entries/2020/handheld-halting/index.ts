@@ -1,6 +1,6 @@
 import { exec } from "child_process";
 import { entryForFile } from "../../../entry";
-import { buildVisualizer } from './visualizer';
+import { buildVisualizer } from "./visualizer";
 
 export interface Instruction {
     op: "acc" | "jmp" | "nop";
@@ -72,10 +72,10 @@ const execute = async (
     };
 
 export const handheldHalting = entryForFile(
-    async ({ 
-        lines, 
-        resultOutputCallback, 
-        screen, 
+    async ({
+        lines,
+        resultOutputCallback,
+        screen,
         pause,
         setAutoStop
     }) => {
@@ -98,10 +98,10 @@ export const handheldHalting = entryForFile(
             }
         });
     },
-    async ({ 
-        lines, 
-        resultOutputCallback, 
-        screen, 
+    async ({
+        lines,
+        resultOutputCallback,
+        screen,
         pause,
         setAutoStop
     }) => {
@@ -168,9 +168,9 @@ export const handheldHalting = entryForFile(
             }
         }
     },
-    { 
-        key: "handheld-halting", 
-        title: "Handheld Halting", 
+    {
+        key: "handheld-halting",
+        title: "Handheld Halting",
         stars: 2,
         supportsQuickRunning: true,
         customComponent: "pause-and-run"
