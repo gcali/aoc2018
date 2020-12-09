@@ -1,75 +1,7 @@
-import { exec } from "child_process";
 import { entryForFile } from "../../../entry";
+import { emptyState, HandheldProgram } from "../support/handheld";
 import { buildVisualizer } from "./visualizer";
 
-export interface Instruction {
-    op: "acc" | "jmp" | "nop";
-    arg: number;
-}
-
-export interface State {
-    acc: number;
-    currentInstruction: number;
-}
-
-const parseLines = (lines: string[]): Instruction[] => {
-    return lines.map((line) => {
-        const [op, arg] = line.split(" ");
-        return {
-            op: op as "jmp" | "acc" | "nop",
-            arg: parseInt(arg, 10)
-        };
-    });
-};
-
-const executeInstruction = (instruction: Instruction, state: State) => {
-    let shouldChangeInstruction = true;
-    switch (instruction.op) {
-        case "acc":
-            state.acc += instruction.arg;
-            break;
-        case "jmp":
-            state.currentInstruction += instruction.arg;
-            shouldChangeInstruction = false;
-            break;
-        case "nop":
-            break;
-        default:
-            throw new Error("Invalid instruction");
-    }
-    if (shouldChangeInstruction) {
-        state.currentInstruction++;
-    }
-};
-
-const emptyState = (): State => ({
-    acc: 0,
-    currentInstruction: 0
-});
-
-const execute = async (
-    program: Instruction[],
-    startState: State,
-    options?: {
-        interceptor?: (state: State, currentInstruction?: Instruction) => Promise<boolean>,
-        changeInstruction?: (currentInstruction: number) => Promise<Instruction>,
-    }): Promise<State> => {
-        const state = {...startState};
-        while (true) {
-            const nextInstructionIndex = state.currentInstruction;
-            const nextInstruction = (options && options.changeInstruction) ?
-                    await options.changeInstruction(nextInstructionIndex) :
-                        program[nextInstructionIndex];
-            if (options && options.interceptor) {
-                const shouldContinue = await options.interceptor(state, nextInstruction);
-                if (!shouldContinue) {
-                    break;
-                }
-            }
-            executeInstruction(nextInstruction, state);
-        }
-        return state;
-    };
 
 export const handheldHalting = entryForFile(
     async ({
@@ -81,11 +13,15 @@ export const handheldHalting = entryForFile(
     }) => {
         setAutoStop();
         const visualizer = buildVisualizer(screen, pause);
-        const program = parseLines(lines);
-        await visualizer.setup(program, 1, 0.4);
+        // const program = parseProgram(lines);
+        const program = new HandheldProgram(lines);
+        await visualizer.setup(program.program, 1, 0.4);
         const executed = new Set<number>();
-        await execute(program, emptyState(), {
-            interceptor: async (s) => {
+        await program
+            .setInterceptor(async (s, beforeOrAfter) => {
+                if (beforeOrAfter === "after") {
+                    return true;
+                }
                 if (executed.has(s.currentInstruction)) {
                     await visualizer.setStatus(0, "loop");
                     await resultOutputCallback(s.acc);
@@ -95,8 +31,8 @@ export const handheldHalting = entryForFile(
                     await visualizer.setExecuted(0, s.currentInstruction);
                     return true;
                 }
-            }
-        });
+            })
+            .execute();
     },
     async ({
         lines,
@@ -107,8 +43,8 @@ export const handheldHalting = entryForFile(
     }) => {
         setAutoStop();
         const visualizer = buildVisualizer(screen, pause);
-        const program = parseLines(lines);
-        const executions = program
+        const program = new HandheldProgram(lines);
+        const executions = program.program
             .map((inst, index) => ({inst, index}))
             .filter((e) => e.inst.op === "nop" || e.inst.op === "jmp")
             .map((e, executionIndex) => {
@@ -125,7 +61,7 @@ export const handheldHalting = entryForFile(
                 };
             });
 
-        await visualizer.setup(program, executions.length, 0.25);
+        await visualizer.setup(program.program, executions.length, 0.25);
         let found = false;
         while (!found) {
             for (const execution of executions) {
@@ -135,36 +71,34 @@ export const handheldHalting = entryForFile(
                 if (execution.stop) {
                     continue;
                 }
-                let toExecute = 1;
-                execution.state = await execute(program, execution.state, {
-                    interceptor: async (s) => {
-                        if (execution.executed.has(s.currentInstruction)) {
-                            await visualizer.setStatus(execution.executionIndex, "loop");
-                            execution.stop = true;
-                            return false;
-                        } else if (s.currentInstruction < 0 || s.currentInstruction >= program.length) {
-                            await visualizer.setStatus(execution.executionIndex, "finished");
-                            found = true;
-                            await resultOutputCallback(s.acc);
-                            return false;
-                        } else {
-                            if (toExecute > 0) {
-                                await visualizer.setExecuted(execution.executionIndex, s.currentInstruction);
-                                execution.executed.add(s.currentInstruction);
-                                toExecute--;
-                                return true;
-                            } else {
+                execution.state = await
+                    program.setInterceptor(async (s, beforeOrAfter, nextInstructionIndex) => {
+                        if (beforeOrAfter === "before") {
+                            if (execution.executed.has(nextInstructionIndex)) {
+                                await visualizer.setStatus(execution.executionIndex, "loop");
+                                execution.stop = true;
                                 return false;
+                            } else if (nextInstructionIndex < 0 || nextInstructionIndex >= program.length) {
+                                await visualizer.setStatus(execution.executionIndex, "finished");
+                                found = true;
+                                await resultOutputCallback(s.acc);
+                                return false;
+                            } else {
+                                return true;
                             }
+                        } else {
+                            await visualizer.setExecuted(execution.executionIndex, nextInstructionIndex);
+                            execution.executed.add(nextInstructionIndex);
+                            return false;
                         }
-                    },
-                    changeInstruction: async (currentInstruction) => {
+                    })
+                    .setInstructionChanger(async (currentInstruction) => {
                         if (currentInstruction === execution.index) {
                             return execution.instruction;
                         }
-                        return program[currentInstruction];
-                    }
-                });
+                        return program.program[currentInstruction];
+                    })
+                    .execute(execution.state);
             }
         }
     },

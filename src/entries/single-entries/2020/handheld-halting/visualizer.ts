@@ -1,9 +1,9 @@
 import { sumCoordinate } from "../../../../support/geometry";
-import { Instruction } from ".";
 import { Drawable, Pause, ScreenBuilder, ScreenPrinter } from "../../../entry";
+import { Instruction, Program } from "../support/handheld";
 
 export interface IHandheldHalting {
-    setup(program: Instruction[], instances: number): Promise<void>;
+    setup(program: Program, instances: number): Promise<void>;
     setExecuted(programNumber: number, instruction: number): Promise<void>;
     setStatus(programNumber: number, status: "loop" | "finished"): Promise<void>;
 }
