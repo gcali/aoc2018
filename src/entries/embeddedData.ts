@@ -22,6 +22,9 @@ import handyHaversacksEmbedded from "../../data/2020/handy-haversacks.txt";
 import {handheldHalting} from "./single-entries/2020/handheld-halting";
 import handheldHaltingEmbedded from "../../data/2020/handheld-halting.txt";
 
+import {encodingError} from "./single-entries/2020/encoding-error";
+import encodingErrorEmbedded from "../../data/2020/encoding-error.txt";
+
 
 const parse = (data: string): string[] => data.trim().split("\n");
 export const embeddedLines: { [key: string]: string[] } = {
@@ -33,4 +36,5 @@ export const embeddedLines: { [key: string]: string[] } = {
     [customCustoms.metadata!.key]: parse(customCustomsEmbedded),
     [handyHaversacks.metadata!.key]: parse(handyHaversacksEmbedded),
     [handheldHalting.metadata!.key]: parse(handheldHaltingEmbedded),
+    [encodingError.metadata!.key]: parse(encodingErrorEmbedded),
 };
