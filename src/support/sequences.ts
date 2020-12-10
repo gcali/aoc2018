@@ -26,6 +26,9 @@ export function groupBy<T>(sequence: T[], n: number): T[][] {
             current = 0;
         }
     }
+    if (next.length > 0) {
+        result.push(next);
+    }
     return result;
 }
 
