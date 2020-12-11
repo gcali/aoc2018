@@ -121,8 +121,10 @@ export const seatingSystem = entryForFile(
         resultOutputCallback,
         pause,
         isQuickRunning,
-        screen
+        screen,
+        setAutoStop
     }) => {
+        setAutoStop();
         const visualizer = buildVisualizer(screen, pause);
         await execute(lines, visualizer, resultOutputCallback, /*pause,*/ isQuickRunning, iterate);
     },
@@ -132,8 +134,10 @@ export const seatingSystem = entryForFile(
         resultOutputCallback,
         pause,
         isQuickRunning,
-        screen
+        screen,
+        setAutoStop
     }) => {
+        setAutoStop();
         const visualizer = buildVisualizer(screen, pause);
         await execute(lines, visualizer, resultOutputCallback, /*pause,*/ isQuickRunning, realIterate);
     },
