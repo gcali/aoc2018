@@ -14,6 +14,10 @@ export class FixedSizeMatrix<T> {
         this.data = new Array<(T | undefined)>(size.x * size.y);
     }
 
+    public getFlatData(): T[] {
+        return this.data.filter((e) => e) as T[];
+    }
+
     public map<U>(mapper: (e: T | undefined, c: Coordinate) => U): FixedSizeMatrix<U> {
         const result = new FixedSizeMatrix<U>(this.size);
         for (let i = 0; i < this.data.length; i++) {
@@ -30,6 +34,12 @@ export class FixedSizeMatrix<T> {
     public fill(fillValue: T | undefined) {
         for (let i = 0; i < this.data.length; i++) {
             this.data[i] = fillValue;
+        }
+    }
+
+    public fillFactory(fillValueFactory: (c: Coordinate) => T) {
+        for (let i = 0; i < this.data.length; i++) {
+            this.data[i] = fillValueFactory(this.coordinateCalculator(i));
         }
     }
 

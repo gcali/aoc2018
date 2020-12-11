@@ -28,7 +28,7 @@ type OldEntryCallback = (
 ) => Promise<void>;
 
 export type OutputCallback = (outputLine: any, shouldClear?: boolean) => Promise<void>;
-export type ResultOutputCallback = (outputLine: any) => Promise<void>
+export type ResultOutputCallback = (outputLine: any) => Promise<void>;
 
 type EntryCallback = (arg: EntryCallbackArg) => Promise<void>;
 

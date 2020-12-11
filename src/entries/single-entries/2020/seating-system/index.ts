@@ -1,14 +1,20 @@
 import { CCoordinate, Coordinate, directionList, getFullSurrounding, manhattanDistance } from "../../../../support/geometry";
 import { FixedSizeMatrix } from "../../../../support/matrix";
-import { entryForFile, OutputCallback, Pause, ResultOutputCallback } from "../../../entry";
+import { entryForFile, ResultOutputCallback } from "../../../entry";
+import { buildVisualizer, ISeatingSystemVisualizer } from "./visualizer";
 
 type Cell = "#" | "L" | ".";
-type Grid = FixedSizeMatrix<Cell>;
+export type Grid = FixedSizeMatrix<Cell>;
 
 const parseLines = (lines: string[]): Grid => {
-    const size = {x: lines[0].length, y: lines.length};
+    const size = {x: lines[lines.length - 1].length, y: lines.length};
     const grid = new FixedSizeMatrix<Cell>(size);
-    grid.setFlatData(lines.join("").split("").map((e) => e as Cell));
+    const flatData = lines
+        .map((e) => e.length !== size.x ? e.slice(0, size.x) : e)
+        .join("")
+        .split("")
+        .map((e) => e as Cell);
+    grid.setFlatData(flatData);
     return grid;
 };
 
@@ -47,14 +53,14 @@ const findFirstSeat = (grid: Grid, start: Coordinate, direction: CCoordinate): C
         }
         start = direction.sum(start);
     }
-}
+};
 
 const realIterate = async (grid: Grid): Promise<Grid> => {
     const g = grid.map<Cell>((element, coordinate) => {
         if (element === ".") {
             return element;
         }
-        const adjacent = directionList.map(d => findFirstSeat(grid, coordinate, d)).filter(e => e) as Cell[];
+        const adjacent = directionList.map((d) => findFirstSeat(grid, coordinate, d)).filter((e) => e) as Cell[];
         const occupied = adjacent.filter((e) => e === "#").length;
 
         if (element === "L") {
@@ -72,61 +78,69 @@ const realIterate = async (grid: Grid): Promise<Grid> => {
 };
 
 const execute = async (
-    lines: string[], 
-    outputCallback: OutputCallback, 
+    lines: string[],
+    visualizer: ISeatingSystemVisualizer,
     resultOutputCallback: ResultOutputCallback,
-    pause: Pause,
+    // pause: Pause,
     isQuickRunning: boolean,
     iterationCallback: typeof iterate) => {
         const visited = new Set<string>();
         let grid = parseLines(lines);
+        await visualizer.setup(grid.size);
         if (!isQuickRunning) {
-            await outputCallback(grid.toString(e => e || " "));
-            await pause();
+            // await outputCallback(grid.toString(e => e || " "));
+            await visualizer.update(grid);
+            // await pause();
         }
         while (true) {
             const serialized = grid.simpleSerialize();
             if (visited.has(serialized)) {
                 const occupied = grid.reduce<number>((acc, next) => acc + (next.cell === "#" ? 1 : 0), 0);
-                if (!isQuickRunning) {
-                    await outputCallback(occupied, true);
-                    await outputCallback(grid.toString(e => e || " "));
-                }
+                // if (!isQuickRunning) {
+                //     await outputCallback(occupied, true);
+                //     await outputCallback(grid.toString(e => e || " "));
+                // }
+                await visualizer.update(grid);
                 await resultOutputCallback(occupied);
                 return;
             }
             visited.add(serialized);
             grid = await iterationCallback(grid);
-            if (!isQuickRunning) {
-                await outputCallback(grid.toString(e => e || " "), true);
-                await pause();
-            }
+            await visualizer.update(grid);
+            // if (!isQuickRunning) {
+                // await outputCallback(grid.toString(e => e || " "), true);
+                // await pause();
+            // }
         }
-    }
+    };
 
 export const seatingSystem = entryForFile(
-    async ({ 
+    async ({
         lines,
-        outputCallback,
+        // outputCallback,
         resultOutputCallback,
         pause,
-        isQuickRunning
+        isQuickRunning,
+        screen
     }) => {
-        await execute(lines, outputCallback, resultOutputCallback, pause, isQuickRunning, iterate);
+        const visualizer = buildVisualizer(screen, pause);
+        await execute(lines, visualizer, resultOutputCallback, /*pause,*/ isQuickRunning, iterate);
     },
-    async ({ 
+    async ({
         lines,
-        outputCallback,
+        // outputCallback,
         resultOutputCallback,
         pause,
-        isQuickRunning
+        isQuickRunning,
+        screen
     }) => {
-        await execute(lines, outputCallback, resultOutputCallback, pause, isQuickRunning, realIterate);
+        const visualizer = buildVisualizer(screen, pause);
+        await execute(lines, visualizer, resultOutputCallback, /*pause,*/ isQuickRunning, realIterate);
     },
-    { 
-        key: "seating-system", 
-        title: "Seating System", 
-        stars: 2, 
+    {
+        key: "seating-system",
+        title: "Seating System",
+        stars: 2,
         supportsQuickRunning: true,
         suggestedDelay: 20,
         customComponent: "pause-and-run"
