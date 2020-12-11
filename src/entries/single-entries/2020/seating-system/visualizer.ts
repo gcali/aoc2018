@@ -65,11 +65,11 @@ class RealVisualizer implements ISeatingSystemVisualizer {
 
     private mapState(cell: "#" | "." | "L"): string {
         if (cell === "#") {
-            return "red";
+            return "#ff6961";//"red";
         } else if (cell === ".") {
             return "white";
         } else {
-            return "lime";
+            return "#77dd77";//"lime";
         }
     }
 }
