@@ -232,5 +232,5 @@ export const slamShuffle = entryForFile(
         const inv = checkCoeff.applyTo(value);
         await outputCallback(inv);
     },
-    { key: "slam-shuffle", title: "Slam Shuffle", stars: 1 }
+    { key: "slam-shuffle", title: "Slam Shuffle", stars: 1, embeddedData: true }
 );

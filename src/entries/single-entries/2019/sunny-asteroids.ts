@@ -29,5 +29,5 @@ export const sunnyAsteroids = entryForFile(
         });
         await outputCallback(output);
     },
-    { key: "sunny-asteroids", title: "Sunny with a Change of Asteroids", stars: 2, }
+    { key: "sunny-asteroids", title: "Sunny with a Change of Asteroids", stars: 2, embeddedData: "sunny-asteroids/sunny-asteroids"}
 );

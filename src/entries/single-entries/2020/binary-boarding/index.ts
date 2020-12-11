@@ -32,6 +32,7 @@ export const binaryBoarding = entryForFile(
         key: "binary-boarding",
         title: "Binary Boarding",
         stars: 2,
-        supportsQuickRunning: true
+        supportsQuickRunning: true,
+        embeddedData: true
     }
 );

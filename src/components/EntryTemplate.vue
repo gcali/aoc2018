@@ -1,7 +1,7 @@
 <template lang="pug">
     div.wrapper
         EntryTitle(:date="id", :name="title", :year="year")
-        EntryInput(:key="$route.path", @file-loaded="fileLoaded", :disabled="disabled" :entryKey="entryKey")
+        EntryInput(:key="$route.path", @file-loaded="fileLoaded", :disabled="disabled" :entryKey="entryKey" :year="year")
         slot
 </template>
 

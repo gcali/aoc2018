@@ -7,12 +7,14 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from "vue-property-decorator";
+import { Component, Vue, Prop, Watch } from "vue-property-decorator";
 import { readFileFromInput } from "../support/file-reader";
 @Component({})
 export default class EntryFileInput extends Vue {
     @Prop({ default: false }) public disabled!: boolean;
     @Prop({ default: false }) public readFile!: boolean;
+    @Prop({ default: false }) public isUsingEmbedded!: boolean;
+
     public shownName: string = "";
     public isFileSelected: boolean = false;
 
@@ -20,11 +22,19 @@ export default class EntryFileInput extends Vue {
         this.chooseFile();
     }
 
+    @Watch("isUsingEmbedded")
+    public watchIsUsingEmbedded(newValue: boolean) {
+        if (newValue) {
+            this.isFileSelected = false;
+        }
+    }
+
     public filesUpdated(e: any) {
         const fileName = this.getFileName();
         if (fileName) {
             this.isFileSelected = true;
             this.shownName = fileName;
+            console.log(this.readFile);
             if (this.readFile) {
                 const component = this;
                 readFileFromInput(this.input!.files![0], (content: string) => {
@@ -78,11 +88,14 @@ export default class EntryFileInput extends Vue {
 <style lang="scss" scoped>
 .file-selection {
     width: auto;
+    .selection-action {
+        margin-bottom: 1em;
+    }
     label {
         font-size: 16px;
     }
     hr {
-        margin-top: 2em;
+        margin-top: 1em;
         margin-bottom: 2em;
         width: 50%;
     }

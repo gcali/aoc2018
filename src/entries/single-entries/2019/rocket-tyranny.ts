@@ -27,5 +27,5 @@ export const entry = entryForFile(
 
         await outputCallback(`Result: ${requirement}`);
     },
-    { key: "rocket-tyranny", title: "The Tyranny of the Rocket Equation", stars: 2, }
+    { key: "rocket-tyranny", title: "The Tyranny of the Rocket Equation", stars: 2, embeddedData: true}
 );

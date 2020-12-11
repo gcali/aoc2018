@@ -24,7 +24,8 @@ const isRawKey = (e: string): e is RawKey => {
 };
 
 export const manyWorldInterpretation = entryForFile(
-    async ({ lines, outputCallback, pause, isCancelled }) => {
+    async ({ lines, outputCallback, pause, setAutoStop, resultOutputCallback }) => {
+        setAutoStop();
         const matrix = parseLines(lines);
         const matrixStart = matrix.findOneWithCoordinate((e, c) => e === "@");
         if (matrixStart === null) {
@@ -39,14 +40,15 @@ export const manyWorldInterpretation = entryForFile(
         });
         await outputCallback(expectedOpenDoors);
         let iterations = 0;
-        console.log(
-            traverseMatrix(
+        await resultOutputCallback(
+            await traverseMatrix(
                 matrix,
                 [matrixStart],
                 [],
                 expectedOpenDoors,
                 new Map<string, number>(),
-                () => {
+                async () => {
+                    await pause();
                     iterations++;
                     if (iterations % 1000 === 0) {
                         console.log(`Iterations: ${iterations / 1000}k`);
@@ -54,7 +56,8 @@ export const manyWorldInterpretation = entryForFile(
                 }
             ));
     },
-    async ({ lines, outputCallback, pause, isCancelled }) => {
+    async ({ lines, outputCallback, pause, setAutoStop, resultOutputCallback }) => {
+        setAutoStop();
         const matrix = parseLines(lines);
         const matrixStart = matrix.findOneWithCoordinate((e, c) => e === "@");
         if (matrixStart === null) {
@@ -71,14 +74,15 @@ export const manyWorldInterpretation = entryForFile(
         });
         await outputCallback(expectedOpenDoors);
         let iterations = 0;
-        console.log(
-            traverseMatrix(
+        await resultOutputCallback(
+            await traverseMatrix(
                 matrix,
                 matrixStarts,
                 [],
                 expectedOpenDoors,
                 new Map<string, number>(),
-                () => {
+                async () => {
+                    await pause();
                     iterations++;
                     if (iterations % 1000 === 0) {
                         console.log(`Iterations: ${iterations / 1000}k`);
@@ -86,7 +90,7 @@ export const manyWorldInterpretation = entryForFile(
                 }
             ));
     },
-    { key: "many-worlds-interpretation", title: "Many-Worlds Interpration", stars: 2 }
+    { key: "many-worlds-interpretation", title: "Many-Worlds Interpration", stars: 2, embeddedData: true }
 );
 
 type Cache = Map<string, number>;
@@ -95,15 +99,15 @@ const serializeState = (coordinate: Coordinate[], openDoors: string[]) => {
     return JSON.stringify({cs: coordinate.map((c) => ({x: c.x, y: c.y})), d: openDoors.sort()});
 };
 
-function traverseMatrix(
+async function traverseMatrix(
     matrix: FixedSizeMatrix<string>,
     matrixStarts: Coordinate[],
     openDoors: string[],
     expectedOpenDoors: number,
     cache: Cache,
-    debug?: () => void): number {
+    debug?: () => Promise<void>): Promise<number> {
     if (debug) {
-        debug();
+        await debug();
     }
     const serializedState = serializeState(matrixStarts, openDoors);
     const cachedValue = cache.get(serializedState);
@@ -142,17 +146,18 @@ function traverseMatrix(
         return 0;
     }
     // console.log({depth, branching: reachableKeys.length});
-    const nestedTotals = reachableKeys.map((cell) => {
+    const nestedTotals: number[] = [];
+    for (const cell of reachableKeys) {
         const newOpenDoors = openDoors.concat([cell.reachable.cell.toUpperCase()]);
-        const nestedDistance = traverseMatrix(
+        const nestedDistance = await traverseMatrix(
             matrix,
             matrixStarts.map((start, index) => index === cell.startIndex ? cell.reachable.coordinate : start),
             newOpenDoors,
             expectedOpenDoors,
             cache,
             debug);
-        return nestedDistance + cell.reachable.distance!;
-    });
+        nestedTotals.push(nestedDistance + cell.reachable.distance!);
+    }
     const bestNestedTotal = nestedTotals.reduce((acc, next) => Math.min(acc, next), Number.POSITIVE_INFINITY);
     cache.set(serializedState, bestNestedTotal);
     return bestNestedTotal;

@@ -241,7 +241,7 @@ export const planetOfDiscord = entryForFile(
                 .reduce((acc, next) => acc + next)
         );
     },
-    { key: "planet-of-discord", title: "Planet of Discord", stars: 2}
+    { key: "planet-of-discord", title: "Planet of Discord", stars: 2, embeddedData: true}
 );
 
 export function getCenter(size: Coordinate) {

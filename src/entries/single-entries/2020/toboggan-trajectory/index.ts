@@ -64,7 +64,8 @@ export const tobogganTrajectory = entryForFile(
         stars: 2,
         customComponent: "pause-and-run",
         suggestedDelay: 50,
-        supportsQuickRunning: true
+        supportsQuickRunning: true,
+        embeddedData: true
     }
 );
 

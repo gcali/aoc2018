@@ -26,7 +26,7 @@ const serializePoint = (c: Coordinate): string => {
 
 
 export const tractorBeam = entryForFile(
-    async ({ lines, outputCallback }) => {
+    async ({ lines, outputCallback, pause }) => {
         const memory = parseMemory(lines[0]);
         let howManyPulled = 0;
         for (let x = 0; x < 50; x++) {
@@ -35,8 +35,14 @@ export const tractorBeam = entryForFile(
                 let nextToServe = 0;
                 await execute({
                     memory,
-                    input: async () => toServe[nextToServe++],
-                    output: async (n) => howManyPulled += n
+                    input: async () => {
+                        await pause();
+                        return toServe[nextToServe++];
+                    },
+                    output: async (n) => {
+                        howManyPulled += n;
+                        await pause();
+                    }
                 });
             }
         }
@@ -100,7 +106,7 @@ export const tractorBeam = entryForFile(
         }
 
     },
-    { key: "tractor-beam", title: "Tractor Beam", stars: 2}
+    { key: "tractor-beam", title: "Tractor Beam", stars: 2, embeddedData: true}
 );
 
 const setRowData = async (memory: Memory, rowStart: Coordinate, rowData: RowMapData): Promise<RowInfo> => {

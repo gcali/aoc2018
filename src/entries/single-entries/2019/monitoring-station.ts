@@ -140,7 +140,7 @@ export const monitoringStation = entryForFile(
             fillVisibilities(asteroids);
         }
     },
-    { key: "monitoring-station", title: "Monitoring Station", stars: 2, }
+    { key: "monitoring-station", title: "Monitoring Station", stars: 2, embeddedData: "monitoring-station/input"}
 );
 
 function getVisibilities(lines: string[]) {

@@ -41,6 +41,7 @@ interface EntryMetadata {
     suggestedDelay?: number;
     customComponent?: "pause-and-run";
     supportsQuickRunning?: boolean;
+    embeddedData?: string | true;
 }
 
 export interface Entry {

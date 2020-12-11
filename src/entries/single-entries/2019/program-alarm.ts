@@ -69,5 +69,5 @@ export const programAlarm = entryForFile(
             }
         }
     },
-    { key: "program-alarm", title: "1202 Program Alarm", stars: 2, }
+    { key: "program-alarm", title: "1202 Program Alarm", stars: 2, embeddedData: "program-alarm/input"}
 );

@@ -25,5 +25,5 @@ export const sensorBoost = entryForFile(
 
         await outputCallback(output);
     },
-    { key: "sensor-boost", title: "Sensor Boost", stars: 2, }
+    { key: "sensor-boost", title: "Sensor Boost", stars: 2, embeddedData: "sensor-boost/sensor-boost"}
 );

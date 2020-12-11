@@ -121,6 +121,7 @@ export default class SimpleEntryTemplate extends Vue {
     public beforeDestroy() {
         this.reset();
         this.destroying = true;
+        this.isCancelled = true;
     }
 
     public async readFile(fileHandling: EntryFileHandling) {
@@ -150,7 +151,7 @@ export default class SimpleEntryTemplate extends Vue {
                 outputCallback: simpleOutputCallbackFactory(this.output, () => this.destroying),
                 additionalInputReader,
                 screen: this.requireScreen ? { requireScreen: this.requireScreen } : undefined,
-                isCancelled: () => false,
+                isCancelled: () => this.isCancelled,
                 pause: this.createPause(),
                 isQuickRunning: this.quickRun,
                 stopTimer: () => this.time = `${new Date().getTime() - startTime}ms`
@@ -164,8 +165,23 @@ export default class SimpleEntryTemplate extends Vue {
         }
     }
 
+    private isCancelled = false;
+
     private createPause(): () => Promise<void> {
-        return async () => await setTimeoutAsync(this.timeout);
+        let lastPause = 0;
+        return async () => {
+            if (this.timeout === 0) {
+                const current = new Date().getTime();
+                if (current - lastPause < 500) {
+                    return;
+                } else {
+                    lastPause = current;
+                    await setTimeoutAsync(0);
+                }
+            } else {
+                await setTimeoutAsync(this.timeout);
+            }
+        };
     }
 
     private reset() {

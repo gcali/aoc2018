@@ -23,53 +23,6 @@ export const adapterArray = entryForFile(
         await resultOutputCallback(ns.differences[1] * ns.differences[3]);
     },
     async ({ lines, outputCallback, resultOutputCallback }) => {
-//         lines = [
-// "16",
-// "10",
-// "15",
-// "5",
-// "1",
-// "11",
-// "7",
-// "19",
-// "6",
-// "12",
-// "4",
-//         ]
-//         lines = [
-// "28",
-// "33",
-// "18",
-// "42",
-// "31",
-// "14",
-// "46",
-// "20",
-// "48",
-// "47",
-// "24",
-// "23",
-// "49",
-// "45",
-// "19",
-// "38",
-// "39",
-// "11",
-// "1",
-// "32",
-// "25",
-// "35",
-// "8",
-// "17",
-// "7",
-// "9",
-// "4",
-// "2",
-// "34",
-// "10",
-// "3",
-
-//         ]
         const ns = lines
             .map((l) => parseInt(l, 10))
             .sort((a, b) => a - b)
@@ -110,5 +63,5 @@ export const adapterArray = entryForFile(
                         : 7 // if there are 3, not all are fine; in particular, the empty subset does not work
                 ), 1));
     },
-    { key: "adapter-array", title: "Adapter Array"}
+    { key: "adapter-array", title: "Adapter Array", stars: 2, embeddedData: true, supportsQuickRunning: true}
 );

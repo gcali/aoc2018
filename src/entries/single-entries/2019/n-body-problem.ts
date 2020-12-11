@@ -205,5 +205,5 @@ export const nBodyProblem = entryForFile(
 
         await outputCallback(lcmRepetition);
     },
-    { key: "n-body-problem", title: "N-Body Problem", stars: 2, }
+    { key: "n-body-problem", title: "N-Body Problem", stars: 2, embeddedData: "n-body-problem/n-body-problem"}
 );

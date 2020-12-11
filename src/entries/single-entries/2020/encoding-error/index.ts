@@ -100,6 +100,7 @@ export const encodingError = entryForFile(
         stars: 2,
         supportsQuickRunning: true,
         suggestedDelay: 15,
-        customComponent: "pause-and-run"
+        customComponent: "pause-and-run",
+        embeddedData: true
     }
 );

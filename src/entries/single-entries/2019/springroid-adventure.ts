@@ -120,7 +120,7 @@ export const springdroidAdventure = entryForFile(
         const output: string[] = await executeAscii(program5, memory, pause);
         await outputCallback(output.join(""));
     },
-    { key: "springdroid-adventure", title: "Springdroid Adventure", stars: 2}
+    { key: "springdroid-adventure", title: "Springdroid Adventure", stars: 2, embeddedData: true}
 );
 
 async function executeAscii(program: string[], memory: Memory, pause: Pause) {

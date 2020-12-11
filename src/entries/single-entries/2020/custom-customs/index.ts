@@ -83,6 +83,7 @@ export const customCustoms = entryForFile(
         stars: 2,
         suggestedDelay: 10,
         customComponent: "pause-and-run",
-        supportsQuickRunning: true
+        supportsQuickRunning: true,
+        embeddedData: true
     }
 );

@@ -192,6 +192,9 @@ export default class EntryWithPauseAndRun extends Vue {
         if (this.clearScreen) {
             this.clearScreen();
         }
+        if (this.running) {
+            this.stop();
+        }
         this.time = "";
         this.destroying = false;
         this.running = false;

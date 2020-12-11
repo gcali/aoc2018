@@ -63,7 +63,8 @@ function tileColor(t: Tile): string {
 }
 
 export const carePackage = entryForFile(
-    async ({ lines, outputCallback, pause, isCancelled, screen }) => {
+    async ({ lines, outputCallback, pause, isCancelled, screen, setAutoStop }) => {
+        setAutoStop();
         const memory = parseMemory(lines[0]);
         const output: number[] = [];
         await execute({ memory, input: async () => { throw new Error("No input"); }, output: (e) => output.push(e) });
@@ -83,7 +84,8 @@ export const carePackage = entryForFile(
         await outputCallback("Blocks: ");
         await outputCallback(blocks.length);
     },
-    async ({ lines, outputCallback, pause, isCancelled, screen }) => {
+    async ({ lines, outputCallback, pause, isCancelled, screen, setAutoStop }) => {
+        setAutoStop();
         const memory = parseMemory(lines[0]);
         memory[0] = 2;
         let currentPaddleX = 0;
@@ -138,7 +140,7 @@ export const carePackage = entryForFile(
         });
         await outputCallback(score);
     },
-    { key: "care-package", title: "Care Package", stars: 2}
+    { key: "care-package", title: "Care Package", stars: 2, embeddedData: true}
 );
 
 async function updateTileFeedback(

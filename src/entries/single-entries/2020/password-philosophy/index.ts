@@ -74,7 +74,8 @@ export const passwordPhilosophy = entryForFile(
         customComponent: "pause-and-run",
         stars: 2,
         suggestedDelay: 20,
-        supportsQuickRunning: true
+        supportsQuickRunning: true,
+        embeddedData: true
     }
 );
 

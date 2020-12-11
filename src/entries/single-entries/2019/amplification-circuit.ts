@@ -124,6 +124,6 @@ export const amplificationCircuit = entryForFile(
         });
         await outputCallback(currentMax);
     },
-    { key: "amplification-circuit", title: "Amplification Circuit", stars: 2, }
+    { key: "amplification-circuit", title: "Amplification Circuit", stars: 2, embeddedData: "amplification-circuit/input"}
 );
 

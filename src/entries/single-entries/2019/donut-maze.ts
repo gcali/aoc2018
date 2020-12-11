@@ -198,7 +198,7 @@ export const donutMaze = entryForFile(
             maxDepth++;
         }
     },
-    { key: "donut-maze", title: "Donut Maze", stars: 2}
+    { key: "donut-maze", title: "Donut Maze", stars: 2, embeddedData: true}
 );
 
 function parseLines(lines: string[]): FixedSizeMatrix<string> {

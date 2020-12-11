@@ -145,7 +145,7 @@ export const spacePolice = entryForFile(
         }
 
     },
-    { key: "space=police", title: "Space Police", stars: 2, }
+    { key: "space-police", title: "Space Police", stars: 2, embeddedData: true}
 );
 function stepComparer(a: { e: Step; i: number; }, b: { e: Step; i: number; }) {
     if (geometry.ascendingCompare(a.e.coordinate, b.e.coordinate) === 0) {

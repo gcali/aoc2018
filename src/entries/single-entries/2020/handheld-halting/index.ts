@@ -107,6 +107,7 @@ export const handheldHalting = entryForFile(
         title: "Handheld Halting",
         stars: 2,
         supportsQuickRunning: true,
-        customComponent: "pause-and-run"
+        customComponent: "pause-and-run",
+        embeddedData: true
     }
 );

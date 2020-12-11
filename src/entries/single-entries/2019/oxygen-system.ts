@@ -370,5 +370,5 @@ export const oxygenSystem = entryForFile(
                 .reduce((a, b) => Math.max(a, b))
         );
     },
-    { key: "oxygen-system", title: "Oxygen System", stars: 2, }
+    { key: "oxygen-system", title: "Oxygen System", stars: 2, embeddedData: true, suggestedDelay: 0}
 );

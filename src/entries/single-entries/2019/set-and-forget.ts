@@ -214,7 +214,7 @@ export const setAndForget = entryForFile(
 
         await outputCallback(answer[answer.length - 1]);
     },
-    {key: "set-and-forget", title: "Set and Forget", stars: 2}
+    {key: "set-and-forget", title: "Set and Forget", stars: 2, embeddedData: true}
 );
 
 const findCandidates = <T, >(e: T[], except: T[]): T[][] => {

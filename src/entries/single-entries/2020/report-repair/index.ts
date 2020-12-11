@@ -73,6 +73,7 @@ export const reportRepair = entryForFile(
         title: "Report Repair",
         customComponent: "pause-and-run",
         stars: 2 ,
-        supportsQuickRunning: true
+        supportsQuickRunning: true,
+        embeddedData: true
     }
 );

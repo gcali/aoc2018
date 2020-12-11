@@ -147,6 +147,7 @@ export const seatingSystem = entryForFile(
         stars: 2,
         supportsQuickRunning: true,
         suggestedDelay: 20,
-        customComponent: "pause-and-run"
+        customComponent: "pause-and-run",
+        embeddedData: true
     }
 );

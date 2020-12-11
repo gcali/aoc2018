@@ -259,5 +259,5 @@ export const categorySix = entryForFile(
             }
         }
     },
-    { key: "category-six", title: "Category Six", stars: 2 }
+    { key: "category-six", title: "Category Six", stars: 2, embeddedData: true }
 );

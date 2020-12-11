@@ -87,5 +87,5 @@ export const flawedFrequencyTransmission = entryForFile(
         }
         await outputCallback(repeatedInput.slice(interestingDigits, interestingDigits + 8).join(""));
     },
-    { key: "flawed-frequency-transmission", title: "Flawed Frequency Transmission", stars: 2, }
+    { key: "flawed-frequency-transmission", title: "Flawed Frequency Transmission", stars: 2, embeddedData: true}
 );

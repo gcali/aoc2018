@@ -194,7 +194,8 @@ export const passportProcessing = entryForFile(
         stars: 2,
         customComponent: "pause-and-run",
         suggestedDelay: 20,
-        supportsQuickRunning: true
+        supportsQuickRunning: true,
+        embeddedData: true
     }
 );
 

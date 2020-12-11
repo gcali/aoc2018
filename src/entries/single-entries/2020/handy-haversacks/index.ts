@@ -103,6 +103,7 @@ export const handyHaversacks = entryForFile(
         key: "handy-haversacks",
         title: "Handy Haversacks",
         stars: 2,
-        supportsQuickRunning: true
+        supportsQuickRunning: true,
+        embeddedData: true
     }
 );
