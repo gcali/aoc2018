@@ -7,7 +7,8 @@ import { tobogganTrajectory } from "./toboggan-trajectory";
 import { handyHaversacks } from "./handy-haversacks";
 import { handheldHalting } from "./handheld-halting";
 import { encodingError } from "./encoding-error";
-import { adapterArray } from './adapter-array';
+import { adapterArray } from "./adapter-array";
+import { seatingSystem } from "./seating-system";
 
 export const entries = [
         reportRepair,
@@ -19,5 +20,6 @@ export const entries = [
         handyHaversacks,
         handheldHalting,
         encodingError,
-        adapterArray
+        adapterArray,
+        seatingSystem
 ];

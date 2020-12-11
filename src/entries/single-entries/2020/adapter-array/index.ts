@@ -1,17 +1,17 @@
-import { groupBy } from '../../../../support/sequences';
+import { groupBy } from "../../../../support/sequences";
 import { entryForFile } from "../../../entry";
 
 const prettyPrint = (lines: string[]) =>
-        [...groupBy(lines.map(l => parseInt(l, 10)).concat([0,51]).sort((a, b) => a - b), 10)]
-            .map(e => e.map(x => x.toString().padStart(3, " ")).join(" ")).join("\n");
+        [...groupBy(lines.map((l) => parseInt(l, 10)).concat([0, 51]).sort((a, b) => a - b), 10)]
+            .map((e) => e.map((x) => x.toString().padStart(3, " ")).join(" ")).join("\n");
 
 export const adapterArray = entryForFile(
     async ({ lines, outputCallback, resultOutputCallback }) => {
         const ns = lines
-            .map(l => parseInt(l, 10))
+            .map((l) => parseInt(l, 10))
             .sort((a, b) => a - b)
             .reduce((acc, next) => {
-                acc.differences[next-acc.prev] = (acc.differences[next-acc.prev] || 0) + 1;
+                acc.differences[next - acc.prev] = (acc.differences[next - acc.prev] || 0) + 1;
                 acc.prev = next;
                 return acc;
             }, {
@@ -71,7 +71,7 @@ export const adapterArray = entryForFile(
 
 //         ]
         const ns = lines
-            .map(l => parseInt(l, 10))
+            .map((l) => parseInt(l, 10))
             .sort((a, b) => a - b)
             .reduce((acc, next) => (
                 {
@@ -80,7 +80,7 @@ export const adapterArray = entryForFile(
             }
             ), {prev: 0, vs: [] as number[]});
         ns.vs.push(3);
-        
+
         const factors: number[] = [];
         let isOnStreak = false;
         let count = 0;
@@ -103,11 +103,11 @@ export const adapterArray = entryForFile(
         await outputCallback(factors);
         await resultOutputCallback(
             factors
-                .filter(f => f > 0)
+                .filter((f) => f > 0)
                 .reduce((acc, next) => acc * (
-                    next <= 2 ? 
-                        (2**next)  //if there are at most 2 optional adapters, all subsets are fine
-                        : 7 //if there are 3, not all are fine; in particular, the empty subset does not work
+                    next <= 2 ?
+                        (2 ** next)  // if there are at most 2 optional adapters, all subsets are fine
+                        : 7 // if there are 3, not all are fine; in particular, the empty subset does not work
                 ), 1));
     },
     { key: "adapter-array", title: "Adapter Array"}

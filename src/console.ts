@@ -141,6 +141,7 @@ reader(async (lines) => {
                 setAutoStop: () => { },
                 additionalInputReader,
                 resultOutputCallback,
+                isQuickRunning: args.q || false
             });
         } else {
             await entryCallback.first({
@@ -150,7 +151,8 @@ reader(async (lines) => {
                 pause: async () => { },
                 setAutoStop: () => { },
                 additionalInputReader,
-                resultOutputCallback
+                resultOutputCallback,
+                isQuickRunning: args.q || false
             });
         }
     } finally {

@@ -14,6 +14,15 @@ export class FixedSizeMatrix<T> {
         this.data = new Array<(T | undefined)>(size.x * size.y);
     }
 
+    public map<U>(mapper: (e: T | undefined, c: Coordinate) => U): FixedSizeMatrix<U> {
+        const result = new FixedSizeMatrix<U>(this.size);
+        for (let i = 0; i < this.data.length; i++) {
+            const c = this.coordinateCalculator(i);
+            result.data[i] = mapper(this.data[i], c);
+        }
+        return result;
+    }
+
     public setDelta(delta: CCoordinate) {
         this._delta = delta;
     }
@@ -51,14 +60,6 @@ export class FixedSizeMatrix<T> {
     }
 
     public findOne(predicate: (cell: T) => boolean): Coordinate | null {
-        // for (let x = 0; x < this.size.x; x++) {
-        //     for (let y = 0; y < this.size.y; y++) {
-        //         if (predicate(this.get({ x, y })!)) {
-        //             return this.delta.sum({ x, y });
-        //         }
-        //     }
-        // }
-        // return null;
         return this.findOneWithCoordinate((cell, coordinate) => predicate(cell));
     }
 
@@ -170,5 +171,12 @@ export class FixedSizeMatrix<T> {
             return null;
         }
         return c.y * this.size.x + c.x;
+    }
+
+    private coordinateCalculator(i: number): Coordinate {
+        if (i < 0 || i >= this.data.length) {
+            throw new Error("Invalid index");
+        }
+        return {x: i % this.size.x, y: Math.floor(i / this.size.x)};
     }
 }

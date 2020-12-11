@@ -6,8 +6,8 @@ export interface ScreenBuilder {requireScreen: (size?: Coordinate) => Promise<Sc
 
 export interface EntryCallbackArg {
     lines: string[];
-    outputCallback: ((outputLine: any, shouldClear?: boolean) => Promise<void>);
-    resultOutputCallback: ((outputLine: any) => Promise<void>);
+    outputCallback: OutputCallback;
+    resultOutputCallback: ResultOutputCallback;
     pause: Pause;
     isCancelled: (() => boolean);
     setAutoStop: () => void;
@@ -16,6 +16,7 @@ export interface EntryCallbackArg {
         close: () => void;
     };
     screen?: ScreenBuilder;
+    isQuickRunning: boolean;
 }
 
 export type Pause = (times?: number) => Promise<void>;
@@ -26,7 +27,8 @@ type OldEntryCallback = (
     statusCallback?: ((outputStatus: Message) => Promise<void>)
 ) => Promise<void>;
 
-export type OutputCallback = ((outputLine: any, shouldClear?: boolean) => Promise<void>);
+export type OutputCallback = (outputLine: any, shouldClear?: boolean) => Promise<void>;
+export type ResultOutputCallback = (outputLine: any) => Promise<void>
 
 type EntryCallback = (arg: EntryCallbackArg) => Promise<void>;
 
@@ -187,6 +189,7 @@ export async function executeEntry({
             additionalInputReader,
             screen: isQuickRunning ? undefined : screen,
             setAutoStop: () => shouldAutoStop = true,
+            isQuickRunning
         });
     } catch (e) {
         if ((e as StopException).isStop) {

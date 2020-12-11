@@ -23,7 +23,8 @@ import {handheldHalting} from "./single-entries/2020/handheld-halting";
 // import handheldHaltingEmbedded from "../../data/2020/handheld-halting.txt";
 
 import {encodingError} from "./single-entries/2020/encoding-error";
-import { adapterArray } from './single-entries/2020/adapter-array';
+import { adapterArray } from "./single-entries/2020/adapter-array";
+import { seatingSystem } from "./single-entries/2020/seating-system";
 // import encodingErrorEmbedded from "../../data/2020/encoding-error.txt";
 
 const parse = (data: string): string[] => data.trim().split("\n");
@@ -37,7 +38,8 @@ export const embeddedLines = [
     handyHaversacks,
     handheldHalting,
     encodingError,
-    adapterArray
+    adapterArray,
+    seatingSystem
 ].reduce((acc, next) => {
     acc[next.metadata!.key] = async () => {
         // console.log("Lazy loading (ideally) " + next.metadata!.key);
