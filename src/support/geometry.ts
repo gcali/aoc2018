@@ -96,7 +96,14 @@ export const directionList = [
 ];
 
 export type Rotation = "Clockwise" | "Counterclockwise" | "None";
-export function rotate(coordinate: CCoordinate, direction: Rotation): CCoordinate {
+export function rotate(
+    coordinate: CCoordinate, 
+    direction: Rotation,
+    times: number = 1
+    ): CCoordinate {
+    if (times > 1) {
+        coordinate = rotate(coordinate, direction, times-1);
+    }
     switch (direction) {
         case "Counterclockwise":
             return new CCoordinate(coordinate.y, -coordinate.x);

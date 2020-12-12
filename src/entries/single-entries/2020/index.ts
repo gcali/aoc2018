@@ -9,6 +9,7 @@ import { handheldHalting } from "./handheld-halting";
 import { encodingError } from "./encoding-error";
 import { adapterArray } from "./adapter-array";
 import { seatingSystem } from "./seating-system";
+import { rainRisk } from "./rain-risk";
 
 export const entries = [
         reportRepair,
@@ -21,5 +22,6 @@ export const entries = [
         handheldHalting,
         encodingError,
         adapterArray,
-        seatingSystem
+        seatingSystem,
+        rainRisk
 ];
