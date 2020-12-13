@@ -22,7 +22,7 @@ export const logarithm = (base: number, target: number): number => {
   return Math.log(base) / Math.log(target);
 };
 
-const calculateExtended = (aP: number, bP: number, m: number): {
+export const calculateExtended = (aP: number, bP: number, m: number): {
     a: number,
     b: number
 } => {
@@ -63,4 +63,21 @@ interface ExtendedEuclidFactor {
     n: number;
     a: number;
     b: number;
+}
+
+
+export function gcd(a: number, b: number): number {
+  let t = 0;
+  if (a < b) {
+      t = b;
+      b = a;
+      a = t;
+  }
+//   a < b && (t = b, b = a, a = t); // swap them if a < b
+  t = a % b;
+  return t ? gcd(b, t) : b;
+}
+
+export function lcm(a: number, b: number) {
+  return a / gcd(a, b) * b;
 }

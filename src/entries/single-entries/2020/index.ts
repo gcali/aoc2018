@@ -10,6 +10,7 @@ import { encodingError } from "./encoding-error";
 import { adapterArray } from "./adapter-array";
 import { seatingSystem } from "./seating-system";
 import { rainRisk } from "./rain-risk";
+import { shuttleSearch } from "./shuttle-search";
 
 export const entries = [
         reportRepair,
@@ -23,5 +24,6 @@ export const entries = [
         encodingError,
         adapterArray,
         seatingSystem,
-        rainRisk
+        rainRisk,
+        shuttleSearch
 ];
