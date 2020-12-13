@@ -88,6 +88,8 @@ export default class SimpleEntryTemplate extends Vue {
 
     private stopper?: () => Promise<void>;
 
+    private isCancelled = false;
+
     public sendInput() {
         const line = this.inputLine;
         this.inputLine = "";
@@ -164,8 +166,6 @@ export default class SimpleEntryTemplate extends Vue {
             this.disabled = false;
         }
     }
-
-    private isCancelled = false;
 
     private createPause(): () => Promise<void> {
         let lastPause = 0;

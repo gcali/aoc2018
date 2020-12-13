@@ -1,15 +1,15 @@
-import { entryList } from './entryList';
+import { entryList } from "./entryList";
 
 const parse = (data: string): string[] => data.trim().split("\n");
 
 export const disabledYear: string | undefined = "2020";
 
-export const embeddedLines = Object.keys(entryList).flatMap(year => entryList[year].map(entry => {
+export const embeddedLines = Object.keys(entryList).flatMap((year) => entryList[year].map((entry) => {
     return {
         year,
         entry
-    }
-})).filter(e => e.entry.entry.metadata && e.entry.entry.metadata.embeddedData)
+    };
+})).filter((e) => e.entry.entry.metadata && e.entry.entry.metadata.embeddedData)
 .reduce((acc, next) => {
     const metadata = next.entry.entry.metadata!;
     acc[metadata.key] = async () => {

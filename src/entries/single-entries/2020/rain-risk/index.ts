@@ -7,26 +7,26 @@ const validDirections = [
 
 const isValidDirection = (d: string): d is Direction => {
     return validDirections.includes(d);
-}
+};
 
 type Direction = "N" | "S" | "E" | "W" | "L" | "R" | "F";
-type Movement = {
-    direction: Direction,
-    magnitude: number
+interface Movement {
+    direction: Direction;
+    magnitude: number;
 }
 
-type State = {
-    position: Coordinate,
-    direction: CCoordinate
+interface State {
+    position: Coordinate;
+    direction: CCoordinate;
 }
 
 const parseLines = (lines: string[]): Movement[] => {
-    return lines.map(line => {
+    return lines.map((line) => {
         const d = line[0];
         if (!isValidDirection(d)) {
             throw new Error("Invalid direction");
         }
-        let magnitude = parseInt(line.slice(1));
+        let magnitude = parseInt(line.slice(1), 10);
         if (d === "R" || d === "L") {
             if (magnitude % 90 !== 0) {
                 throw new Error("Invalid magnitude");
@@ -37,13 +37,13 @@ const parseLines = (lines: string[]): Movement[] => {
             direction: d,
             magnitude
         };
-    })
-}
-
-type WaypointState = {
-    shipCoordinate: Coordinate,
-    waypointCoordinate: CCoordinate,
+    });
 };
+
+interface WaypointState {
+    shipCoordinate: Coordinate;
+    waypointCoordinate: CCoordinate;
+}
 
 const updateWaypointState = (state: WaypointState, movement: Movement): WaypointState => {
     const result = {...state};
@@ -71,7 +71,7 @@ const updateWaypointState = (state: WaypointState, movement: Movement): Waypoint
             break;
     }
     return result;
-}
+};
 
 const updateState = (state: State, movement: Movement): State => {
     const result = {...state};
@@ -99,12 +99,12 @@ const updateState = (state: State, movement: Movement): State => {
             break;
     }
     return result;
-}
+};
 
 export const rainRisk = entryForFile(
     async ({ lines, outputCallback, resultOutputCallback }) => {
         const input = parseLines(lines);
-        let state: State = {position: {x:0, y:0}, direction: directions.right};
+        let state: State = {position: {x: 0, y: 0}, direction: directions.right};
         for (const movement of input) {
             state = updateState(state, movement);
         }
@@ -113,7 +113,7 @@ export const rainRisk = entryForFile(
     async ({ lines, outputCallback, resultOutputCallback }) => {
         const input = parseLines(lines);
         let state: WaypointState = {
-            shipCoordinate: {x:0, y:0}, 
+            shipCoordinate: {x: 0, y: 0},
             waypointCoordinate: new CCoordinate(10, -1)
         };
         for (const movement of input) {

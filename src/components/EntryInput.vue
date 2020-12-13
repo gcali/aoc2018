@@ -64,8 +64,9 @@ export default class EntryInput extends Vue {
     public async loadFile(choice: Choice): Promise<EntryFileHandling> {
         if (this.noInput || this.forceEmbedded) {
             const content = await (embeddedLines[this.entryKey] || (async () => [] as string[]))();
-            if (content.length > 0 && content[content.length-1].endsWith("\n")) {
-                content[content.length-1] = content[content.length-1].slice(0, content[content.length-1].length - 1);
+            const lastIndex = content.length - 1;
+            if (content.length > 0 && content[lastIndex].endsWith("\n")) {
+                content[lastIndex] = content[lastIndex].slice(0, content[lastIndex].length - 1);
             }
             return {choice, content };
         }
