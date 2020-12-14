@@ -11,6 +11,7 @@ import { adapterArray } from "./adapter-array";
 import { seatingSystem } from "./seating-system";
 import { rainRisk } from "./rain-risk";
 import { shuttleSearch } from "./shuttle-search";
+import { dockingData } from "./docking-data";
 
 export const entries = [
         reportRepair,
@@ -25,5 +26,6 @@ export const entries = [
         adapterArray,
         seatingSystem,
         rainRisk,
-        shuttleSearch
+        shuttleSearch,
+        dockingData
 ];
