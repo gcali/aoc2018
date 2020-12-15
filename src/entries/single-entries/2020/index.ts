@@ -12,6 +12,7 @@ import { seatingSystem } from "./seating-system";
 import { rainRisk } from "./rain-risk";
 import { shuttleSearch } from "./shuttle-search";
 import { dockingData } from "./docking-data";
+import { rambunctiousRecitation } from "./rambunctious-recitation";
 
 export const entries = [
         reportRepair,
@@ -27,5 +28,6 @@ export const entries = [
         seatingSystem,
         rainRisk,
         shuttleSearch,
-        dockingData
+        dockingData,
+        rambunctiousRecitation
 ];
