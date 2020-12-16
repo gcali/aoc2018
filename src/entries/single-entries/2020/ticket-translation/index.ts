@@ -1,15 +1,16 @@
 import { buildGroupsFromSeparator } from "../../../../support/sequences";
 import { entryForFile } from "../../../entry";
+import { buildCommunicator, ITicketTranslationMessageSender } from "./communication";
 
-type ValidityRule = {
+interface ValidityRule {
     min: number;
     max: number;
 }
-type TicketRules = {
-    [key: string]: ValidityRule[]
+interface TicketRules {
+    [key: string]: ValidityRule[];
 }
 
-type Document = {
+interface Document {
     ticketRules: TicketRules;
     myTicket: number[];
     nearbyTickets: number[][];
@@ -36,35 +37,35 @@ const checkInvalidValues = (ticket: number[], ticketRules: TicketRules): number[
         }
     }
     return invalid;
-}
+};
 
 const parseLines = (lines: string[]): Document => {
-    const groups = [...buildGroupsFromSeparator(lines, e => e.trim().length === 0)];
-    const ticketRules: TicketRules = groups[0].map(line => line.split(": ")).map(tokens => {
+    const groups = [...buildGroupsFromSeparator(lines, (e) => e.trim().length === 0)];
+    const ticketRules: TicketRules = groups[0].map((line) => line.split(": ")).map((tokens) => {
         return {
             key: tokens[0],
-            validity: tokens[1].split(" or ").map(e => ({
+            validity: tokens[1].split(" or ").map((e) => ({
                 min: parseInt(e.split("-")[0], 10),
                 max: parseInt(e.split("-")[1], 10)
             } as ValidityRule))
         };
-    }).reduce((acc, next) => {acc[next.key] = next.validity; return acc;}, {} as TicketRules)
+    }).reduce((acc, next) => {acc[next.key] = next.validity; return acc; }, {} as TicketRules);
 
-    const myTicket = groups[1][1].split(",").map(e => parseInt(e, 10));
+    const myTicket = groups[1][1].split(",").map((e) => parseInt(e, 10));
     const nearbyTickets = groups[2]
         .slice(1)
-        .map(line =>  line.split(",").map(e => parseInt(e, 10)));
-    
+        .map((line) =>  line.split(",").map((e) => parseInt(e, 10)));
+
     return {
         ticketRules,
         myTicket,
         nearbyTickets
     };
-}
-
-type TicketIndex = {
-    [key: string]: number
 };
+
+interface TicketIndex {
+    [key: string]: number;
+}
 
 const checkIfRuleCanBe = (rule: ValidityRule[], index: number, tickets: number[][]): boolean => {
     for (const ticket of tickets) {
@@ -82,51 +83,73 @@ const checkIfRuleCanBe = (rule: ValidityRule[], index: number, tickets: number[]
     return true;
 };
 
-const buildIndex = (ticketRules: TicketRules, validTickets: number[][], currentIndex: TicketIndex): boolean => {
+const buildIndex = async (
+    ticketRules: TicketRules,
+    validTickets: number[][],
+    currentIndex: TicketIndex,
+    communicator: ITicketTranslationMessageSender
+): Promise<boolean> => {
     const allRules = Object.keys(ticketRules);
-    const rulesToFind = allRules.filter(rule => currentIndex[rule] === undefined);
+    const rulesToFind = allRules.filter((rule) => currentIndex[rule] === undefined);
     const takenIndexes = new Set<number>(Object.values(currentIndex));
-    const availableIndexes = [...Array(validTickets[0].length).keys()].filter(e => !takenIndexes.has(e));
+    const availableIndexes = [...Array(validTickets[0].length).keys()].filter((e) => !takenIndexes.has(e));
     if (availableIndexes.length === 0) {
         return true;
     }
     let found = false;
     for (const rule of rulesToFind) {
-        const possibleIndexes = availableIndexes.filter(index => checkIfRuleCanBe(ticketRules[rule], index, validTickets));
+        const possibleIndexes =
+            availableIndexes.filter((index) =>
+                checkIfRuleCanBe(ticketRules[rule], index, validTickets)
+            );
         if (possibleIndexes.length === 1) {
             currentIndex[rule] = possibleIndexes[0];
             found = true;
+            await communicator.foundLabel(rule, possibleIndexes[0]);
         }
     }
     if (found) {
-        return buildIndex(ticketRules, validTickets, currentIndex);
+        return await buildIndex(ticketRules, validTickets, currentIndex, communicator);
     }
     return false;
-}
+};
 
 export const ticketTranslation = entryForFile(
-    async ({ lines, outputCallback, resultOutputCallback }) => {
+    async ({ lines, resultOutputCallback }) => {
         const document = parseLines(lines);
-        const invalid = document.nearbyTickets.reduce((acc, next) => acc.concat(checkInvalidValues(next, document.ticketRules)), []);
-        await resultOutputCallback(invalid.reduce((acc, next) => acc + next, 0))
+        const invalid = document
+            .nearbyTickets
+            .reduce(
+                (acc, next) => acc.concat(checkInvalidValues(next, document.ticketRules)),
+                []
+            );
+        await resultOutputCallback(invalid.reduce((acc, next) => acc + next, 0));
     },
-    async ({ lines, outputCallback, resultOutputCallback }) => {
+    async ({ lines, outputCallback, resultOutputCallback, sendMessage, pause }) => {
+        const communicator = buildCommunicator(sendMessage, pause);
         const document = parseLines(lines);
-        const validTickets = document.nearbyTickets.filter(e => checkInvalidValues(e, document.ticketRules).length === 0);
+        await communicator.setup(document.myTicket);
+        const validTickets = document
+            .nearbyTickets
+            .filter((e) => checkInvalidValues(e, document.ticketRules).length === 0);
         const ticketIndex: TicketIndex = {};
-        const hasBuilt = buildIndex(document.ticketRules, validTickets, ticketIndex);
+        const hasBuilt = await buildIndex(document.ticketRules, validTickets, ticketIndex, communicator);
         if (hasBuilt) {
-            const interestingRules = Object.keys(ticketIndex).filter(e => e.startsWith("departure"));
-            await resultOutputCallback(interestingRules.reduce((acc, next) => acc * document.myTicket[ticketIndex[next]], 1));
+            const interestingRules = Object.keys(ticketIndex).filter((e) => e.startsWith("departure"));
+            await resultOutputCallback(
+                interestingRules.reduce((acc, next) => acc * document.myTicket[ticketIndex[next]], 1)
+            );
         } else {
             await outputCallback("Did not build the index :(");
         }
     },
-    { 
-        key: "ticket-translation", 
+    {
+        key: "ticket-translation",
         title: "Ticket Translation",
         embeddedData: true,
         stars: 2,
-        supportsQuickRunning: true
+        supportsQuickRunning: true,
+        customComponent: "ticket-translation",
+        suggestedDelay: 200
     }
 );

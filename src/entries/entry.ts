@@ -17,6 +17,7 @@ export interface EntryCallbackArg {
     };
     screen?: ScreenBuilder;
     isQuickRunning: boolean;
+    sendMessage?: MessageSender;
 }
 
 export type Pause = (times?: number) => Promise<void>;
@@ -39,7 +40,7 @@ interface EntryMetadata {
     date?: number;
     hasAdditionalInput?: boolean;
     suggestedDelay?: number;
-    customComponent?: "pause-and-run";
+    customComponent?: "pause-and-run" | "ticket-translation";
     supportsQuickRunning?: boolean;
     embeddedData?: string | true;
 }
@@ -114,6 +115,7 @@ export interface ScreenPrinter {
     setManualRender: () => void;
 }
 
+export type MessageSender = (message: any) => Promise<void>;
 interface ExecutionArgs {
     entry: Entry;
     choice: Choice;
@@ -121,6 +123,7 @@ interface ExecutionArgs {
     outputCallback: EntryCallbackArg["outputCallback"];
     isCancelled: (() => boolean);
     pause?: () => Promise<void>;
+    sendMessage?: MessageSender;
     additionalInputReader?: {
         read: () => Promise<string | null>;
         close: () => void;
@@ -146,7 +149,8 @@ export async function executeEntry({
     additionalInputReader,
     screen,
     isQuickRunning,
-    stopTimer
+    stopTimer,
+    sendMessage
 }: ExecutionArgs
 ) {
     let callback: EntryCallback;
@@ -190,7 +194,8 @@ export async function executeEntry({
             additionalInputReader,
             screen: isQuickRunning ? undefined : screen,
             setAutoStop: () => shouldAutoStop = true,
-            isQuickRunning
+            isQuickRunning,
+            sendMessage
         });
     } catch (e) {
         if ((e as StopException).isStop) {

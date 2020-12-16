@@ -4,6 +4,7 @@ import Home from "./views/Home.vue";
 import Entries from "./views/Entries.vue";
 import SimpleEntryTemplate from "./views/entries/SimpleEntryTemplate.vue";
 import EntryWithPauseAndRun from "@/views/entries/EntryWithPauseAndRun.vue";
+import TicketTranslationView from "@/views/entries/custom/2020/TicketTranslationView.vue";
 
 import { entryList, EntryRoute } from "./entries/entryList";
 import { map as entryComponentMap } from "./entries/entryMap";
@@ -32,6 +33,8 @@ const getTemplate = (entry: EntryRoute): VueConstructor<Vue> => {
   } else if (entry.entry.metadata && entry.entry.metadata.customComponent) {
     if (entry.entry.metadata.customComponent === "pause-and-run") {
       return EntryWithPauseAndRun;
+    } else if (entry.entry.metadata.customComponent === "ticket-translation") {
+      return TicketTranslationView;
     }
   }
   return SimpleEntryTemplate;
