@@ -13,6 +13,7 @@ import { rainRisk } from "./rain-risk";
 import { shuttleSearch } from "./shuttle-search";
 import { dockingData } from "./docking-data";
 import { rambunctiousRecitation } from "./rambunctious-recitation";
+import { ticketTranslation } from "./ticket-translation";
 
 export const entries = [
         reportRepair,
@@ -29,5 +30,6 @@ export const entries = [
         rainRisk,
         shuttleSearch,
         dockingData,
-        rambunctiousRecitation
+        rambunctiousRecitation,
+        ticketTranslation
 ];
