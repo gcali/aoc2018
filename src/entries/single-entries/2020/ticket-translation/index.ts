@@ -149,7 +149,7 @@ export const ticketTranslation = entryForFile(
         embeddedData: true,
         stars: 2,
         supportsQuickRunning: true,
-        customComponent: "ticket-translation",
+        // customComponent: "ticket-translation",
         suggestedDelay: 200
     }
 );

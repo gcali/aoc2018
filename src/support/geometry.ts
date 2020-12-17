@@ -6,16 +6,25 @@ export interface Coordinate {
     y: number;
 }
 
-export interface Coordinate3d {
-    x: number;
-    y: number;
+export interface Coordinate3d extends Coordinate {
     z: number;
 }
 
-export type FullCoordinate = Coordinate | Coordinate3d;
+export interface Coordinate4d extends Coordinate3d {
+    w: number;
+}
 
+export type FullCoordinate = Coordinate | Coordinate3d | Coordinate4d;
+
+function is4d(c: FullCoordinate): c is Coordinate4d {
+    return (c as Coordinate4d).w !== undefined;
+}
 function is3d(c: FullCoordinate): c is Coordinate3d {
-    return (c as Coordinate3d).z !== undefined;
+    return (c as Coordinate3d).z !== undefined && (c as Coordinate4d).w === undefined;
+}
+
+function is2d(c: FullCoordinate): c is Coordinate {
+    return (c as Coordinate3d).z === undefined;
 }
 
 function isBounds(c: Coordinate | Bounds): c is Bounds {
@@ -115,11 +124,30 @@ export function rotate(
 }
 
 
-function fillWithZero(c: Coordinate): Coordinate {
-    return {
-        x: c.x ? c.x : 0,
-        y: c.y ? c.y : 0,
-    };
+function fillWithZero(c: Coordinate): Coordinate;
+function fillWithZero(c: Coordinate3d): Coordinate3d;
+function fillWithZero(c: Coordinate4d): Coordinate4d;
+function fillWithZero(c: FullCoordinate): FullCoordinate {
+    if (is4d(c)) {
+        if (!c.w) {
+            c.w = 0;
+        }
+        if (!c.z) {
+            c.z = 0;
+        }
+    }
+    if (is3d(c)) {
+        if (!c.z) {
+            c.z = 0;
+        }
+    } 
+    if (!c.x) {
+        c.x = 0;
+    }
+    if (!c.y) {
+        c.y = 0;
+    }
+    return c;
 }
 
 export interface Bounds {
@@ -164,13 +192,32 @@ export const getBoundaries = (points: Coordinate[]): Bounds => {
     };
 };
 
-export const sumCoordinate = (a: Coordinate, b: Coordinate): Coordinate => {
+
+export function sumCoordinate(a: Coordinate4d, b: Coordinate4d): Coordinate4d;
+export function sumCoordinate(a: Coordinate3d, b: Coordinate3d): Coordinate3d;
+export function sumCoordinate(a: Coordinate, b: Coordinate): Coordinate;
+export function sumCoordinate(a: FullCoordinate, b: FullCoordinate): FullCoordinate {
     a = fillWithZero(a);
     b = fillWithZero(b);
-    return {
-        x: a.x + b.x,
-        y: a.y + b.y,
-    };
+    if (is4d(a) && is4d(b)) {
+        return {
+            x: a.x + b.x,
+            y: a.y + b.y,
+            z: a.z + b.z,
+            w: a.w + b.w,
+        };
+    } else if (is3d(a) && is3d(b)) {
+        return {
+            x: a.x + b.x,
+            y: a.y + b.y,
+            z: a.z + b.z
+        };
+    } else {
+        return {
+            x: a.x + b.x,
+            y: a.y + b.y,
+        };
+    }
 };
 
 export function getDirection(from: Coordinate, to: Coordinate): CCoordinate {
@@ -196,27 +243,79 @@ export const oppositeCoordinate = (a: Coordinate): Coordinate => ({ x: -a.x, y: 
 
 export const diffCoordinate = (a: Coordinate, b: Coordinate): Coordinate => sumCoordinate(a, oppositeCoordinate(b));
 export const manhattanDistance = (a: FullCoordinate, b: FullCoordinate) => {
-    const z = (is3d(a) && is3d(b)) ? Math.abs(a.z - b.z) : 0;
-    return Math.abs(a.x - b.x) + Math.abs(a.y - b.y) + z;
+    const w = (is4d(a) && is4d(b)) ? Math.abs(a.w - b.w) : 0;
+    const z = ((is3d(a) && is3d(b)) || (is4d(a) && is4d(b))) ? Math.abs(a.z - b.z) : 0;
+    return Math.abs(a.x - b.x) + Math.abs(a.y - b.y) + z + w;
 };
 
-export const getSurrounding = (c: Coordinate): Coordinate[] => [
-    directions.up,
-    directions.left,
-    directions.down,
-    directions.right
-].map((d) => d.sum(c));
+export function getSurrounding(c: Coordinate): Coordinate[];
+export function getSurrounding(c: Coordinate3d): Coordinate3d[];
+export function getSurrounding(c: Coordinate4d): Coordinate4d[];
+export function getSurrounding(c: FullCoordinate): FullCoordinate[] {
+    if (is2d(c)) {
+        return [
+            directions.up,
+            directions.left,
+            directions.down,
+            directions.right
+        ].map((d) => d.sum(c));
+    } else {
+        return getFullSurrounding(c).filter(e => manhattanDistance(c, e) === 1);
+    }
+}
 
-export const getFullSurrounding = (c: Coordinate): Coordinate[] => [
-    directions.up,
-    directions.left,
-    directions.down,
-    directions.right,
-    directions.upLeft,
-    directions.upRight,
-    directions.downLeft,
-    directions.downRight,
-].map((d) => d.sum(c));
+export function getFullSurrounding(coordinate: Coordinate): Coordinate[];
+export function getFullSurrounding(coordinate: Coordinate3d): Coordinate3d[];
+export function getFullSurrounding(coordinate: Coordinate4d): Coordinate4d[];
+export function getFullSurrounding(coordinate: FullCoordinate): FullCoordinate[] {
+    if (is4d(coordinate)) {
+        const result: Coordinate4d[] = [];
+        const deltas = [-1,0,1];
+        for (const x of deltas) {
+            for (const y of deltas) {
+                for (const z of deltas) {
+                    for (const w of deltas) {
+                        const neighbour =sumCoordinate(coordinate, {x,y,z,w});
+                        if (manhattanDistance(neighbour, coordinate) === 0) {
+                            continue;
+                        }
+                        result.push(neighbour);
+                    }
+                }
+            }
+        };
+        return result;
+    } else if (is2d(coordinate)) {
+        const c = coordinate;
+        return [
+            directions.up,
+            directions.left,
+            directions.down,
+            directions.right,
+            directions.upLeft,
+            directions.upRight,
+            directions.downLeft,
+            directions.downRight,
+        ].map((d) => d.sum(c));
+    }
+    else {
+        const result: Coordinate3d[] = [];
+        const deltas = [-1,0,1];
+        for (const x of deltas) {
+            for (const y of deltas) {
+                for (const z of deltas) {
+                    const neighbour =sumCoordinate(coordinate, {x,y,z});
+                    if (manhattanDistance(neighbour, coordinate) === 0) {
+                        continue;
+                    }
+                    result.push(neighbour);
+                }
+            }
+        };
+        return result;
+    }
+}
+
 
 export function getRanges(points: Coordinate[]) {
     const minComparator = (a: number, b: number) => b - a;
@@ -243,8 +342,38 @@ export function getCoordinateForGrid(index: number, rows: number): Coordinate {
 
 
 export const serialization = {
-    serialize(c: Coordinate): string {
-        return `${c.x}|${c.y}`;
+    serialize(c: FullCoordinate): string {
+        const els = [c.x,c.y];
+        if (is3d(c)) {
+            els.push(c.z);
+        } else if (is4d(c)) {
+            els.push(c.z);
+            els.push(c.w);
+        }
+        return els.join("|");
+    },
+    deserialize4d(s: string): Coordinate4d {
+        const split = s.split("|").map(e => parseInt(e, 10));
+        if (split.length !== 4) {
+            throw new RangeError("Could not deserialize " + s);
+        }
+        return {
+            x: split[0],
+            y: split[1],
+            z: split[2],
+            w: split[3],
+        };
+    },
+    deserialize3d(s: string): Coordinate3d {
+        const split = s.split("|").map(e => parseInt(e, 10));
+        if (split.length !== 3) {
+            throw new RangeError("Could not deserialize " + s);
+        }
+        return {
+            x: split[0],
+            y: split[1],
+            z: split[2]
+        };
     },
     deserialize(s: string): Coordinate {
         const split = s.split("|");

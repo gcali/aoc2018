@@ -140,7 +140,13 @@ export const carePackage = entryForFile(
         });
         await outputCallback(score);
     },
-    { key: "care-package", title: "Care Package", stars: 2, embeddedData: true}
+    { 
+        key: "care-package", 
+        title: "Care Package", 
+        stars: 2, 
+        embeddedData: true,
+        customComponent: "pause-and-run"
+    }
 );
 
 async function updateTileFeedback(

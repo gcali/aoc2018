@@ -449,5 +449,10 @@ export const mineCartMadness = entryForFile(
             field.toString(false)
         ], true);
     },
-    { key: "mine-cart-madness", title: "Mine Cart Madness", stars: 2, }
+    { 
+        key: "mine-cart-madness", 
+        title: "Mine Cart Madness", 
+        stars: 2, 
+        customComponent: "pause-and-run"
+    }
 );

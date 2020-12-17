@@ -14,6 +14,7 @@ import { shuttleSearch } from "./shuttle-search";
 import { dockingData } from "./docking-data";
 import { rambunctiousRecitation } from "./rambunctious-recitation";
 import { ticketTranslation } from "./ticket-translation";
+import { conwayCubes } from "./conway-cubes";
 
 export const entries = [
         reportRepair,
@@ -31,5 +32,6 @@ export const entries = [
         shuttleSearch,
         dockingData,
         rambunctiousRecitation,
-        ticketTranslation
+        ticketTranslation,
+        conwayCubes
 ];
