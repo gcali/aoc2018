@@ -4,8 +4,8 @@ import { Coordinate, Coordinate3d, Coordinate4d } from "../../../../support/geom
 import { MessageSender, Pause } from "../../../entry";
 
 export interface IConwayCubesMessageSender {
-    send3dData(activeCubes: () => TimedCubes<Coordinate3d>[]): Promise<void>;
-    send4dData(activeCubes: () => TimedCubes<Coordinate4d>[]): Promise<void>;
+    send3dData(activeCubes: () => Array<TimedCubes<Coordinate3d>>): Promise<void>;
+    send4dData(activeCubes: () => Array<TimedCubes<Coordinate4d>>): Promise<void>;
 }
 export const buildCommunicator = (
         messageSender: MessageSender | undefined,
@@ -20,16 +20,16 @@ export const buildCommunicator = (
 
 interface TimedCubes<T> {
     time: number;
-    cubes: T[]
-};
+    cubes: T[];
+}
 type PrivateConwayCubesMessage = {
     type: "3d",
-    data(time: number, depth: number): string[][]
     minDepth: number;
     maxDepth: number;
     maxTime: number;
     minHyper?: number;
     maxHyper?: number;
+    data(time: number, depth: number): string[][]
 } | {
     minDepth: number;
     maxDepth: number;
@@ -55,7 +55,7 @@ export function isConwayCubesMessage(message: any): message is ConwayCubesMessag
 
 class RealMessageSender implements IConwayCubesMessageSender {
     constructor(private readonly messageSender: MessageSender, private readonly pause: Pause) { }
-    async send3dData(activeCubes: () => TimedCubes<Coordinate3d>[]): Promise<void> {
+    public async send3dData(activeCubes: () => Array<TimedCubes<Coordinate3d>>): Promise<void> {
         let max = Number.MIN_VALUE;
         let min = Number.MAX_VALUE;
         const timedCubes = activeCubes();
@@ -64,8 +64,8 @@ class RealMessageSender implements IConwayCubesMessageSender {
             max = Math.max(cube.z, max);
             min = Math.min(cube.z, min);
         }
-        const mainData = [...Array(max+1-min).keys()].map(k => k + min).flatMap(depth => {
-            const result: {time: number; depth: number; data: string[][]}[] = [];
+        const mainData = [...Array(max + 1 - min).keys()].map((k) => k + min).flatMap((depth) => {
+            const result: Array<{time: number; depth: number; data: string[][]}> = [];
             for (let i = 0; i < timedCubes.length; i++) {
                 const field = new UnknownSizeField<string>();
                 for (const cube of timedCubes[i].cubes) {
@@ -73,22 +73,22 @@ class RealMessageSender implements IConwayCubesMessageSender {
                         field.set({x: cube.x, y: cube.y}, "#");
                     }
                 }
-                const data = field.toMatrix().toString(e => e || " ").split("\n").map(e => e.split(""));
+                const data = field.toMatrix().toString((e) => e || " ").split("\n").map((e) => e.split(""));
                 result.push({time: i, depth, data});
             }
             return result;
-        })
+        });
         this.messageSender(buildMessage({
                 type: "3d",
                 maxDepth: max,
                 minDepth: min,
                 data(time, depth) {
-                    return mainData.filter(e => e.time === time && e.depth === depth)[0].data;
+                    return mainData.filter((e) => e.time === time && e.depth === depth)[0].data;
                 },
-                maxTime: timedCubes.length-1,
+                maxTime: timedCubes.length - 1,
         }));
     }
-    async send4dData(activeCubes: () => TimedCubes<Coordinate4d>[]): Promise<void> {
+    public async send4dData(activeCubes: () => Array<TimedCubes<Coordinate4d>>): Promise<void> {
         let max = Number.MIN_VALUE;
         let min = Number.MAX_VALUE;
         let maxHyper = Number.MIN_VALUE;
@@ -101,9 +101,9 @@ class RealMessageSender implements IConwayCubesMessageSender {
             maxHyper = Math.max(cube.w, max);
             minHyper = Math.min(cube.w, min);
         }
-        const mainData = [...Array(max+1-min).keys()].map(k => k + min).flatMap(depth => {
-            return [...Array(maxHyper+1-minHyper).keys()].map(k => k + min).flatMap(hyper => {
-                const result: {time: number; depth: number; hyper: number; data: string[][]}[] = [];
+        const mainData = [...Array(max + 1 - min).keys()].map((k) => k + min).flatMap((depth) => {
+            return [...Array(maxHyper + 1 - minHyper).keys()].map((k) => k + min).flatMap((hyper) => {
+                const result: Array<{time: number; depth: number; hyper: number; data: string[][]}> = [];
                 for (let i = 0; i < timedCubes.length; i++) {
                     const field = new UnknownSizeField<string>();
                     for (const cube of timedCubes[i].cubes) {
@@ -111,12 +111,12 @@ class RealMessageSender implements IConwayCubesMessageSender {
                             field.set({x: cube.x, y: cube.y}, "#");
                         }
                     }
-                    const data = field.toMatrix().toString(e => e || " ").split("\n").map(e => e.split(""));
+                    const data = field.toMatrix().toString((e) => e || " ").split("\n").map((e) => e.split(""));
                     result.push({time: i, depth, hyper, data});
                 }
                 return result;
             });
-        })
+        });
         this.messageSender(buildMessage({
                 type: "4d",
                 maxDepth: max,
@@ -124,15 +124,15 @@ class RealMessageSender implements IConwayCubesMessageSender {
                 minHyper,
                 maxHyper,
                 data(time, depth, hyper) {
-                    return mainData.filter(e => e.time === time && e.depth === depth && e.hyper === hyper)[0].data;
+                    return mainData.filter((e) => e.time === time && e.depth === depth && e.hyper === hyper)[0].data;
                 },
-                maxTime: timedCubes.length-1,
+                maxTime: timedCubes.length - 1,
         }));
     }
 
 }
 
 class DummyMessageSender implements IConwayCubesMessageSender {
-    async send3dData(activeCubes: () => TimedCubes<Coordinate3d>[]): Promise<void> { }
-    async send4dData(activeCubes: () => TimedCubes<Coordinate4d>[]): Promise<void> { }
+    public async send3dData(activeCubes: () => Array<TimedCubes<Coordinate3d>>): Promise<void> { }
+    public async send4dData(activeCubes: () => Array<TimedCubes<Coordinate4d>>): Promise<void> { }
 }

@@ -166,10 +166,10 @@ export const entry = entryForFile(
         //     iteration++;
         // }
     },
-    { 
-        key: "settlers-of-the-north-pole", 
-        title: "Settlers of the North Pole", 
-        stars: 2, 
+    {
+        key: "settlers-of-the-north-pole",
+        title: "Settlers of the North Pole",
+        stars: 2,
         customComponent: "pause-and-run",
     }
 );

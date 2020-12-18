@@ -29,9 +29,9 @@ export const safeCracking = entryForFile(
         await outputCallback("I'm not sure whether the solution is universal; it does work on my input");
         await outputCallback(result);
     },
-    { 
-        key: "safe-cracking", 
-        title: "Safe Cracking", 
+    {
+        key: "safe-cracking",
+        title: "Safe Cracking",
         stars: 2,
         customComponent: "pause-and-run"
     }

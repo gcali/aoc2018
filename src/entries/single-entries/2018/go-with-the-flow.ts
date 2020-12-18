@@ -112,10 +112,10 @@ let divisorSum = (c) => {
 }
         */
     },
-    { 
-        key: "go-with-the-flow", 
-        title: "Go with the flow", 
-        stars: 2, 
+    {
+        key: "go-with-the-flow",
+        title: "Go with the flow",
+        stars: 2,
         customComponent: "pause-and-run"
     }
 );

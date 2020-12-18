@@ -62,6 +62,17 @@ export default class ConwayCubesView extends Vue {
 
     private get3dData?: (time: number, depth: number) => string[][];
     private get4dData?: (time: number, depth: number, hyper: number) => string[][];
+    public getData(): string[][] {
+        if (!this.showGrid) {
+            return [];
+        }
+        if (this.get3dData) {
+            return this.get3dData(this.time, this.depth);
+        } else if (this.get4dData) {
+            return this.get4dData(this.time, this.depth, this.hyper);
+        }
+        throw new NotImplementedError();
+    }
 
     private reset() {
         this.showGrid = false;
@@ -102,17 +113,6 @@ export default class ConwayCubesView extends Vue {
             throw new NotImplementedError();
         }
         this.showGrid = true;
-    }
-    public getData(): string[][] {
-        if (!this.showGrid) {
-            return [];
-        }
-        if (this.get3dData) {
-            return this.get3dData(this.time, this.depth);
-        } else if (this.get4dData) {
-            return this.get4dData(this.time, this.depth, this.hyper);
-        }
-        throw new NotImplementedError();
     }
 
 }

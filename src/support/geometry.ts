@@ -140,7 +140,7 @@ function fillWithZero(c: FullCoordinate): FullCoordinate {
         if (!c.z) {
             c.z = 0;
         }
-    } 
+    }
     if (!c.x) {
         c.x = 0;
     }
@@ -218,7 +218,7 @@ export function sumCoordinate(a: FullCoordinate, b: FullCoordinate): FullCoordin
             y: a.y + b.y,
         };
     }
-};
+}
 
 export function getDirection(from: Coordinate, to: Coordinate): CCoordinate {
     if (manhattanDistance(from, to) !== 1) {
@@ -260,7 +260,7 @@ export function getSurrounding(c: FullCoordinate): FullCoordinate[] {
             directions.right
         ].map((d) => d.sum(c));
     } else {
-        return getFullSurrounding(c).filter(e => manhattanDistance(c, e) === 1);
+        return getFullSurrounding(c).filter((e) => manhattanDistance(c, e) === 1);
     }
 }
 
@@ -270,12 +270,12 @@ export function getFullSurrounding(coordinate: Coordinate4d): Coordinate4d[];
 export function getFullSurrounding(coordinate: FullCoordinate): FullCoordinate[] {
     if (is4d(coordinate)) {
         const result: Coordinate4d[] = [];
-        const deltas = [-1,0,1];
+        const deltas = [-1, 0, 1];
         for (const x of deltas) {
             for (const y of deltas) {
                 for (const z of deltas) {
                     for (const w of deltas) {
-                        const neighbour =sumCoordinate(coordinate, {x,y,z,w});
+                        const neighbour = sumCoordinate(coordinate, {x, y, z, w});
                         if (manhattanDistance(neighbour, coordinate) === 0) {
                             continue;
                         }
@@ -283,7 +283,7 @@ export function getFullSurrounding(coordinate: FullCoordinate): FullCoordinate[]
                     }
                 }
             }
-        };
+        }
         return result;
     } else if (is2d(coordinate)) {
         const c = coordinate;
@@ -297,21 +297,20 @@ export function getFullSurrounding(coordinate: FullCoordinate): FullCoordinate[]
             directions.downLeft,
             directions.downRight,
         ].map((d) => d.sum(c));
-    }
-    else {
+    } else {
         const result: Coordinate3d[] = [];
-        const deltas = [-1,0,1];
+        const deltas = [-1, 0, 1];
         for (const x of deltas) {
             for (const y of deltas) {
                 for (const z of deltas) {
-                    const neighbour =sumCoordinate(coordinate, {x,y,z});
+                    const neighbour = sumCoordinate(coordinate, {x, y, z});
                     if (manhattanDistance(neighbour, coordinate) === 0) {
                         continue;
                     }
                     result.push(neighbour);
                 }
             }
-        };
+        }
         return result;
     }
 }
@@ -343,7 +342,7 @@ export function getCoordinateForGrid(index: number, rows: number): Coordinate {
 
 export const serialization = {
     serialize(c: FullCoordinate): string {
-        const els = [c.x,c.y];
+        const els = [c.x, c.y];
         if (is3d(c)) {
             els.push(c.z);
         } else if (is4d(c)) {
@@ -353,7 +352,7 @@ export const serialization = {
         return els.join("|");
     },
     deserialize4d(s: string): Coordinate4d {
-        const split = s.split("|").map(e => parseInt(e, 10));
+        const split = s.split("|").map((e) => parseInt(e, 10));
         if (split.length !== 4) {
             throw new RangeError("Could not deserialize " + s);
         }
@@ -365,7 +364,7 @@ export const serialization = {
         };
     },
     deserialize3d(s: string): Coordinate3d {
-        const split = s.split("|").map(e => parseInt(e, 10));
+        const split = s.split("|").map((e) => parseInt(e, 10));
         if (split.length !== 3) {
             throw new RangeError("Could not deserialize " + s);
         }
