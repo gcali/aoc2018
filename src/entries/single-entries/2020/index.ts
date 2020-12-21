@@ -16,6 +16,7 @@ import { rambunctiousRecitation } from "./rambunctious-recitation";
 import { ticketTranslation } from "./ticket-translation";
 import { conwayCubes } from "./conway-cubes";
 import { operationOrder } from "./operation-order";
+import { monsterMessages } from "./monster-messages";
 
 export const entries = [
         reportRepair,
@@ -35,5 +36,6 @@ export const entries = [
         rambunctiousRecitation,
         ticketTranslation,
         conwayCubes,
-        operationOrder
+        operationOrder,
+        monsterMessages
 ];
