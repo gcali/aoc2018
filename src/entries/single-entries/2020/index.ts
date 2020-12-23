@@ -17,6 +17,7 @@ import { ticketTranslation } from "./ticket-translation";
 import { conwayCubes } from "./conway-cubes";
 import { operationOrder } from "./operation-order";
 import { monsterMessages } from "./monster-messages";
+import { jurassicJigsaw } from "./jurassic-jigsaw";
 
 export const entries = [
         reportRepair,
@@ -37,5 +38,6 @@ export const entries = [
         ticketTranslation,
         conwayCubes,
         operationOrder,
-        monsterMessages
+        monsterMessages,
+        jurassicJigsaw
 ];

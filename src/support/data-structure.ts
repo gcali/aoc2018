@@ -138,6 +138,23 @@ export class Queue<T> {
   }
 }
 
+export class Counter {
+  private _data: {[key: string]: number} = {};
+
+  public incr(key: string) {
+    if (!this._data[key]) {
+      this._data[key] = 0;
+    }
+    this._data[key]++;
+  }
+  public get keys(): string[] {
+    return Object.keys(this._data);
+  }
+  public get(key: string): number {
+    return this._data[key] || 0;
+  }
+}
+
 export class DefaultListDictionaryString<T> {
   private dictionary: { [key: string]: T[] } = {};
 
