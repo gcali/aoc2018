@@ -40,7 +40,7 @@ interface EntryMetadata {
     date?: number;
     hasAdditionalInput?: boolean;
     suggestedDelay?: number;
-    customComponent?: "pause-and-run" | "ticket-translation";
+    customComponent?: "pause-and-run";
     supportsQuickRunning?: boolean;
     embeddedData?: string | true;
 }
