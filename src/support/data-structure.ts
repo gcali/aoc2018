@@ -313,6 +313,16 @@ export class CircularDoubleLinkedNode<T> {
     return this.next.next.removePrevious();
   }
 
+  public getAllElements(): T[] {
+    const values: T[] = [this.value];
+    let current = this.next;
+    while (current && current !== this) {
+      values.push(current.value);
+      current = current.next;
+    }
+    return values;
+  }
+
   public get prev(): CircularDoubleLinkedNode<T> {
     if (this._prev === null) {
       return this;

@@ -18,6 +18,7 @@ import { conwayCubes } from "./conway-cubes";
 import { operationOrder } from "./operation-order";
 import { monsterMessages } from "./monster-messages";
 import { jurassicJigsaw } from "./jurassic-jigsaw";
+import { crabCups } from "./crab-cups";
 
 export const entries = [
         reportRepair,
@@ -39,5 +40,6 @@ export const entries = [
         conwayCubes,
         operationOrder,
         monsterMessages,
-        jurassicJigsaw
+        jurassicJigsaw,
+        crabCups
 ];
