@@ -14,6 +14,20 @@ export const sumHexCoordinates = (a: HexCubeCoordinate, b: HexCubeCoordinate): H
     };
 };
 
+export const getHexSurrounding = (a: HexCubeCoordinate): HexCubeCoordinate[] => {
+    return Object
+        .values(pointyHexDirections)
+        .map((d) => sumHexCoordinates(a, d));
+};
+
+export const serialization = {
+    serialize: (c: HexCubeCoordinate) => `${c.x}|${c.y}|${c.z}`,
+    deserialize: (s: string): HexCubeCoordinate => {
+        const [x, y, z] = s.split("|").map((e) => parseInt(e, 10));
+        return {x, y, z};
+    }
+};
+
 export const flatHexDirections = {
     northWest: {x: -1, y: 1, z: 0},
     southEast: {x: 1, y: -1, z: 0},
@@ -21,6 +35,15 @@ export const flatHexDirections = {
     southWest: {x: -1, y: 0, z: 1},
     north: {x: 0, y: 1, z: -1},
     south: {x: 0, y: -1, z: 1},
+};
+
+export const pointyHexDirections = {
+    west: {x: -1, y: 1, z: 0},
+    east: {x: 1, y: -1, z: 0},
+    northEast: {x: 1, y: 0, z: -1},
+    southWest: {x: -1, y: 0, z: 1},
+    northWest: {x: 0, y: 1, z: -1},
+    southEast: {x: 0, y: -1, z: 1},
 };
 
 export const hexManhattanDistance = (a: HexCubeCoordinate, b: HexCubeCoordinate): number => {

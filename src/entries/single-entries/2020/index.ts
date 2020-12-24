@@ -21,6 +21,7 @@ import { jurassicJigsaw } from "./jurassic-jigsaw";
 import { crabCups } from "./crab-cups";
 import { allergenAssessment } from "./allergen-assessment";
 import { crabCombat } from "./crab-combat";
+import { lobbyLayout } from "./lobby-layout";
 
 export const entries = [
         reportRepair,
@@ -45,5 +46,6 @@ export const entries = [
         jurassicJigsaw,
         allergenAssessment,
         crabCombat,
-        crabCups
+        crabCups,
+        lobbyLayout
 ];
