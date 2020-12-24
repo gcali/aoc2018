@@ -121,5 +121,11 @@ export const rainRisk = entryForFile(
         }
         await resultOutputCallback(manhattanDistance(state.shipCoordinate, {x: 0, y: 0}));
     },
-    { key: "rain-risk", title: "Rain Risk", embeddedData: true, supportsQuickRunning: true}
+    {
+        key: "rain-risk",
+        title: "Rain Risk",
+        embeddedData: true,
+        supportsQuickRunning: true,
+        stars: 2
+    }
 );

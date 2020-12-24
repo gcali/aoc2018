@@ -155,6 +155,7 @@ export const monsterMessages = entryForFile(
         key: "monster-messages",
         title: "Monster Messages",
         supportsQuickRunning: true,
-        embeddedData: true
+        embeddedData: true,
+        stars: 2
     }
 );

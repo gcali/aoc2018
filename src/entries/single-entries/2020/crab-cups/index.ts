@@ -4,6 +4,7 @@ import { entryForFile } from "../../../entry";
 type GameState = {
     cups: CircularDoubleLinkedNode<number>;
     length: number;
+    map: {[key: number]: CircularDoubleLinkedNode<number>}
 };
 
 const serialize = (state: GameState): string => {
@@ -20,14 +21,25 @@ const move = (state: GameState): void => {
     if (destination < 1 || destination > state.length) {
         throw new Error("Invalid destination: " + destination);
     }
-    let destinationCup = state.cups;
-    while (destinationCup.value !== destination) {
-        destinationCup = destinationCup.next!;
-    }
+    let destinationCup = state.map[destination];
     for (const toPut of pickedUp) {
         destinationCup = destinationCup.append(toPut);
+        state.map[destinationCup.value] = destinationCup;
     }
     state.cups = state.cups.next!;
+};
+
+type Cup = CircularDoubleLinkedNode<number>;
+
+const buildMap = (cups: Cup): {[key: number]: Cup} => {
+    const start = cups;
+    const map: {[key: number]: Cup} = {};
+    let current = start;
+    do {
+        map[current.value] = current;
+        current = current.next;
+    } while (current !== start);
+    return map;
 };
 
 const parseLines = (lines: string[]): GameState => {
@@ -39,7 +51,8 @@ const parseLines = (lines: string[]): GameState => {
     }
     return {
         cups: startCup,
-        length: cups.length
+        length: cups.length,
+        map: buildMap(startCup)
     };
 };
 
@@ -56,47 +69,13 @@ const fillUp = (state: GameState, upTo: number) => {
         state.cups.prepend(i + 1);
     }
     state.length = upTo;
+    state.map = buildMap(state.cups);
 };
 
 const range = (start: number, end: number) => {
     return Array(end - start + 1).fill(0).map((_, idx) => start + idx);
 };
 
-
-const crabcups = (labels: string, moves= 100, cupcount= 9) => {
-    // next will store the next cup, it will also be filled such that next[i] = i+1;
-    const next = range(1, cupcount + 1);
-    // cups[] stores each cup value
-    const cups = labels.split("").map((i) => parseInt(i, 10));
-    next[0] = next[next.length - 1] = cups[0];
-    for (let x = 0; x < cups.length - 1; x++) {
-        // here the cup value is used as the index, it points to the cup next to the current cup
-        next[cups[x]] = cups[x + 1];
-    }
-    // since our next array is filled with 1->cupcount the last value we care to set is the last
-    // cups next value, which will be 1+the max of cups
-    next[cups[cups.length - 1]] = Math.max(...cups) + 1;
-    let cur = 0;
-
-    for (let c = 0; c <= moves; c++) {
-        // this is defined abouve as the first cup, next[0] = cups[0]
-        cur = next[cur];
-        let ins = cur !== 1 ? cur - 1 : cupcount;
-        const p1 = next[cur];
-        const p2 = next[p1];
-        const p3 = next[p2];
-
-        while (ins === p1 || ins === p2 || ins === p3) {
-            ins -= 1;
-        }
-        if (ins < 1) {
-            ins += cupcount;
-        }
-
-        [next[p3], next[ins], next[cur]] = [next[ins], next[cur], next[p3]];
-    }
-    return next[1] * next[next[1]];
-};
 
 export const crabCups = entryForFile(
     async ({ lines, outputCallback, resultOutputCallback }) => {
@@ -107,15 +86,24 @@ export const crabCups = entryForFile(
         await outputCallback(serialize(state));
         await resultOutputCallback(createResult(state));
     },
-    async ({ lines, outputCallback, resultOutputCallback }) => {
+    async ({ lines, outputCallback, pause, resultOutputCallback }) => {
         const size = 1000000;
         const moves = 10000000;
-        await resultOutputCallback(crabcups(lines[0], moves, size));
+        const state = parseLines(lines);
+        fillUp(state, size);
+        for (let i = 0; i < moves; i++) {
+            move(state);
+            if (i % 10000 === 0) {
+                await pause();
+            }
+        }
+        await resultOutputCallback(state.map[1].next.value * state.map[1].next.next.value);
     },
     {
         key: "crab-cups",
         title: "Crab Cups",
         supportsQuickRunning: true,
-        embeddedData: true
+        embeddedData: true,
+        stars: 2
     }
 );

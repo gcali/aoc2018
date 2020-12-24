@@ -139,6 +139,7 @@ export const crabCombat = entryForFile(
         embeddedData: true,
         supportsQuickRunning: true,
         suggestedDelay: 0,
-        customComponent: "pause-and-run"
+        customComponent: "pause-and-run",
+        stars: 2
     }
 );

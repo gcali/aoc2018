@@ -200,5 +200,6 @@ export const allergenAssessment = entryForFile(
         key: "allergen-assessment",
         title: "Allergen Assessment",
         embeddedData: true,
+        stars: 2
     }
 );
