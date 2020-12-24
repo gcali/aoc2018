@@ -37,6 +37,7 @@
         "allow-empty-functions"
       ]
     },
+    "interface-over-type-literal": false,
     "variable-name": false,
     "no-console": false,
     "interface-over-type-literal": false

@@ -17,18 +17,19 @@ type SimpleMatch = number[];
 type ListMatch = number[][];
 type FullMatch = TerminalMatch | SimpleMatch | ListMatch;
 
-type Rule = {
+interface Rule {
     key: number;
     match: FullMatch;
-};
+}
 
-type RuleIndex = {[key: number]: Rule};
+interface RuleIndex {[key: number]: Rule; }
 
 const parseRules = (lines: string[]): RuleIndex => {
     return lines.map((line) => {
         const [a, b] = line.split(": ");
         const clean = b.trim();
-        const match: FullMatch = clean.includes("|") ? (clean.split(" | ").map((e) => e.split(" ").map((x) => parseInt(x, 10))))
+        const match: FullMatch = clean.includes("|") ?
+              (clean.split(" | ").map((e) => e.split(" ").map((x) => parseInt(x, 10))))
             : (clean.includes("\"") ? clean.replaceAll("\"", "") : clean.split(" ").map((e) => parseInt(e, 10)));
         return {
             key: parseInt(a, 10),
@@ -62,7 +63,7 @@ const combine = (elems: string[][]): string[] => {
     return elems[0].flatMap((e) => combine(elems.slice(1)).map((x) => e + x));
 };
 
-type QElement = {current: Array<string|Rule>};
+interface QElement {current: Array<string|Rule>; }
 
 const isBuiltFromStart = (target: string, pool: string[]): boolean => {
     if (target.length === 0) {
@@ -84,7 +85,11 @@ const isBuiltFromStartEnd = (target: string, startPool: string[], endPool: strin
         if (target.startsWith(startCandidate)) {
             for (const endCandidate of endPool) {
                 if (target.endsWith(endCandidate)) {
-                    return isBuiltFromStartEnd(target.slice(startCandidate.length, -endCandidate.length), startPool, endPool);
+                    return isBuiltFromStartEnd(
+                        target.slice(startCandidate.length, -endCandidate.length),
+                        startPool,
+                        endPool
+                    );
                 }
             }
         }

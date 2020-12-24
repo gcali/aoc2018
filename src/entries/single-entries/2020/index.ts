@@ -19,6 +19,8 @@ import { operationOrder } from "./operation-order";
 import { monsterMessages } from "./monster-messages";
 import { jurassicJigsaw } from "./jurassic-jigsaw";
 import { crabCups } from "./crab-cups";
+import { allergenAssessment } from "./allergen-assessment";
+import { crabCombat } from "./crab-combat";
 
 export const entries = [
         reportRepair,
@@ -41,5 +43,7 @@ export const entries = [
         operationOrder,
         monsterMessages,
         jurassicJigsaw,
+        allergenAssessment,
+        crabCombat,
         crabCups
 ];

@@ -4,7 +4,7 @@ import { Coordinate } from "../../../../support/geometry";
 import { buildGroupsFromSeparator } from "../../../../support/sequences";
 import { entryForFile } from "../../../entry";
 
-type Tile = {
+interface Tile {
     id: number;
     tile: string[][];
     matches: Array<{
@@ -12,7 +12,7 @@ type Tile = {
         operations: TileOperations
     }>;
     isPlaced: boolean;
-};
+}
 
 const rotate = (tile: Tile): Tile => {
     return {
@@ -41,11 +41,16 @@ const horizontalMatch = (a: Tile, b: Tile): boolean => {
     return true;
 };
 
-type TileOperations = {rotations: number; flipped: boolean; inverted: boolean; direction: "horizontal" | "vertical"};
-type MatchResult = {
+interface TileOperations {
+    rotations: number;
+    flipped: boolean;
+    inverted: boolean;
+    direction: "horizontal" | "vertical";
+}
+interface MatchResult {
     a: TileOperations;
     b: TileOperations;
-};
+}
 
 const match = (a: Tile, b: Tile): MatchResult | false => {
     const easyMatch = (x: Tile, y: Tile): Omit<Omit<TileOperations, "rotations">, "flipped"> | false => {
@@ -63,7 +68,12 @@ const match = (a: Tile, b: Tile): MatchResult | false => {
         }
         return false;
     };
-    const makeMatch = (rot: number, flipped: boolean, inverted: boolean, direction: "horizontal" | "vertical"): TileOperations => {
+    const makeMatch = (
+        rot: number,
+        flipped: boolean,
+        inverted: boolean,
+        direction: "horizontal" | "vertical"
+    ): TileOperations => {
         return {
             rotations: (rot + 1) % 4, flipped, inverted, direction
         };
@@ -134,7 +144,7 @@ const adjust = (fixed: Tile, movable: Tile, direction: "horizontal" | "vertical"
     return null;
 };
 
-type TileIndex = {[key: number]: Tile};
+interface TileIndex {[key: number]: Tile; }
 
 export const jurassicJigsaw = entryForFile(
     async ({ lines, outputCallback, resultOutputCallback }) => {
@@ -184,26 +194,13 @@ export const jurassicJigsaw = entryForFile(
         }, {} as TileIndex);
 
         const corners = input.filter((k) => k.matches.length === 2);
-        const borders = input.filter((k) => k.matches.length === 3);
-        const hyper = input.filter((k) => k.matches.length > 4);
         let topLeftCorner = corners.sort((a, b) => a.id - b.id)[0];
-        // const hasToInvert = topLeftCorner.matches.filter(e => e.operations.inverted);
-        const h = tileIndex[topLeftCorner.matches.filter((m) => m.operations.direction === "horizontal")[0].matchesWith];
-        const v = tileIndex[topLeftCorner.matches.filter((m) => m.operations.direction === "vertical")[0].matchesWith];
         // this is not generic!
         topLeftCorner = flip(horizontalFlip(topLeftCorner));
         console.log(toString(topLeftCorner));
-        // for (const inversion of hasToInvert) {
-        //     if (inversion.operations.direction === "horizontal") {
-        //         topLeftCorner = horizontalFlip(topLeftCorner);
-        //     } else {
-        //         topLeftCorner = flip(topLeftCorner);
-        //     }
-        // }
         const size = Math.sqrt(input.length);
         let currentLine: Tile[] = [topLeftCorner];
         topLeftCorner.isPlaced = true;
-        // const tilesToPlace: Set<number> = new Set<number>(input.map(e => e.id).filter(e => e !== topLeftCorner.id));
         const result: Tile[][] = [];
         while (result.length < size) {
             if (currentLine.length > 0 && currentLine.length < size) {
@@ -211,7 +208,6 @@ export const jurassicJigsaw = entryForFile(
                 const current = currentLine[lastIndex];
                 const candidates = current.matches.map((t) => tileIndex[t.matchesWith]).filter((e) => !e.isPlaced);
                 let target: Tile | null = null;
-                // const target = candidates.filter(c => currentLine.length === 1 || c.matchesWith !== currentLine[lastIndex-1].id)[0];
                 for (const tile of candidates) {
                     target = adjust(current, tile, "horizontal");
                     if (target) {
@@ -264,15 +260,8 @@ export const jurassicJigsaw = entryForFile(
                 }
                 for (let x = 0; x < size; x++) {
                     const inner = result[y][x].tile[innerY];
-                    // if (!inner) {
-                    //     console.log({y,innerY,x});
-                    //     console.log(topLeftCorner.tile.length);
-                    //     console.log(topLeftCorner.tile[0].length);
-                    //     throw new Error();
-                    // }
                     currentMaxiLine = currentMaxiLine.concat(inner.slice(1, -1));
                 }
-                // console.log(currentMaxiLine);
                 maxiTile.tile.push(currentMaxiLine);
                 currentMaxiLine = [];
             }
@@ -283,11 +272,8 @@ export const jurassicJigsaw = entryForFile(
  #  #  #  #  #  #   `.split("\n");
         const seaMonsterSize = {y: seaMonsterPattern.length, x: seaMonsterPattern[0].length};
         const clearSeaMonster = (tile: string[][], corner: Coordinate): void => {
-            const tileSize = {y: tile.length, x: tile[0].length};
-            if (corner.x + seaMonsterSize.x > tileSize.x || corner.y + seaMonsterSize.y > tileSize.y) {
-                // if (shouldPrint) {
-                //     console.log("Out of bounds");
-                // }
+            const nestedTileSize = {y: tile.length, x: tile[0].length};
+            if (corner.x + seaMonsterSize.x > nestedTileSize.x || corner.y + seaMonsterSize.y > nestedTileSize.y) {
                 return;
             }
             for (let y = 0; y < seaMonsterPattern.length; y++) {
@@ -300,23 +286,13 @@ export const jurassicJigsaw = entryForFile(
         };
 
         const seaMonsterMatch = (tile: string[][], corner: Coordinate): boolean => {
-            // const shouldPrint = corner.x === 2 && corner.y === 2;
-            // if (shouldPrint) {
-            //     console.log("Starting");
-            // }
-            const tileSize = {y: tile.length, x: tile[0].length};
-            if (corner.x + seaMonsterSize.x > tileSize.x || corner.y + seaMonsterSize.y > tileSize.y) {
-                // if (shouldPrint) {
-                //     console.log("Out of bounds");
-                // }
+            const nestedTileSize = {y: tile.length, x: tile[0].length};
+            if (corner.x + seaMonsterSize.x > nestedTileSize.x || corner.y + seaMonsterSize.y > nestedTileSize.y) {
                 return false;
             }
             for (let y = 0; y < seaMonsterPattern.length; y++) {
                 for (let x = 0; x < seaMonsterPattern[0].length; x++) {
                     if (seaMonsterPattern[y][x] === "#" && tile[y + corner.y][x + corner.x] !== "#") {
-                        // if (shouldPrint) {
-                        //     console.log(`Coordinate ${x},${y} betrayal: ${seaMonsterPattern[y][x]} !== ${tile[y+corner.y][x+corner.x]}`);
-                        // }
                         return false;
                     }
                 }
@@ -334,58 +310,7 @@ export const jurassicJigsaw = entryForFile(
             }
             return seaMonsterCount;
         };
-//         maxiTile.tile =
-// `.#.#..#.##...#.##..#####
-// ###....#.#....#..#......
-// ##.##.###.#.#..######...
-// ###.#####...#.#####.#..#
-// ##.#....#.##.####...#.##
-// ...########.#....#####.#
-// ....#..#...##..#.#.###..
-// .####...#..#.....#......
-// #..#.##..#..###.#.##....
-// #.####..#.####.#.#.###..
-// ###.#.#...#.######.#..##
-// #.####....##..########.#
-// ##..##.#...#...#.#.#.#..
-// ...#..#..#.#.##..###.###
-// .#.#....#.##.#...###.##.
-// ###.#...#..#.##.######..
-// .#.#.###.##.##.#..#.##..
-// .####.###.#...###.#..#.#
-// ..#.#..#..#.#.#.####.###
-// #..####...#.#.#.###.###.
-// #####..#####...###....##
-// #.##..#..#...#..####...#
-// .#.###..##..##..####.##.
-// ...###...##...#...#..###`.split("\n").map(l => l.split(""));
-// maxiTile.tile =
-// `.####...#####..#...###..
-// #####..#..#.#.####..#.#.
-// .#.#...#.###...#.##.O#..
-// #.O.##.OO#.#.OO.##.OOO##
-// ..#O.#O#.O##O..O.#O##.##
-// ...#.#..##.##...#..#..##
-// #.##.#..#.#..#..##.#.#..
-// .###.##.....#...###.#...
-// #.####.#.#....##.#..#.#.
-// ##...#..#....#..#...####
-// ..#.##...###..#.#####..#
-// ....#.##.#.#####....#...
-// ..##.##.###.....#.##..#.
-// #...#...###..####....##.
-// .#.##...#.##.#.#.###...#
-// #.###.#..####...##..#...
-// #.###...#.##...#.##O###.
-// .O##.#OO.###OO##..OOO##.
-// ..O#.O..O..O.#O##O##.###
-// #.#..##.########..#..##.
-// #.#####..#.#...##..#....
-// #....##..#.#########..##
-// #...#.....#..##...###.##
-// #..###....##.#...##.##.#`.replaceAll("O","#").split("\n").map(l => l.split(""));
         let bestTile: Tile | null = null;
-        // bestMonsterCount = countMonsters(maxiTile.tile);
         for (let i = 0; i < 4; i++) {
             const current = countMonsters(maxiTile.tile);
             if (current > 0) {
@@ -397,8 +322,6 @@ export const jurassicJigsaw = entryForFile(
                 bestTile = maxiTile;
                 break;
             }
-            // console.log(currentFlipped);
-            // bestMonsterCount = Math.max(current, currentFlipped, bestMonsterCount);
             maxiTile = rotate(maxiTile);
         }
         if (!bestTile) {
@@ -412,17 +335,20 @@ export const jurassicJigsaw = entryForFile(
             }
         }
         await outputCallback(toString(bestTile));
-        // await outputCallback(maxiTile.tile.length);
-        // await outputCallback(maxiTile.tile[0].length);
-        // await outputCallback(toString(maxiTile));
-        // await outputCallback(bestMonsterCount);
-        // await outputCallback(seaMonsterMatch([seaMonsterPattern[0].split("").map(e => ".")].concat(seaMonsterPattern.map(p => p.split("").map(e => "#"))), {x: 0, y: 1}));
-        await resultOutputCallback(bestTile.tile.map((e) => e.join("")).join("").split("").filter((t) => t === "#").length);
+        await resultOutputCallback(
+            bestTile.tile
+                .map((e) => e.join(""))
+                .join("")
+                .split("")
+                .filter((t) => t === "#")
+                .length
+        );
     },
     {
         key: "jurassic-jigsaw",
         title: "Jurassic Jigsaw",
         supportsQuickRunning: true,
-        embeddedData: true
+        embeddedData: true,
+        stars: 2
     }
 );
