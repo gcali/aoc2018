@@ -1,10 +1,15 @@
 import { VueConstructor } from "vue";
 import { Vue } from "vue-property-decorator";
 import { Entry } from "./entry";
+
 import {ticketTranslation} from "./single-entries/2020/ticket-translation";
 import TicketTranslationView from "../views/entries/custom/2020/TicketTranslationView.vue";
-import ConwayCubesView from "../views/entries/custom/2020/ConwayCubesView.vue";
+
 import { conwayCubes } from "./single-entries/2020/conway-cubes";
+import ConwayCubesView from "../views/entries/custom/2020/ConwayCubesView.vue";
+
+import { lobbyLayout } from "./single-entries/2020/lobby-layout";
+import LobbyLayout from "../views/entries/custom/2020/LobbyLayout.vue";
 
 import EntryWithPauseAndRun from "@/views/entries/EntryWithPauseAndRun.vue";
 
@@ -39,6 +44,7 @@ const buildMap = (tuples: Array<[Entry, VueConstructor<Vue>]>, entries: Entry[])
 const map2020: EntryMap = buildMap([
     [ticketTranslation, TicketTranslationView],
     [conwayCubes, ConwayCubesView],
+    [lobbyLayout, LobbyLayout]
 ], entries2020);
 
 export const map: { [key: string]: VueConstructor<Vue> } = [

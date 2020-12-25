@@ -22,6 +22,7 @@ import { crabCups } from "./crab-cups";
 import { allergenAssessment } from "./allergen-assessment";
 import { crabCombat } from "./crab-combat";
 import { lobbyLayout } from "./lobby-layout";
+import { comboBreaker } from "./combo-breaker";
 
 export const entries = [
         reportRepair,
@@ -47,5 +48,6 @@ export const entries = [
         allergenAssessment,
         crabCombat,
         crabCups,
-        lobbyLayout
+        lobbyLayout,
+        comboBreaker
 ];
