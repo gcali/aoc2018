@@ -1,0 +1,1 @@
+{"version":3,"sources":["webpack:///./data/2018/go-with-the-flow/example.txt"],"names":[],"mappings":"qIAAA,OAAe","file":"js/2018-go-with-the-flow-example-txt.2c5a9c96.js","sourcesContent":["export default \"#ip 0\\nseti 5 0 1\\nseti 6 0 2\\naddi 0 1 0\\naddr 1 2 3\\nsetr 1 0 0\\nseti 8 0 4\\nseti 9 0 5\";"],"sourceRoot":""}

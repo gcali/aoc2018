@@ -1,0 +1,2 @@
+(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([["2020-crab-combat-txt"],{"54aa":function(n,a,t){"use strict";t.r(a),a["default"]="Player 1:\n2\n31\n14\n45\n33\n18\n29\n36\n44\n47\n38\n6\n9\n5\n48\n17\n50\n41\n4\n21\n42\n23\n25\n28\n3\n\nPlayer 2:\n26\n16\n27\n12\n49\n32\n19\n46\n37\n15\n10\n30\n11\n24\n1\n40\n7\n8\n43\n34\n20\n35\n22\n39\n13\n"}}]);
+//# sourceMappingURL=2020-crab-combat-txt.f784e3c2.js.map

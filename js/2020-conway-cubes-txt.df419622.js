@@ -1,0 +1,2 @@
+(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([["2020-conway-cubes-txt"],{"43db":function(n,w,c){"use strict";c.r(w),w["default"]="####.#..\n.......#\n#..#####\n.....##.\n##...###\n#..#.#.#\n.##...#.\n#...##..\n"}}]);
+//# sourceMappingURL=2020-conway-cubes-txt.df419622.js.map

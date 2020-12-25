@@ -1,0 +1,2 @@
+(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([["2018-subterranean-substainability-subterranean-example-txt"],{f77c:function(n,t,a){"use strict";a.r(t),t["default"]="initial state: #..#.#..##......###...###\n\n...## => #\n..#.. => #\n.#... => #\n.#.#. => #\n.#.## => #\n.##.. => #\n.#### => #\n#.#.# => #\n#.### => #\n##.#. => #\n##.## => #\n###.. => #\n###.# => #\n####. => #"}}]);
+//# sourceMappingURL=2018-subterranean-substainability-subterranean-example-txt.3fe3c8f8.js.map

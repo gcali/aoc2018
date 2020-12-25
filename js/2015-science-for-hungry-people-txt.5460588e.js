@@ -1,0 +1,2 @@
+(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([["2015-science-for-hungry-people-txt"],{"3a8f":function(a,t,r){"use strict";r.r(t),t["default"]="Sprinkles: capacity 5, durability -1, flavor 0, texture 0, calories 5\nPeanutButter: capacity -1, durability 3, flavor 0, texture 0, calories 1\nFrosting: capacity 0, durability -1, flavor 4, texture 0, calories 6\nSugar: capacity -1, durability 0, flavor 0, texture 2, calories 8\n"}}]);
+//# sourceMappingURL=2015-science-for-hungry-people-txt.5460588e.js.map

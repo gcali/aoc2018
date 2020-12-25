@@ -1,0 +1,2 @@
+(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([["2019-monitoring-station-example-1-txt"],{4763:function(n,t,o){"use strict";o.r(t),t["default"]="-- best: 3,4 (8)\n.#..#\n.....\n#####\n....#\n...##"}}]);
+//# sourceMappingURL=2019-monitoring-station-example-1-txt.3c80bcb6.js.map
