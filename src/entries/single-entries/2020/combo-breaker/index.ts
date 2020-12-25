@@ -45,6 +45,7 @@ export const comboBreaker = entryForFile(
         key: "combo-breaker",
         title: "Combo Breaker",
         supportsQuickRunning: true,
-        embeddedData: true
+        embeddedData: true,
+        stars: 2
     }
 );

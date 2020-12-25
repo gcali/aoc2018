@@ -110,6 +110,7 @@ export const lobbyLayout = entryForFile(
         key: "lobby-layout",
         title: "Lobby Layout",
         supportsQuickRunning: true,
-        embeddedData: true
+        embeddedData: true,
+        stars: 2
     }
 );
